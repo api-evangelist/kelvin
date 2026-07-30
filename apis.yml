@@ -1,7 +1,15 @@
 aid: kelvin
 name: Kelvin
-description: Kelvin is a company surfaced as a portfolio company of seedcamp and added to the API Evangelist
-  network as a stub for enrichment. This profile is a lead awaiting the enrichment pipeline.
+description: 'Kelvin (kelvin°) is a Paris-based startup, founded in 2023 and backed
+  by Seedcamp, building an AI-powered commercial platform for the home energy-renovation
+  industry in France. Its tools help RGE-certified artisans, renovation contractors,
+  general contractors, CEE delegatees and trade platforms find and qualify renovation
+  prospects, generate leads through embeddable address-based simulators, automatically
+  compute energy-efficiency scenarios and government aids (MaPrimeRenov / CEE) with
+  remaining customer cost, and assemble complete financing packages. The AI is trained
+  by thermal engineers and architects and uses open data plus computer vision to assess
+  buildings without a recent DPE. More than 4,000 artisans and sales reps use Kelvin
+  to prospect, prepare appointments and quote work.'
 url: https://raw.githubusercontent.com/api-evangelist/kelvin/refs/heads/main/apis.yml
 x-type: company
 x-source: vc-portfolio
@@ -9,11 +17,32 @@ x-backed-by:
 - seedcamp
 x-tier: stub
 x-tier-reason: portfolio-lead
+accessModel:
+  pricing: unknown
+  onboarding: unknown
+  trial: false
+  try_now: false
+  public: false
+  label: Unknown
+  confidence: low
+  source: []
+  generated: '2026-07-22'
+  method: derived
 specificationVersion: '0.20'
 created: '2026-07-17'
-modified: '2026-07-17'
+modified: '2026-07-19'
+image: https://cdn.prod.website-files.com/6655caeb6e3835fd7ee50dd6/67a1271dde24f8ccdf843524_Kelvin-Wordmark.svg
 tags:
 - Company
+- Energy
+- Energy Efficiency
+- Home Renovation
+- Construction
+- Artificial Intelligence
+- Lead Generation
+- Sales Enablement
+- France
+- Sustainability
 apis: []
 maintainers:
 - FN: Kin Lane
@@ -22,4 +51,21 @@ maintainers:
   email: info@apis.io
 common:
 - type: Website
-  url: http://go-kelvin.com
+  url: https://go-kelvin.com
+- type: Blog
+  url: https://go-kelvin.com/ressources
+- type: SignUp
+  url: https://go-kelvin.com/creer-un-compte-kelvin
+- type: Login
+  url: https://app.go-kelvin.com/users/sign_in
+- type: PrivacyPolicy
+  url: https://go-kelvin.com/gestion-des-donnees
+- type: LLMsTxt
+  url: llms/kelvin-llms.txt
+- type: DomainSecurity
+  url: security/kelvin-domain-security.yml
+x-enrichment:
+  date: '2026-07-19'
+  status: backfilled
+  pass: local-v1
+  note: backfilled from .gitignore signal + verified work evidence
