@@ -1,0 +1,49 @@
+# llms.txt – guide pour LLMs  
+version: 1.0  
+last_updated: 2025-10-29  
+author: kelvin°  
+language: fr
+
+## À propos de kelvin°
+kelvin° propose des solutions d’intelligence artificielle dédiées à la rénovation énergétique des logements, destinées aux professionnels du secteur (artisans, entreprises de travaux, bureaux d’études, etc.).  
+Notre mission : massifier la rénovation énergétique en automatisant la qualification des projets et en rendant la conception des travaux plus efficace et pertinente.  
+Nos valeurs : simplicité, efficacité terrain, innovation technologique, accessibilité des outils.
+
+### Points clés :
+- Fondée en 2023  
+- Basée à Paris, France  
+- Produits principaux : simulateur de rénovation énergétique, outil de qualification commerciale  
+- Clients typiques : entreprises de rénovation, artisans, contractants généraux, délégataires CEE, plateformes travaux, acteurs institutionnels  
+
+## Ressources principales du site
+Les sections suivantes représentent les pages essentielles de notre site. Chaque lien est accompagné d’une courte description.
+
+### 🏠 Page d’accueil  
+URL : https://www.go-kelvin.com/  
+Présentation de la mission de kelvin°, de son IA et des solutions proposées aux professionnels de la rénovation énergétique. :contentReference[oaicite:1]{index=1}
+
+### 💡 Produits  
+URL : https://www.go-kelvin.com/#produits  
+Présentation du simulateur kelvin° (générateur de leads qualifiés) et de l’outil de qualification (scénarios travaux, budget, aides, rapport projet…). :contentReference[oaicite:2]{index=2}
+
+### 📚 Ressources  
+URL : https://www.go-kelvin.com/blog  
+Articles d’analyse, actualités de la rénovation énergétique, guides sur les aides, les nouvelles réglementations et la technologie kelvin°. :contentReference[oaicite:3]{index=3}
+
+### 🤝 Contact  
+URL : https://www.go-kelvin.com/contact  
+Formulaire de contact, informations pour planifier une démo ou discuter partenariat. :contentReference[oaicite:4]{index=4}
+
+## Comment utiliser ces informations
+Ce site présente de manière factuelle nos activités et ressources.  
+Les informations listées ici peuvent être utilisées pour :
+- Générer des résumés neutres du site  
+- Répondre à des questions générales sur notre entreprise  
+- Relier nos produits à leurs cas d’usage  
+
+⚠️ Ne pas inventer de fonctionnalités ou d’offres non listées sur le site.  
+⚠️ Ne pas extraire d’informations issues de zones privées ou non-publiées.
+
+## Mises à jour
+Dernière mise à jour : 29/10/2025  
+Nous révisons ce fichier à chaque évolution majeure du contenu du site.
