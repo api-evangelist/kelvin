@@ -15,22 +15,35 @@ x-type: company
 x-source: vc-portfolio
 x-backed-by:
 - seedcamp
-x-tier: stub
-x-tier-reason: portfolio-lead
+x-tier: profiled
+x-tier-reason: >-
+  Promoted from stub 2026-08-14: a real, live, versioned OpenAPI 3.1.0 contract (kelvin
+  API v3, 25 operations) was found published at https://app.go-kelvin.com/api/docs and
+  harvested, along with v2.
 accessModel:
-  pricing: unknown
-  onboarding: unknown
+  pricing: enterprise
+  onboarding: sales
   trial: false
   try_now: false
   public: false
-  label: Unknown
-  confidence: low
-  source: []
-  generated: '2026-07-22'
-  method: derived
+  label: Enterprise · Requires approval
+  confidence: high
+  source:
+  - https://app.go-kelvin.com/api/docs
+  - https://www.go-kelvin.com/demo-produit
+  - https://www.go-kelvin.com/creer-un-compte-kelvin
+  note: >-
+    The API reference is fully public and requires no login, but access to the API is
+    not. No price is published anywhere (/tarifs, /prix and /pricing all 404), there is
+    no self-serve key issuance, and credentials are per-team keys prefixed
+    team-api-key- that kelvin provisions. Every commercial path funnels to a demo
+    request or contact form. Free public calculators exist on the marketing site but
+    are not API access.
+  generated: '2026-08-14'
+  method: searched
 specificationVersion: '0.20'
 created: '2026-07-17'
-modified: '2026-07-19'
+modified: '2026-08-14'
 image: https://cdn.prod.website-files.com/6655caeb6e3835fd7ee50dd6/67a1271dde24f8ccdf843524_Kelvin-Wordmark.svg
 tags:
 - Company
@@ -43,13 +56,76 @@ tags:
 - Sales Enablement
 - France
 - Sustainability
-apis: []
+apis:
+- name: kelvin API
+  description: >-
+    REST API for kelvin's energy-renovation engine. Create a simulation from a
+    latitude/longitude (and optionally a Base Adresse Nationale key), record the
+    occupant's qualification profile, run kelvin's model, then read back the dwelling's
+    current energy performance (DPE energy and carbon letters, consumption, insulation
+    U-values, heating and hot-water systems, with a per-field provenance map saying
+    whether each value came from AI, the user or a filed DPE) and a set of costed
+    renovation scenarios carrying MaPrimeRenov', CEE, eco-PTZ and local aid amounts plus
+    a property-valuation KPI. Also searches published French DPE certificates, exposes
+    the team's own enabled catalogue of work gestures, services and price references,
+    and asynchronously generates the paperwork a renovation company needs - full study,
+    CEE contribution framework, dimensioning note, sworn statement and the commercial
+    quote. Authenticated with a per-team bearer key prefixed team-api-key-. Current
+    version v3 (25 operations); v2 remains served and documented.
+  humanURL: https://app.go-kelvin.com/api/docs
+  baseURL: https://app.go-kelvin.com
+  tags:
+  - energy-efficiency
+  - home-renovation
+  - building-data
+  - energy-simulation
+  - dpe
+  - france
+  - government-incentives
+  - lead-generation
+  - document-generation
+  - construction
+  properties:
+  - type: Documentation
+    url: https://app.go-kelvin.com/api/docs
+  - type: APIReference
+    url: https://app.go-kelvin.com/api/docs
+  - type: OpenAPI
+    url: openapi/kelvin-api-openapi.yml
+  - type: OpenAPI
+    url: openapi/kelvin-api-v2-openapi.yml
+  - type: Overlay
+    url: overlays/kelvin-api-overlay.yaml
+  - type: Authentication
+    url: authentication/kelvin-authentication.yml
+  - type: OAuthScopes
+    url: scopes/kelvin-scopes.yml
+  - type: Conventions
+    url: conventions/kelvin-conventions.yml
+  - type: ErrorCatalog
+    url: errors/kelvin-problem-types.yml
+  - type: DataModel
+    url: data-model/kelvin-data-model.yml
+  - type: Lifecycle
+    url: lifecycle/kelvin-lifecycle.yml
+  - type: ChangeLog
+    url: changelog/kelvin-changelog.yml
+  - type: RateLimits
+    url: rate-limits/kelvin-rate-limits.yml
+  - type: Conformance
+    url: conformance/kelvin-conformance.yml
+  - type: MCPServer
+    url: mcp/kelvin-mcp.yml
+  - type: AgentSkill
+    url: skills/_index.yml
 maintainers:
 - FN: Kin Lane
   email: kin@apievangelist.com
 - FN: APIs.json
   email: info@apis.io
 common:
+- type: Authentication
+  url: authentication/kelvin-authentication.yml
 - type: Website
   url: https://go-kelvin.com
 - type: Blog
@@ -64,8 +140,46 @@ common:
   url: llms/kelvin-llms.txt
 - type: DomainSecurity
   url: security/kelvin-domain-security.yml
+- type: DeveloperPortal
+  url: https://app.go-kelvin.com/api/docs
+- type: Documentation
+  url: https://app.go-kelvin.com/api/docs
+- type: APIReference
+  url: https://app.go-kelvin.com/api/docs
+- type: Support
+  url: https://go-kelvin.com/demande-de-contact
+- type: TermsOfService
+  url: https://go-kelvin.com/conditions-de-vente
+- type: LegalNotice
+  url: https://go-kelvin.com/mentions-legales
+- type: Components
+  url: components/kelvin-components.yml
+- type: Plans
+  url: plans/kelvin-plans-pricing.yml
+x-artifacts-without-pointer:
+  note: >-
+    These artifacts document a verified ABSENCE. They are deliberately left unwired,
+    because the canonical pointer asserts the provider serves the surface and this
+    provider does not.
+  files:
+  - path: well-known/kelvin-well-known.yml
+    reason: >-
+      No /.well-known/ document on either host — 404 on go-kelvin.com, soft-200 HTML
+      error page on app.go-kelvin.com. No WellKnown or SecurityTxt pointer.
+  - path: packages/kelvin-packages.yml
+    reason: >-
+      Zero first-party client libraries on any registry, and no GitHub organisation.
+      No Packages or SDKs pointer.
 x-enrichment:
-  date: '2026-07-19'
-  status: backfilled
+  date: '2026-08-14'
+  status: enriched
+  artifacts_added: 23
   pass: local-v1
-  note: backfilled from .gitignore signal + verified work evidence
+  note: >-
+    Contract discovery found the kelvin API. The spec is not served at any
+    /openapi.json-style URL — every such path on both hosts returns the Rails
+    application error page — it is embedded as Redoc state in the docs page at
+    https://app.go-kelvin.com/api/docs, where a version selector exposes v3 and v2.
+    Both were extracted verbatim. Ownership verified: info.title "kelvin API",
+    servers[] default host app.go-kelvin.com, bearer keys prefixed team-api-key-, and
+    the docs URL is cited by kelvin's own resources pages.
