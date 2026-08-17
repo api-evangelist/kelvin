@@ -1,0 +1,4237 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "kelvin API",
+    "version": "v2",
+    "description": "> ⚠️ **Cette version de l'API est dépréciée.** Elle sera maintenue en mode maintenance jusqu'au **1er octobre 2026**, date après laquelle elle ne sera plus supportée. Veuillez migrer vers la [v3](/api/docs).\n\nBienvenue dans la documentation de l'API kelvin. Cette API est conçue pour évaluer et améliorer la performance énergétique des propriétés.\n\n![API Logo](/api/kelvin-api-flow-colored.svg)\n\n### Aperçu de l'API\nL'API kelvin vous permet de créer des simulations pour évaluer la performance énergétique d'un bien immobilier. Elle vous aide également à proposer des plans de travaux personnalisés pour optimiser l'efficacité énergétique de ces biens.\n\n### Objectifs Principaux\n- **Création de simulations** : Lancez des simulations pour obtenir la performance énergétique actuelle d'une propriété.\n- **Propositions de travaux** : Génération de recommandations de travaux spécifiques pour améliorer l'efficacité énergétique, basées sur les résultats de la simulation.\n- **Gestion des DPE** : Recherchez et gérez les Diagnostics de Performance Énergétique.\n\n### Utilisation de l'iframe de sélection de polygone\nPour créer une simulation, il faut déterminer la latitude, la longitude et l'identifiant d'interopérabilité (ban_id) de la propriété. Une carte interactive est disponible pour faciliter cette tâche: L'iframe de sélection de polygone. Cette carte permet aux utilisateurs de sélectionner visuellement leur propriété sur une carte. Vous pouvez intégrer ce composant dans vos applications en suivant la [documentation de l'iframe de sélection de polygone](https://app.go-kelvin.com/docs/simulator-map-iframe#/).\n\nUtilisez cette documentation pour explorer les endpoints disponibles, comprendre les paramètres requis, et découvrir comment intégrer efficacement l'API dans votre système.\n"
+  },
+  "tags": [
+    {
+      "name": "Simulateur",
+      "description": "Endpoints disponibles dans l'offre Simulateur"
+    },
+    {
+      "name": "Qualification",
+      "description": "Endpoints disponibles dans l'offre Qualification"
+    }
+  ],
+  "paths": {
+    "/api/v2/dpes": {
+      "get": {
+        "summary": "Rechercher des DPE par clé d'interopérabilité ou par numéro DPE.",
+        "tags": [
+          "Qualification"
+        ],
+        "description": "Cet endpoint permet de rechercher des DPE par clé d'interopérabilité ou par numéro de DPE.\n\n**Fonctionnalités :** Il est obligatoire de fournir au moins un des deux paramètres \"ban_id\" ou \"dpe_id\".\n- **Recherche par clé d'interopérabilité** : Il est possible de rechercher les DPE par la clé d'interopérabilité (ban_id) d'une adresse. Par exemple \"31157_0790_00009\".\n- **Recherche par Numéro de DPE** : Il est également possible de rechercher un DPE en utilisant son numéro unique. Cela permet de récupérer rapidement les informations d'un DPE spécifique, par exemple \"2331E2555868X\".\n\n**Filtres :**\nEn plus des paramètres principaux, cet endpoint permet d'appliquer des filtres supplémentaires :\n- **Surface** : Filtrer les DPE en fonction de la surface du bien à 10% près.\n- **Date du du diagnostic** : Filtrer les DPE selon la date à laquelle ils ont été établis.\n- **Classe Énergétique** : Filtrer par la classe énergétique du DPE.\n\n**Réponse :**\nEn cas de succès, l'endpoint retourne une liste de DPE correspondant aux critères de recherche spécifiés.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "dpe_id",
+            "in": "query",
+            "required": false,
+            "example": "2331E2555868X",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "building_type",
+            "in": "query",
+            "required": false,
+            "example": "house",
+            "enum": [
+              "apartment",
+              "house",
+              "building",
+              "unknown"
+            ],
+            "description": "Le type de bâtiment:\n * `apartment` \n * `house` \n * `building` \n * `unknown` \n ",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "ban_id",
+            "in": "query",
+            "required": false,
+            "example": "31157_0790_00009",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "surface",
+            "in": "query",
+            "required": false,
+            "example": 100,
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "report_date",
+            "in": "query",
+            "required": false,
+            "example": "2024-01-01",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "energy_class",
+            "in": "query",
+            "required": false,
+            "example": "E",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "dpe_id": {
+                        "type": "string",
+                        "example": "2331E2555868X",
+                        "description": "Le numéro unique du DPE."
+                      },
+                      "building_type": {
+                        "type": "string",
+                        "example": "house",
+                        "enum": [
+                          "apartment",
+                          "house",
+                          "building",
+                          "unknown"
+                        ],
+                        "description": "Le type de bâtiment."
+                      },
+                      "ban_id": {
+                        "type": "string",
+                        "example": "31157_0790_00009",
+                        "description": "clé d'interopérabilité."
+                      },
+                      "energy_class": {
+                        "type": "string",
+                        "example": "A",
+                        "description": "La classe énergétique du DPE."
+                      },
+                      "emission_class": {
+                        "type": "string",
+                        "example": "B",
+                        "description": "La classe d'émission du DPE."
+                      },
+                      "surface": {
+                        "type": "number",
+                        "example": 100,
+                        "description": "La surface."
+                      },
+                      "report_date": {
+                        "type": "string",
+                        "example": "2024-05-10",
+                        "description": "La date à laquelle le DPE a été établi."
+                      },
+                      "address": {
+                        "type": "string",
+                        "example": "9 Rue du Vivier, Cugnaux, 31270",
+                        "description": "L'adresse associée au DPE"
+                      },
+                      "address_complement": {
+                        "type": "string",
+                        "example": "Escalier: Etage 3; Porte 322, Lot: 10",
+                        "description": "Détails supplémentaires pour l'adresse."
+                      },
+                      "dpe_version": {
+                        "type": "string",
+                        "example": "2.4",
+                        "description": "La version du dpe."
+                      }
+                    },
+                    "required": [
+                      "dpe_id",
+                      "ban_id",
+                      "energy_class",
+                      "emission_class",
+                      "surface",
+                      "report_date",
+                      "address"
+                    ]
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "example": "Required dpe_id and ban_id are both missing",
+                      "description": "Error message indicating the issue."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "example": "Unauthorized"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "example": "Forbidden"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v2/simulations": {
+      "get": {
+        "summary": "Lister les simulations",
+        "description": "Endpoint pour lister les simulations.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "status",
+            "in": "query",
+            "required": false,
+            "example": "with_contact_details",
+            "enum": [
+              "with_contact_details"
+            ],
+            "description": "Filtrer les simulations avec des informations de contact:\n * `with_contact_details` \n ",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "required": false,
+            "example": 1,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "string",
+                            "example": "1fh9vrmd2c",
+                            "description": "L'identifiant de la simulation"
+                          },
+                          "created_at": {
+                            "type": "string",
+                            "format": "date-time",
+                            "example": "2024-10-08T10:00:54Z",
+                            "description": "La date de création de la simulation"
+                          },
+                          "simulation_url": {
+                            "type": "string",
+                            "format": "uri",
+                            "example": "https://app.go-kelvin.com/simulator/4732fnd4mt/simulations/1fh9vrmd2c",
+                            "description": "L'adresse web du résultat de la simulation"
+                          },
+                          "team_id": {
+                            "type": "string",
+                            "example": "4732fnd4mt",
+                            "description": "L'identifiant de l'équipe"
+                          },
+                          "source": {
+                            "type": "string",
+                            "enum": [
+                              "simulator",
+                              "qualification",
+                              "api"
+                            ],
+                            "example": "api",
+                            "description": "La source de la simulation"
+                          },
+                          "tracking_context": {
+                            "type": "object",
+                            "description": "Les informations de tracking extraites du contexte de lancement de la simulation",
+                            "properties": {
+                              "utm_source": {
+                                "type": [
+                                  "string",
+                                  "null"
+                                ]
+                              },
+                              "utm_medium": {
+                                "type": [
+                                  "string",
+                                  "null"
+                                ]
+                              },
+                              "utm_campaign": {
+                                "type": [
+                                  "string",
+                                  "null"
+                                ]
+                              },
+                              "utm_content": {
+                                "type": [
+                                  "string",
+                                  "null"
+                                ]
+                              },
+                              "utm_term": {
+                                "type": [
+                                  "string",
+                                  "null"
+                                ]
+                              },
+                              "gad_source": {
+                                "type": [
+                                  "string",
+                                  "null"
+                                ]
+                              },
+                              "gclid": {
+                                "type": [
+                                  "string",
+                                  "null"
+                                ]
+                              },
+                              "fbclid": {
+                                "type": [
+                                  "string",
+                                  "null"
+                                ]
+                              },
+                              "cuid": {
+                                "type": [
+                                  "string",
+                                  "null"
+                                ]
+                              },
+                              "referer": {
+                                "type": [
+                                  "string",
+                                  "null"
+                                ]
+                              },
+                              "gbraid": {
+                                "type": [
+                                  "string",
+                                  "null"
+                                ]
+                              },
+                              "msclkid": {
+                                "type": [
+                                  "string",
+                                  "null"
+                                ]
+                              },
+                              "krid": {
+                                "type": [
+                                  "string",
+                                  "null"
+                                ]
+                              },
+                              "krsrc": {
+                                "type": [
+                                  "string",
+                                  "null"
+                                ]
+                              },
+                              "ksid": {
+                                "type": [
+                                  "string",
+                                  "null"
+                                ]
+                              }
+                            }
+                          },
+                          "client": {
+                            "type": "object",
+                            "description": "Les informations du client (nom, prénom, email, téléphone)",
+                            "properties": {
+                              "first_name": {
+                                "type": [
+                                  "string",
+                                  "null"
+                                ],
+                                "example": "Jean",
+                                "description": "Le prénom du client"
+                              },
+                              "last_name": {
+                                "type": [
+                                  "string",
+                                  "null"
+                                ],
+                                "example": "Dupont",
+                                "description": "Le nom de famille du client"
+                              },
+                              "email": {
+                                "type": [
+                                  "string",
+                                  "null"
+                                ],
+                                "example": "jean.dupont@example.com",
+                                "description": "L'email du client"
+                              },
+                              "phone_number": {
+                                "type": [
+                                  "string",
+                                  "null"
+                                ],
+                                "example": "+33600112233",
+                                "description": "Le téléphone du client"
+                              },
+                              "ownership_status": {
+                                "type": [
+                                  "string",
+                                  "null"
+                                ],
+                                "enum": [
+                                  "Propriétaire occupant",
+                                  "Résidence secondaire",
+                                  "Locataire",
+                                  "Propriétaire bailleur"
+                                ],
+                                "example": "Propriétaire occupant",
+                                "description": "Le statut de propriété du client"
+                              },
+                              "main_property": {
+                                "type": [
+                                  "string",
+                                  "null"
+                                ],
+                                "example": "true",
+                                "description": "Indique si la propriété est la principale"
+                              },
+                              "number_people": {
+                                "type": [
+                                  "integer",
+                                  "null"
+                                ],
+                                "example": 4,
+                                "description": "Le nombre de personnes dans le foyer"
+                              },
+                              "fiscal_department": {
+                                "type": [
+                                  "string",
+                                  "null"
+                                ],
+                                "example": "50",
+                                "description": "Le département fiscal du client"
+                              },
+                              "revenues": {
+                                "type": [
+                                  "string",
+                                  "null"
+                                ],
+                                "example": "34948 - 44802",
+                                "description": "La tranche de revenus du client"
+                              },
+                              "mindset": {
+                                "type": [
+                                  "string",
+                                  "null"
+                                ],
+                                "enum": [
+                                  "Projet d’achat",
+                                  "Réflexion en cours",
+                                  "Devis déjà obtenu",
+                                  "Devis déjà signé"
+                                ],
+                                "example": "Projet d’achat",
+                                "description": "L'état d'esprit ou la maturité du projet du client"
+                              },
+                              "household_level": {
+                                "type": [
+                                  "string",
+                                  "null"
+                                ],
+                                "enum": [
+                                  "Très modeste",
+                                  "Modeste",
+                                  "Intermédiaire",
+                                  "Supérieur"
+                                ],
+                                "example": "Très modeste",
+                                "description": "Le niveau de revenu du ménage"
+                              },
+                              "household_color": {
+                                "type": [
+                                  "string",
+                                  "null"
+                                ],
+                                "enum": [
+                                  "Bleu",
+                                  "Jaune",
+                                  "Violet",
+                                  "Rose"
+                                ],
+                                "example": "Bleu",
+                                "description": "La couleur associée au niveau de revenu du ménage"
+                              }
+                            }
+                          },
+                          "housing": {
+                            "type": "object",
+                            "description": "Les informations du logement (type, latitude, longitude, adresse, adresse détaillée, BAN, lien Google Maps)",
+                            "properties": {
+                              "kind": {
+                                "type": [
+                                  "string",
+                                  "null"
+                                ],
+                                "enum": [
+                                  "apartment",
+                                  "house",
+                                  null
+                                ],
+                                "description": "Le type de logement"
+                              },
+                              "latitude": {
+                                "type": "number",
+                                "format": "float",
+                                "example": 48.8487743,
+                                "description": "La latitude des coordonnées GPS du logement"
+                              },
+                              "longitude": {
+                                "type": "number",
+                                "format": "float",
+                                "example": 2.328388,
+                                "description": "La longitude des coordonnées GPS du logement"
+                              },
+                              "address": {
+                                "type": [
+                                  "string",
+                                  "null"
+                                ],
+                                "example": "10 rue du Regard, 75006, Paris",
+                                "description": "L'adresse du logement"
+                              },
+                              "address_parts": {
+                                "type": "object",
+                                "description": "Les parties de l'adresse du logement (numéro, rue, ville, code postal, pays, latitude, longitude)",
+                                "properties": {
+                                  "street_number": {
+                                    "type": "string",
+                                    "example": "10",
+                                    "description": "Le numéro de la rue"
+                                  },
+                                  "address_line_1": {
+                                    "type": "string",
+                                    "example": "rue du Regard",
+                                    "description": "La rue"
+                                  },
+                                  "address_line_2": {
+                                    "type": [
+                                      "string",
+                                      "null"
+                                    ],
+                                    "example": "Appartement 2",
+                                    "description": "Le complément d'adresse"
+                                  },
+                                  "city": {
+                                    "type": "string",
+                                    "example": "Paris",
+                                    "description": "La ville"
+                                  },
+                                  "postal_code": {
+                                    "type": "string",
+                                    "example": "75006",
+                                    "description": "Le code postal"
+                                  },
+                                  "country_number": {
+                                    "type": "integer",
+                                    "example": 250,
+                                    "description": "Le code pays (ISO 3166-1 alpha-3)"
+                                  },
+                                  "latitude": {
+                                    "type": "number",
+                                    "format": "float",
+                                    "example": 48.8487743,
+                                    "description": "La latitude des coordonnées GPS du logement"
+                                  },
+                                  "longitude": {
+                                    "type": "number",
+                                    "format": "float",
+                                    "example": 2.328388,
+                                    "description": "La longitude des coordonnées GPS du logement"
+                                  }
+                                }
+                              },
+                              "ban_id": {
+                                "type": [
+                                  "string",
+                                  "null"
+                                ],
+                                "example": "75106_8092_00010",
+                                "description": "L'identifiant BAN du logement"
+                              },
+                              "google_maps_link": {
+                                "type": "string",
+                                "example": "https://maps.google.com/",
+                                "description": "Le lien Google Maps du logement"
+                              }
+                            }
+                          },
+                          "initial_state": {
+                            "type": "object",
+                            "properties": {
+                              "dpe_class": {
+                                "type": "string",
+                                "enum": [
+                                  "A",
+                                  "B",
+                                  "C",
+                                  "D",
+                                  "E",
+                                  "F",
+                                  "G"
+                                ],
+                                "example": "B",
+                                "description": "La lettre du DPE"
+                              },
+                              "confidence_score": {
+                                "type": "float",
+                                "example": 0.85,
+                                "description": "Le score de confiance concernant la lettre du DPE."
+                              },
+                              "annual_energy_cost_range": {
+                                "type": "object",
+                                "properties": {
+                                  "min": {
+                                    "type": "integer",
+                                    "example": 500,
+                                    "description": "[Déprécié] Le minimum du prix annuel estimé de chauffage."
+                                  },
+                                  "max": {
+                                    "type": "float",
+                                    "example": 1200,
+                                    "description": "[Déprécié] Le maximum du prix annuel estimé de chauffage."
+                                  }
+                                }
+                              },
+                              "annual_energy_consumption": {
+                                "type": "integer",
+                                "example": 150,
+                                "description": "La consommation énergétique annuelle en kWh/m²/an."
+                              },
+                              "position_percentage_neighborhood": {
+                                "type": "float",
+                                "example": 0.75,
+                                "description": "Le pourcentage de logements du quartier qui consomment plus que le logement en question."
+                              },
+                              "energy_loss_percentage": {
+                                "type": "object",
+                                "properties": {
+                                  "walls": {
+                                    "type": "float",
+                                    "example": 0.15,
+                                    "description": "Le pourcentage de perte d'énergie des murs."
+                                  },
+                                  "openings": {
+                                    "type": "float",
+                                    "example": 0.2,
+                                    "description": "Le pourcentage de perte d'énergie des ouvrants."
+                                  },
+                                  "low_floor": {
+                                    "type": "float",
+                                    "example": 0.3,
+                                    "description": "Le pourcentage de perte d'énergie des planchers bas."
+                                  },
+                                  "high_floor": {
+                                    "type": "float",
+                                    "example": 0.35,
+                                    "description": "Le pourcentage de perte d'énergie des plafonds."
+                                  }
+                                }
+                              },
+                              "close_to_historical_monument": {
+                                "type": "boolean",
+                                "example": false,
+                                "description": "Proximité d'un monument historique."
+                              },
+                              "living_area": {
+                                "type": "number",
+                                "example": 120,
+                                "description": "La surface habitable en mètres carrés."
+                              },
+                              "exterior_walls_surface": {
+                                "type": "integer",
+                                "example": 100,
+                                "description": "La surface extérieure des murs en mètres carrés."
+                              },
+                              "house_number_of_levels": {
+                                "type": "integer",
+                                "example": 1,
+                                "description": "Le nombre de niveaux dans la maison."
+                              },
+                              "shared_walls": {
+                                "type": "boolean",
+                                "example": true,
+                                "description": "Présence de murs mitoyens."
+                              },
+                              "wall_material": {
+                                "type": "string",
+                                "enum": [
+                                  "aggregate",
+                                  "brick",
+                                  "concrete",
+                                  "millstone",
+                                  "other",
+                                  "stone",
+                                  "wood"
+                                ],
+                                "example": "brick",
+                                "description": "Le matériau principal des murs."
+                              },
+                              "construction_year": {
+                                "type": "integer",
+                                "example": 1985,
+                                "description": "L'année de construction du bâtiment."
+                              },
+                              "number_of_windows": {
+                                "type": "integer",
+                                "example": 8,
+                                "description": "Le nombre total de fenêtres."
+                              },
+                              "generator_type": {
+                                "type": "string",
+                                "enum": [
+                                  "boiler",
+                                  "district_heating_network",
+                                  "electric",
+                                  "heat_pump"
+                                ],
+                                "example": "heat_pump",
+                                "description": "Le type de générateur de chauffage."
+                              },
+                              "generator_energy": {
+                                "type": "string",
+                                "enum": [
+                                  "electricity",
+                                  "fuel",
+                                  "gas",
+                                  "urban_heating_or_biomass",
+                                  "wood"
+                                ],
+                                "example": "electricity",
+                                "description": "Le type d'énergie utilisé par le générateur de chauffage."
+                              },
+                              "hot_water_type": {
+                                "type": "string",
+                                "enum": [
+                                  "boiler",
+                                  "district_heating_network",
+                                  "heat_pump",
+                                  "hot_water_tank",
+                                  "water_heater"
+                                ],
+                                "example": "heat_pump",
+                                "description": "Le type de système de production d'eau chaude sanitaire."
+                              },
+                              "hot_water_energy": {
+                                "type": "string",
+                                "enum": [
+                                  "electricity",
+                                  "fuel",
+                                  "gas",
+                                  "urban_heating_or_biomass",
+                                  "wood"
+                                ],
+                                "example": "electricity",
+                                "description": "Le type d'énergie utilisé pour l'eau chaude sanitaire."
+                              },
+                              "u_walls": {
+                                "type": "string",
+                                "enum": [
+                                  "excellent",
+                                  "very_good",
+                                  "good",
+                                  "low",
+                                  "very_low",
+                                  "poor"
+                                ],
+                                "example": "very_good",
+                                "description": "L'indice de confort des murs."
+                              },
+                              "u_windows": {
+                                "type": "string",
+                                "enum": [
+                                  "high_class",
+                                  "middle_class",
+                                  "low_class"
+                                ],
+                                "example": "middle_class",
+                                "description": "L'indice de confort des fenêtres."
+                              },
+                              "u_high_floor": {
+                                "type": "string",
+                                "enum": [
+                                  "excellent",
+                                  "very_good",
+                                  "good",
+                                  "low",
+                                  "very_low",
+                                  "poor"
+                                ],
+                                "example": "very_good",
+                                "description": "L'indice de confort des plafonds."
+                              },
+                              "u_low_floor": {
+                                "type": "string",
+                                "enum": [
+                                  "excellent",
+                                  "very_good",
+                                  "good",
+                                  "low",
+                                  "very_low",
+                                  "poor"
+                                ],
+                                "example": "very_good",
+                                "description": "L'indice de confort des planchers bas."
+                              },
+                              "vents_type": {
+                                "type": "string",
+                                "enum": [
+                                  "window_opening",
+                                  "high_low_air_inlets",
+                                  "vmc_sf_autoregulated",
+                                  "vmc_sf_hygro_a",
+                                  "vmc_sf_gas",
+                                  "vmc_sf_hygro_b",
+                                  "low_pressure_autoregulated",
+                                  "low_pressure_hygro_a",
+                                  "low_pressure_hygro_b",
+                                  "vmc_df_individual",
+                                  "vmc_df_collective",
+                                  "natural_ventilation",
+                                  "hybrid_ventilation",
+                                  "mechanical_ventilation_existing_duct",
+                                  "climatic_well"
+                                ],
+                                "example": "electric",
+                                "description": "Le type de ventilation."
+                              },
+                              "has_vents": {
+                                "type": "boolean",
+                                "example": true,
+                                "description": "Présence d'un système de ventilation."
+                              },
+                              "recently_renovated": {
+                                "type": "array",
+                                "items": {
+                                  "type": "string",
+                                  "enum": [
+                                    "roof",
+                                    "attic",
+                                    "walls",
+                                    "windows",
+                                    "lower_floor",
+                                    "vents",
+                                    "generator",
+                                    "hot_water"
+                                  ]
+                                },
+                                "uniqueItems": true,
+                                "example": [
+                                  "roof",
+                                  "walls"
+                                ],
+                                "description": "Les travaux récents effectués sur le logement."
+                              },
+                              "high_floor_type": {
+                                "type": "string",
+                                "enum": [
+                                  "apartment",
+                                  "converted_attic",
+                                  "lost_attic",
+                                  "not_heated_space",
+                                  "office",
+                                  "roof_terrace",
+                                  "unknown"
+                                ],
+                                "example": "not_heated_space",
+                                "description": "Le type de plafond."
+                              },
+                              "low_floor_type": {
+                                "type": "string",
+                                "enum": [
+                                  "apartment",
+                                  "crawl_space",
+                                  "not_heated_space",
+                                  "office",
+                                  "slab_on_grade",
+                                  "underground_garage",
+                                  "unknown"
+                                ],
+                                "example": "crawl_space",
+                                "description": "Le type de plancher bas."
+                              }
+                            }
+                          },
+                          "projected_state": {
+                            "type": "object",
+                            "properties": {
+                              "renovation_plans": {
+                                "type": "array",
+                                "items": {
+                                  "type": "object",
+                                  "description": "Liste des plans de rénovation.",
+                                  "properties": {
+                                    "id": {
+                                      "type": "string",
+                                      "example": "hjjcm1qp28",
+                                      "description": "L'identifiant du plan de rénovation."
+                                    },
+                                    "name": {
+                                      "type": "string",
+                                      "example": "Mon plan personnalisé",
+                                      "description": "Le nom du plan de rénovation."
+                                    },
+                                    "type": {
+                                      "type": "string",
+                                      "enum": [
+                                        "customized",
+                                        "optimized",
+                                        "normal"
+                                      ],
+                                      "example": "customized",
+                                      "description": "Le type de plan de rénovation."
+                                    },
+                                    "dpe_after_renovation": {
+                                      "type": "string",
+                                      "enum": [
+                                        "A",
+                                        "B",
+                                        "C",
+                                        "D",
+                                        "E",
+                                        "F",
+                                        "G"
+                                      ],
+                                      "example": "B",
+                                      "description": "La lettre du DPE après rénovation."
+                                    },
+                                    "yearly_energy_savings": {
+                                      "type": "number",
+                                      "format": "float",
+                                      "description": "Économies d'énergie annuelles estimées en Euros.",
+                                      "example": 600
+                                    },
+                                    "yearly_energy_cost": {
+                                      "type": "number",
+                                      "format": "float",
+                                      "description": "Coût énergétique annuel estimé en Euros.",
+                                      "example": 12000
+                                    },
+                                    "budget": {
+                                      "type": "number",
+                                      "format": "float",
+                                      "description": "Coût total estimé du plan de travaux en Euros.",
+                                      "example": 12000
+                                    },
+                                    "subsidies": {
+                                      "type": "number",
+                                      "format": "float",
+                                      "description": "Total des aides estimées en Euros.",
+                                      "example": 1200
+                                    },
+                                    "renovation_plan": {
+                                      "type": "object",
+                                      "description": "Liste des tâches du plan de rénovation.",
+                                      "properties": {
+                                        "vents": {
+                                          "type": "object",
+                                          "properties": {
+                                            "id": {
+                                              "type": "string",
+                                              "enum": [
+                                                "vmc_sf_hygro_b"
+                                              ]
+                                            },
+                                            "simplified_id": {
+                                              "type": "string",
+                                              "enum": [
+                                                "install_vmc_hygro_b"
+                                              ]
+                                            },
+                                            "label": {
+                                              "type": "string",
+                                              "enum": [
+                                                "Installation d'une VMC hygro B"
+                                              ]
+                                            },
+                                            "quantity": {
+                                              "type": "integer",
+                                              "description": "Nombre d'unités"
+                                            }
+                                          }
+                                        },
+                                        "walls": {
+                                          "type": "object",
+                                          "properties": {
+                                            "id": {
+                                              "type": "string",
+                                              "enum": [
+                                                "ite_12cm_lm",
+                                                "ite_16cm_pse",
+                                                "add_10cm_th32_outside",
+                                                "concrete_18cm_pse_26cm_th32_coating_1_5cm_ite",
+                                                "iti_10cm_pur",
+                                                "iti_12cm_lm",
+                                                "iti_14cm_ldb",
+                                                "iti_16cm_pse",
+                                                "add_10cm_th32_inside",
+                                                "mob_22cm_lm_th35_8percent_wood_double_interior_10cm_th32"
+                                              ]
+                                            },
+                                            "simplified_id": {
+                                              "type": "string",
+                                              "enum": [
+                                                "wall_isolation_inside",
+                                                "wall_isolation_outside"
+                                              ]
+                                            },
+                                            "label": {
+                                              "type": "string",
+                                              "enum": [
+                                                "ITE avec 12 cm LM",
+                                                "ITE avec 16 cm PSE",
+                                                "Rajouter équivalent 10 cm Th32 à l'extérieur",
+                                                "Béton 18 cm + PSE 26 cm Th32 + enduit 1,5 cm (ITE)",
+                                                "ITI avec 10 cm PUR",
+                                                "ITI avec 12 cm LM",
+                                                "ITI avec 14 cm LdB",
+                                                "ITI avec 16 cm PSE",
+                                                "Rajouter équivalent 10 cm Th32 à l'intérieur",
+                                                "MOB 22 cm LM Th35 (8% bois) + doublage intérieur 10 cm Th32"
+                                              ]
+                                            },
+                                            "quantity": {
+                                              "type": "integer",
+                                              "description": "Surface en m²"
+                                            }
+                                          }
+                                        },
+                                        "windows": {
+                                          "type": "object",
+                                          "properties": {
+                                            "id": {
+                                              "type": "string",
+                                              "enum": [
+                                                "wood_or_pvc_windows_dv_4_20_4",
+                                                "wood_or_pvc_windows_dv_4_20_4_mh_zone",
+                                                "passive_windows_tv_4_16_4_16_4_itr",
+                                                "passive_windows_tv_4_16_4_16_4_itr_mh_zone"
+                                              ]
+                                            },
+                                            "simplified_id": {
+                                              "type": "string",
+                                              "enum": [
+                                                "install_double_glazed_windows",
+                                                "install_triple_glazed_windows"
+                                              ]
+                                            },
+                                            "label": {
+                                              "type": "string",
+                                              "enum": [
+                                                "Menuiserie bois ou PVC avec DV 4/20/4",
+                                                "Menuiserie bois ou PVC avec DV 4/20/4 - MH zone",
+                                                "Menuiserie passive avec TV, 4/16/4/16/4, ITR",
+                                                "Menuiserie passive avec TV, 4/16/4/16/4, ITR - MH zone"
+                                              ]
+                                            },
+                                            "quantity": {
+                                              "type": "integer",
+                                              "description": "Nombre d'unités"
+                                            }
+                                          }
+                                        },
+                                        "low_floor": {
+                                          "type": "object",
+                                          "properties": {
+                                            "id": {
+                                              "type": "string",
+                                              "enum": [
+                                                "underfloor_insulation_14cm_th35",
+                                                "underfloor_insulation_16cm_fibrasyrène_th36",
+                                                "under_screed_insulation_10cm_pur",
+                                                "20cm_insulating_hollow_block_r4_5_on_crawl_space_8cm_pur"
+                                              ]
+                                            },
+                                            "simplified_id": {
+                                              "type": "string",
+                                              "enum": [
+                                                "low_floor_isolation"
+                                              ]
+                                            },
+                                            "label": {
+                                              "type": "string",
+                                              "enum": [
+                                                "Isolation en sous-face avec 14 cm Th35",
+                                                "Isolation en sous-face avec 16 cm Fibrasyrène Th36",
+                                                "Isolation sous chape avec 10 cm PUR",
+                                                "20 cm entrevous isolant R=4,5 sur vide sanitaire + 8 cm PUR"
+                                              ]
+                                            },
+                                            "quantity": {
+                                              "type": "integer",
+                                              "description": "Surface en m²"
+                                            }
+                                          }
+                                        },
+                                        "high_floor": {
+                                          "type": "object",
+                                          "properties": {
+                                            "id": {
+                                              "type": "string",
+                                              "enum": [
+                                                "add_10cm_th32_outside_or_inside",
+                                                "insulation_rampants_12cm_lm_between_rafters_18cm_fdb",
+                                                "insulation_flat_roof_20cm_pur",
+                                                "insulation_30cm_lm_high_floor",
+                                                "add_8cm_th32_outside_or_inside",
+                                                "add_10cm_th32",
+                                                "wooden_floor_to_attic_30cm_lm_th32_above",
+                                                "flat_roof_20cm_concrete_24cm_pur_th24",
+                                                "iti_16cm_pse"
+                                              ]
+                                            },
+                                            "simplified_id": {
+                                              "type": "string",
+                                              "enum": [
+                                                "roof_high_floor_isolation"
+                                              ]
+                                            },
+                                            "label": {
+                                              "type": "string",
+                                              "enum": [
+                                                "Rajouter équivalent 10 cm Th32 à l'extérieur ou à l'intérieur",
+                                                "Isolation des rampants avec 12 cm LM entre chevrons + 18 cm FdB",
+                                                "Isolation sur toiture terrasse avec 20 cm PUR",
+                                                "Isolation 30 cm LM sur plancher haut",
+                                                "Rajouter équivalent 8 cm Th32 à l'extérieur ou à l'intérieur",
+                                                "Rajouter équivalent 10 cm Th32",
+                                                "Plancher bois vers combles avec 30 cm LM Th32 au-dessus",
+                                                "Toiture terrasse 20 cm béton + 24 cm PUR Th24",
+                                                "ITI avec 16 cm PSE"
+                                              ]
+                                            },
+                                            "quantity": {
+                                              "type": "integer",
+                                              "description": "Surface en m²"
+                                            }
+                                          }
+                                        },
+                                        "generator_type": {
+                                          "type": "object",
+                                          "properties": {
+                                            "id": {
+                                              "type": "string",
+                                              "enum": [
+                                                "pac_air_air",
+                                                "pac_other_than_air_air",
+                                                "double_service_heat_pump",
+                                                "electric_joule_effect_generators"
+                                              ]
+                                            },
+                                            "simplified_id": {
+                                              "type": "string",
+                                              "enum": [
+                                                "install_electric_joule_effect_generators",
+                                                "install_heat_pump_air_water",
+                                                "install_heat_pump_air_air",
+                                                "install_double_service_heat_pump"
+                                              ]
+                                            },
+                                            "label": {
+                                              "type": "string",
+                                              "enum": [
+                                                "Installation d'une pompe à chaleur (air/air)",
+                                                "Installation d'une pompe à chaleur (air/eau)",
+                                                "Installation d'une pompe à chaleur double service",
+                                                "Installation d'un générateur électrique à effet joule"
+                                              ]
+                                            },
+                                            "quantity": {
+                                              "type": "integer",
+                                              "description": "Nombre d'unités"
+                                            }
+                                          }
+                                        },
+                                        "generator_energy": {
+                                          "type": "object",
+                                          "properties": {
+                                            "id": {
+                                              "type": "string",
+                                              "enum": [
+                                                "electricity",
+                                                "gas",
+                                                "wood",
+                                                "fuel",
+                                                "urban_heating_or_biomass"
+                                              ]
+                                            },
+                                            "label": {
+                                              "type": "string",
+                                              "enum": [
+                                                "Électricité",
+                                                "Gaz",
+                                                "Bois",
+                                                "Fioul",
+                                                "Chauffage urbain ou biomasse"
+                                              ]
+                                            }
+                                          }
+                                        },
+                                        "hot_water_type": {
+                                          "type": "object",
+                                          "properties": {
+                                            "id": {
+                                              "type": "string",
+                                              "enum": [
+                                                "electric_water_heater",
+                                                "thermodynamic_water_heater"
+                                              ]
+                                            },
+                                            "simplified_id": {
+                                              "type": "string",
+                                              "enum": [
+                                                "install_heat_pump",
+                                                "install_water_tank",
+                                                "install_thermodynamic_water_tank"
+                                              ]
+                                            },
+                                            "label": {
+                                              "type": "string",
+                                              "enum": [
+                                                "Installation d'un ballon électrique",
+                                                "Installation d'un ballon thermodynamique"
+                                              ]
+                                            }
+                                          }
+                                        },
+                                        "hot_water_energy": {
+                                          "type": "object",
+                                          "properties": {
+                                            "id": {
+                                              "type": "string",
+                                              "enum": [
+                                                "electricity",
+                                                "gas",
+                                                "wood",
+                                                "fuel",
+                                                "urban_heating_or_biomass"
+                                              ]
+                                            },
+                                            "label": {
+                                              "type": "string",
+                                              "enum": [
+                                                "Électricité",
+                                                "Gaz",
+                                                "Bois",
+                                                "Fioul",
+                                                "Chauffage urbain ou biomasse"
+                                              ]
+                                            }
+                                          }
+                                        }
+                                      }
+                                    }
+                                  },
+                                  "required": [
+                                    "id",
+                                    "name",
+                                    "type",
+                                    "dpe_after_renovation",
+                                    "yearly_energy_savings",
+                                    "yearly_energy_cost",
+                                    "budget",
+                                    "subsidies",
+                                    "renovation_plan"
+                                  ]
+                                }
+                              }
+                            }
+                          }
+                        },
+                        "required": [
+                          "id",
+                          "created_at",
+                          "simulation_url",
+                          "team_id",
+                          "source",
+                          "tracking_context",
+                          "client",
+                          "housing"
+                        ]
+                      }
+                    },
+                    "meta": {
+                      "type": "object",
+                      "properties": {
+                        "total_pages": {
+                          "type": "integer"
+                        },
+                        "current_page": {
+                          "type": "integer"
+                        },
+                        "total_count": {
+                          "type": "integer"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "example": "Status is not valid",
+                      "description": "Error message indicating the issue."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "example": "Unauthorized"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "example": "Forbidden"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "Créer une simulation",
+        "description": "Endpoint pour créer une simulation à partir d'un ban_id et des coordonnées GPS.",
+        "tags": [
+          "Simulateur"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": "Created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "simulation_id": {
+                      "type": "string",
+                      "example": "hjjcm1qp28",
+                      "description": "L'identifiant de la simulation créée."
+                    }
+                  },
+                  "required": [
+                    "simulation_id"
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "example": "Latitude is missing, Longitude is missing",
+                      "description": "Error message indicating the issue."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "example": "Unauthorized"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "example": "Forbidden"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Unprocessable Entity",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "example": "Could not find an address for the given GPS coordinates",
+                      "description": "Error message indicating the issue."
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "latitude": {
+                    "type": "number",
+                    "example": 43.53718
+                  },
+                  "longitude": {
+                    "type": "number",
+                    "example": 1.337797
+                  },
+                  "ban_id": {
+                    "type": "string",
+                    "example": "31157_0790_00009"
+                  }
+                },
+                "required": [
+                  "latitude",
+                  "longitude"
+                ]
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v2/simulations/{simulation_id}/housing": {
+      "get": {
+        "summary": "Récupérer les informations de la propriété",
+        "tags": [
+          "Simulateur"
+        ],
+        "description": "Les informations de la propriété.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "simulation_id",
+            "in": "path",
+            "required": true,
+            "example": "hjjcm1qp28",
+            "description": "L'identifiant de simulation renvoyé par l'appel au endpoint créer",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "enum": [
+                        "pending",
+                        "processing",
+                        "completed",
+                        "failed"
+                      ],
+                      "example": "completed",
+                      "description": "Le statut de l'opération de génération de résultat."
+                    },
+                    "housing": {
+                      "type": "object",
+                      "properties": {
+                        "housing_type": {
+                          "type": "string",
+                          "enum": [
+                            "house",
+                            "apartment",
+                            "unknown"
+                          ],
+                          "example": "apartment",
+                          "nullable": true,
+                          "description": "Le type de la propriété."
+                        },
+                        "dpe_id": {
+                          "type": "string",
+                          "nullable": true,
+                          "example": "2331E2555868X",
+                          "description": "Le numéro unique du DPE."
+                        },
+                        "surface": {
+                          "type": "integer",
+                          "nullable": true,
+                          "example": 100,
+                          "description": "La surface de la propriété en m2."
+                        },
+                        "floor_level": {
+                          "type": "string",
+                          "nullable": true,
+                          "enum": [
+                            "ground",
+                            "intermediate",
+                            "last"
+                          ],
+                          "example": "ground",
+                          "description": "La position da le propriété dans l'immeuble."
+                        },
+                        "number_of_exterior_wall": {
+                          "type": "integer",
+                          "nullable": true,
+                          "example": 1,
+                          "description": "Le nombre de murs donnant sur l'extérieur."
+                        }
+                      }
+                    },
+                    "address": {
+                      "type": "object",
+                      "properties": {
+                        "street_number": {
+                          "type": "string",
+                          "example": "123",
+                          "description": "Le numéro de la rue."
+                        },
+                        "address_line_1": {
+                          "type": "string",
+                          "example": "Rue de la Paix",
+                          "description": "Le nom de la rue."
+                        },
+                        "address_line_2": {
+                          "type": "string",
+                          "nullable": true,
+                          "example": "Apt 4B",
+                          "description": "Complément d'adresse."
+                        },
+                        "city": {
+                          "type": "string",
+                          "example": "Paris",
+                          "description": "La ville."
+                        },
+                        "postal_code": {
+                          "type": "string",
+                          "example": "75000",
+                          "description": "Le code postal."
+                        },
+                        "country_number": {
+                          "type": "integer",
+                          "example": 250,
+                          "description": "Le numéro du pays, code ISO3166. France = 250"
+                        },
+                        "latitude": {
+                          "type": "number",
+                          "example": 43.53718,
+                          "description": "La latitude."
+                        },
+                        "longitude": {
+                          "type": "number",
+                          "example": 1.337797,
+                          "description": "La longitude."
+                        }
+                      }
+                    }
+                  },
+                  "required": [
+                    "housing",
+                    "status",
+                    "address"
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "example": "Unauthorized"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "example": "Forbidden"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "example": "Could not find the simulation",
+                      "description": "Error message indicating the issue."
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "summary": "Mettre à jour les informations de la propriété",
+        "description": "Endpoint pour mettre à jour les informations de la propriété",
+        "tags": [
+          "Simulateur"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "simulation_id",
+            "in": "path",
+            "required": true,
+            "example": "hjjcm1qp28",
+            "description": "L'identifiant de simulation renvoyé par l'appel au endpoint créer",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "No Content"
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "example": "Housing type is missing or invalid",
+                      "description": "Error message indicating the issue."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "example": "Unauthorized"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "example": "Forbidden"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "dpe_id": {
+                    "type": "string",
+                    "example": "2331E2555868X",
+                    "description": "Le numéro unique du DPE."
+                  },
+                  "housing_type": {
+                    "type": "string",
+                    "enum": [
+                      "house",
+                      "apartment"
+                    ],
+                    "example": "apartment",
+                    "description": "Le type de propriété."
+                  },
+                  "surface": {
+                    "type": "integer",
+                    "example": 100,
+                    "description": "La surface de la propriété en m2. Obligatoire si le housing_type est apartment."
+                  },
+                  "floor_level": {
+                    "type": "string",
+                    "enum": [
+                      "ground",
+                      "intermediate",
+                      "last"
+                    ],
+                    "example": "ground",
+                    "description": "La position da le propriété dans l'immeuble. Obligatoire si le housing_type est apartment."
+                  },
+                  "number_of_exterior_wall": {
+                    "type": "integer",
+                    "example": 1,
+                    "description": "Le nombre de murs donnant sur l'extérieur. Obligatoire si le housing_type est apartment."
+                  }
+                },
+                "required": [
+                  "simulation_id",
+                  "post_params"
+                ]
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v2/simulations/{simulation_id}/run": {
+      "post": {
+        "summary": "Lancer la simulation",
+        "description": "Endpoint pour lancer la simulation.",
+        "tags": [
+          "Simulateur"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "simulation_id",
+            "in": "path",
+            "required": true,
+            "example": "hjjcm1qp28",
+            "description": "L'identifiant de simulation renvoyé par l'appel au endpoint créer",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Created"
+          },
+          "401": {
+            "description": "unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "example": "Unauthorized"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "example": "Forbidden"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Unprocessable Entity",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "example": "Apartment information is needed"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v2/simulations/{simulation_id}/initial-state": {
+      "get": {
+        "summary": "Récupérer l'état initial",
+        "description": "Les informations de l'état initial.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "tags": [
+          "Qualification"
+        ],
+        "parameters": [
+          {
+            "name": "simulation_id",
+            "in": "path",
+            "required": true,
+            "example": "hjjcm1qp28",
+            "description": "L'identifiant de simulation renvoyé par l'appel au endpoint créer",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "enum": [
+                        "pending",
+                        "processing",
+                        "completed",
+                        "failed"
+                      ],
+                      "example": "completed",
+                      "description": "Le statut de l'opération de génération de résultat."
+                    },
+                    "initial_state": {
+                      "type": "object",
+                      "properties": {
+                        "dpe_class": {
+                          "type": "string",
+                          "enum": [
+                            "A",
+                            "B",
+                            "C",
+                            "D",
+                            "E",
+                            "F",
+                            "G"
+                          ],
+                          "example": "B",
+                          "description": "La lettre du DPE"
+                        },
+                        "confidence_score": {
+                          "type": "float",
+                          "example": 0.85,
+                          "description": "Le score de confiance concernant la lettre du DPE."
+                        },
+                        "annual_energy_cost_range": {
+                          "type": "object",
+                          "properties": {
+                            "min": {
+                              "type": "integer",
+                              "example": 500,
+                              "description": "[Déprécié] Le minimum du prix annuel estimé de chauffage."
+                            },
+                            "max": {
+                              "type": "float",
+                              "example": 1200,
+                              "description": "[Déprécié] Le maximum du prix annuel estimé de chauffage."
+                            }
+                          }
+                        },
+                        "annual_energy_consumption": {
+                          "type": "integer",
+                          "example": 150,
+                          "description": "La consommation énergétique annuelle exprimée en kWh/m²/an."
+                        },
+                        "position_percentage_neighborhood": {
+                          "type": "float",
+                          "example": 0.75,
+                          "description": "Le pourcentage de logements du quartier qui consomment plus que le logement en question."
+                        },
+                        "energy_loss_percentage": {
+                          "type": "object",
+                          "properties": {
+                            "walls": {
+                              "type": "float",
+                              "example": 0.15,
+                              "description": "Le pourcentage de perte d'énergie des murs."
+                            },
+                            "openings": {
+                              "type": "float",
+                              "example": 0.2,
+                              "description": "Le pourcentage de perte d'énergie des ouvrants."
+                            },
+                            "low_floor": {
+                              "type": "float",
+                              "example": 0.3,
+                              "description": "Le pourcentage de perte d'énergie des planchers bas."
+                            },
+                            "high_floor": {
+                              "type": "float",
+                              "example": 0.35,
+                              "description": "Le pourcentage de perte d'énergie des plafonds."
+                            }
+                          }
+                        },
+                        "close_to_historical_monument": {
+                          "type": "boolean",
+                          "example": false,
+                          "description": "Proximité d'un monument historique."
+                        },
+                        "living_area": {
+                          "type": "number",
+                          "example": 120,
+                          "description": "La surface habitable en mètres carrés."
+                        },
+                        "exterior_walls_surface": {
+                          "type": "integer",
+                          "example": 100,
+                          "description": "La surface extérieure des murs en mètres carrés."
+                        },
+                        "house_number_of_levels": {
+                          "type": "integer",
+                          "example": 1,
+                          "description": "Le nombre de niveaux dans la maison."
+                        },
+                        "shared_walls": {
+                          "type": "boolean",
+                          "example": true,
+                          "description": "Présence de murs mitoyens."
+                        },
+                        "wall_material": {
+                          "type": "string",
+                          "enum": [
+                            "aggregate",
+                            "brick",
+                            "concrete",
+                            "millstone",
+                            "other",
+                            "stone",
+                            "wood"
+                          ],
+                          "example": "brick",
+                          "description": "Le matériau principal des murs."
+                        },
+                        "construction_year": {
+                          "type": "integer",
+                          "example": 1985,
+                          "description": "L'année de construction du bâtiment."
+                        },
+                        "number_of_windows": {
+                          "type": "integer",
+                          "example": 8,
+                          "description": "Le nombre total de fenêtres."
+                        },
+                        "generator_type": {
+                          "type": "string",
+                          "enum": [
+                            "boiler",
+                            "district_heating_network",
+                            "electric",
+                            "heat_pump"
+                          ],
+                          "example": "heat_pump",
+                          "description": "Le type de générateur de chauffage."
+                        },
+                        "generator_energy": {
+                          "type": "string",
+                          "enum": [
+                            "electricity",
+                            "fuel",
+                            "gas",
+                            "urban_heating_or_biomass",
+                            "wood"
+                          ],
+                          "example": "electricity",
+                          "description": "Le type d'énergie utilisé par le générateur de chauffage."
+                        },
+                        "hot_water_type": {
+                          "type": "string",
+                          "enum": [
+                            "boiler",
+                            "district_heating_network",
+                            "heat_pump",
+                            "hot_water_tank",
+                            "water_heater"
+                          ],
+                          "example": "heat_pump",
+                          "description": "Le type de système de production d'eau chaude sanitaire."
+                        },
+                        "hot_water_energy": {
+                          "type": "string",
+                          "enum": [
+                            "electricity",
+                            "fuel",
+                            "gas",
+                            "urban_heating_or_biomass",
+                            "wood"
+                          ],
+                          "example": "electricity",
+                          "description": "Le type d'énergie utilisé pour l'eau chaude sanitaire."
+                        },
+                        "u_walls": {
+                          "type": "string",
+                          "enum": [
+                            "excellent",
+                            "very_good",
+                            "good",
+                            "low",
+                            "very_low",
+                            "poor"
+                          ],
+                          "example": "very_good",
+                          "description": "L'indice de confort des murs."
+                        },
+                        "u_windows": {
+                          "type": "string",
+                          "enum": [
+                            "high_class",
+                            "middle_class",
+                            "low_class"
+                          ],
+                          "example": "middle_class",
+                          "description": "L'indice de confort des fenêtres."
+                        },
+                        "u_high_floor": {
+                          "type": "string",
+                          "enum": [
+                            "excellent",
+                            "very_good",
+                            "good",
+                            "low",
+                            "very_low",
+                            "poor"
+                          ],
+                          "example": "very_good",
+                          "description": "L'indice de confort des plafonds."
+                        },
+                        "u_low_floor": {
+                          "type": "string",
+                          "enum": [
+                            "excellent",
+                            "very_good",
+                            "good",
+                            "low",
+                            "very_low",
+                            "poor"
+                          ],
+                          "example": "very_good",
+                          "description": "L'indice de confort des planchers bas."
+                        },
+                        "vents_type": {
+                          "type": "string",
+                          "enum": [
+                            "window_opening",
+                            "high_low_air_inlets",
+                            "vmc_sf_autoregulated",
+                            "vmc_sf_hygro_a",
+                            "vmc_sf_gas",
+                            "vmc_sf_hygro_b",
+                            "low_pressure_autoregulated",
+                            "low_pressure_hygro_a",
+                            "low_pressure_hygro_b",
+                            "vmc_df_individual",
+                            "vmc_df_collective",
+                            "natural_ventilation",
+                            "hybrid_ventilation",
+                            "mechanical_ventilation_existing_duct",
+                            "climatic_well"
+                          ],
+                          "example": "electric",
+                          "description": "Le type de ventilation."
+                        },
+                        "has_vents": {
+                          "type": "boolean",
+                          "example": true,
+                          "description": "Présence d'un système de ventilation."
+                        },
+                        "garage": {
+                          "type": "boolean",
+                          "example": false,
+                          "description": "Présence d'un garage."
+                        },
+                        "recently_renovated": {
+                          "type": "array",
+                          "items": {
+                            "type": "string",
+                            "enum": [
+                              "roof",
+                              "attic",
+                              "walls",
+                              "windows",
+                              "lower_floor",
+                              "vents",
+                              "generator",
+                              "hot_water"
+                            ]
+                          },
+                          "uniqueItems": true,
+                          "example": [
+                            "roof",
+                            "walls"
+                          ],
+                          "description": "Les travaux récents effectués sur le logement."
+                        },
+                        "high_floor_type": {
+                          "type": "string",
+                          "enum": [
+                            "apartment",
+                            "converted_attic",
+                            "lost_attic",
+                            "not_heated_space",
+                            "office",
+                            "roof_terrace",
+                            "unknown"
+                          ],
+                          "example": "not_heated_space",
+                          "description": "Le type de plafond."
+                        },
+                        "low_floor_type": {
+                          "type": "string",
+                          "enum": [
+                            "apartment",
+                            "crawl_space",
+                            "not_heated_space",
+                            "office",
+                            "slab_on_grade",
+                            "underground_garage",
+                            "unknown"
+                          ],
+                          "example": "crawl_space",
+                          "description": "Le type de plancher bas."
+                        }
+                      }
+                    }
+                  },
+                  "required": [
+                    "status"
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "example": "Unauthorized"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "example": "Forbidden"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "example": "Could not find the simulation",
+                      "description": "Error message indicating the issue."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflit",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "example": "The simulation has not been run yet",
+                      "description": "Error message indicating the issue."
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "summary": "Mettre à jour l'état initial",
+        "description": "Endpoint pour mettre à jour les informations de l'état initial",
+        "tags": [
+          "Qualification"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "simulation_id",
+            "in": "path",
+            "required": true,
+            "example": "hjjcm1qp28",
+            "description": "L'identifiant de simulation renvoyé par l'appel au endpoint créer",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "No Content"
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "example": "Generator type n'est pas valide"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "example": "Unauthorized"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "example": "Forbidden"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "example": "Could not find the simulation",
+                      "description": "Error message indicating the issue."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Unprocessable Entity",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "example": "Apartment information is needed"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "housing_type": {
+                    "type": "string",
+                    "enum": [
+                      "house",
+                      "apartment"
+                    ],
+                    "example": "apartment",
+                    "description": "Type de logement."
+                  },
+                  "close_to_historical_monument": {
+                    "type": "boolean",
+                    "example": true,
+                    "description": "Proximité d'un monument historique."
+                  },
+                  "floor_level": {
+                    "type": "string",
+                    "enum": [
+                      "ground",
+                      "intermediate",
+                      "last"
+                    ],
+                    "example": "ground",
+                    "description": "Niveau de l'étage (rez-de-chaussée, intermédiaire, dernier étage)."
+                  },
+                  "living_area": {
+                    "type": "number",
+                    "example": 120,
+                    "description": "La surface habitable en mètres carrés."
+                  },
+                  "number_of_exterior_wall": {
+                    "type": "integer",
+                    "example": 3,
+                    "description": "Nombre de murs extérieurs."
+                  },
+                  "house_number_of_levels": {
+                    "type": "integer",
+                    "example": 1,
+                    "description": "Le nombre de niveaux dans la maison."
+                  },
+                  "shared_walls": {
+                    "type": "boolean",
+                    "example": true,
+                    "description": "Présence de murs mitoyens."
+                  },
+                  "construction_year": {
+                    "type": "object",
+                    "description": "L'année de construction du bâtiment.",
+                    "properties": {
+                      "range": {
+                        "type": "string",
+                        "enum": [
+                          "exact_date",
+                          "less_than_two",
+                          "two_to_fifteen",
+                          "fifteen_to_twenty_five",
+                          "more_twenty_five"
+                        ],
+                        "example": "exact_date",
+                        "description": "Plage d'années de construction."
+                      },
+                      "exact_date": {
+                        "type": "integer",
+                        "example": 1985,
+                        "description": "Éléments récemment rénovés."
+                      }
+                    }
+                  },
+                  "recently_renovated": {
+                    "type": "array",
+                    "example": [
+                      "windows",
+                      "attic"
+                    ],
+                    "description": "Éléments récemment rénovés.",
+                    "uniqueItems": true,
+                    "items": {
+                      "type": "string",
+                      "enum": [
+                        "roof",
+                        "attic",
+                        "walls",
+                        "windows",
+                        "lower_floor",
+                        "vents",
+                        "generator",
+                        "hot_water"
+                      ]
+                    }
+                  },
+                  "wall_material": {
+                    "type": "string",
+                    "enum": [
+                      "aggregate",
+                      "others",
+                      "concrete",
+                      "wood",
+                      "brick",
+                      "millstone",
+                      "stone"
+                    ],
+                    "example": "brick",
+                    "description": "Le matériau principal des murs."
+                  },
+                  "high_floor_type": {
+                    "type": "string",
+                    "enum": [
+                      "roof_terrace",
+                      "not_heated_space",
+                      "office",
+                      "apartment",
+                      "converted_attic",
+                      "lost_attic"
+                    ],
+                    "example": "roof_terrace",
+                    "description": "Le type de plancher haut."
+                  },
+                  "low_floor_type": {
+                    "type": "string",
+                    "enum": [
+                      "slab_on_grade",
+                      "not_heated_space",
+                      "office",
+                      "apartment",
+                      "crawl_space"
+                    ],
+                    "example": "slab_on_grade",
+                    "description": "Le type de plancher bas."
+                  },
+                  "windows": {
+                    "type": "string",
+                    "enum": [
+                      "high_class",
+                      "middle_class",
+                      "low_class"
+                    ],
+                    "example": "middle_class",
+                    "description": "Le type de fenêtre."
+                  },
+                  "number_of_windows": {
+                    "type": "integer",
+                    "example": 8,
+                    "description": "Le nombre total de fenêtres."
+                  },
+                  "generator_energy": {
+                    "type": "string",
+                    "enum": [
+                      "gas",
+                      "electricity",
+                      "fuel",
+                      "urban_heating_or_biomass"
+                    ],
+                    "example": "electricity",
+                    "description": "Le type d'énergie utilisé par le générateur de chauffage."
+                  },
+                  "generator_type": {
+                    "type": "string",
+                    "enum": [
+                      "boiler",
+                      "district_heating_network",
+                      "electric",
+                      "heat_pump"
+                    ],
+                    "example": "heat_pump",
+                    "description": "Le type d'énergie utilisé par le générateur de chauffage."
+                  },
+                  "hot_water_energy": {
+                    "type": "string",
+                    "enum": [
+                      "gas",
+                      "electricity",
+                      "fuel",
+                      "urban_heating_or_biomass",
+                      "wood"
+                    ],
+                    "example": "electricity",
+                    "description": "Le type d'énergie utilisé pour l'eau chaude sanitaire."
+                  },
+                  "hot_water_type": {
+                    "type": "string",
+                    "enum": [
+                      "boiler",
+                      "district_heating_network",
+                      "heat_pump",
+                      "hot_water_tank",
+                      "water_heater"
+                    ],
+                    "example": "heat_pump",
+                    "description": "Le type de système de production d'eau chaude sanitaire."
+                  },
+                  "has_vents": {
+                    "type": "boolean",
+                    "example": true,
+                    "description": "Présence d'un système de ventilation."
+                  },
+                  "garage": {
+                    "type": "boolean",
+                    "example": false,
+                    "description": "Présence d'un garage."
+                  }
+                },
+                "required": []
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v2/simulations/{simulation_id}/projected-state": {
+      "get": {
+        "summary": "Récupérer l'état projeté",
+        "description": "Les informations de l'état projeté.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "tags": [
+          "Simulateur"
+        ],
+        "parameters": [
+          {
+            "name": "simulation_id",
+            "in": "path",
+            "required": true,
+            "example": "hjjcm1qp28",
+            "description": "L'identifiant de simulation renvoyé par l'appel au endpoint créer",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "enum": [
+                        "pending",
+                        "processing",
+                        "completed",
+                        "failed"
+                      ],
+                      "example": "completed",
+                      "description": "Le statut de l'opération de génération de résultat."
+                    },
+                    "projected_state": {
+                      "type": "object",
+                      "properties": {
+                        "renovation_plans": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "description": "Liste des plans de rénovation.",
+                            "properties": {
+                              "id": {
+                                "type": "string",
+                                "example": "hjjcm1qp28",
+                                "description": "L'identifiant du plan de rénovation."
+                              },
+                              "name": {
+                                "type": "string",
+                                "example": "Mon plan personnalisé",
+                                "description": "Le nom du plan de rénovation."
+                              },
+                              "type": {
+                                "type": "string",
+                                "enum": [
+                                  "normal",
+                                  "customized",
+                                  "optimized"
+                                ],
+                                "example": "customized",
+                                "description": "Le type de plan de rénovation."
+                              },
+                              "dpe_after_renovation": {
+                                "type": "string",
+                                "enum": [
+                                  "A",
+                                  "B",
+                                  "C",
+                                  "D",
+                                  "E",
+                                  "F",
+                                  "G"
+                                ],
+                                "example": "B"
+                              },
+                              "yearly_energy_savings": {
+                                "type": "number",
+                                "format": "float",
+                                "description": "Économies d'énergie annuelles estimées en Euros.",
+                                "example": 600
+                              },
+                              "yearly_energy_cost": {
+                                "type": "number",
+                                "format": "float",
+                                "description": "Coût énergétique annuel estimé en Euros.",
+                                "example": 12000
+                              },
+                              "budget": {
+                                "type": "number",
+                                "format": "float",
+                                "description": "Coût total estimé du plan de travaux en Euros.",
+                                "example": 12000
+                              },
+                              "subsidies": {
+                                "type": "number",
+                                "format": "float",
+                                "description": "Total des aides estimées en Euros.",
+                                "example": 1200
+                              },
+                              "renovation_plan": {
+                                "type": "object",
+                                "description": "Liste des tâches du plan de rénovation.",
+                                "properties": {
+                                  "vents": {
+                                    "type": "object",
+                                    "properties": {
+                                      "id": {
+                                        "type": "string",
+                                        "enum": [
+                                          "vmc_sf_hygro_b"
+                                        ]
+                                      },
+                                      "simplified_id": {
+                                        "type": "string",
+                                        "enum": [
+                                          "install_vmc_hygro_b"
+                                        ]
+                                      },
+                                      "label": {
+                                        "type": "string",
+                                        "enum": [
+                                          "Installation d'une VMC hygro B"
+                                        ]
+                                      },
+                                      "quantity": {
+                                        "type": "integer",
+                                        "description": "Nombre d'unités"
+                                      }
+                                    }
+                                  },
+                                  "walls": {
+                                    "type": "object",
+                                    "properties": {
+                                      "id": {
+                                        "type": "string",
+                                        "enum": [
+                                          "ite_12cm_lm",
+                                          "ite_16cm_pse",
+                                          "add_10cm_th32_outside",
+                                          "concrete_18cm_pse_26cm_th32_coating_1_5cm_ite",
+                                          "iti_10cm_pur",
+                                          "iti_12cm_lm",
+                                          "iti_14cm_ldb",
+                                          "iti_16cm_pse",
+                                          "add_10cm_th32_inside",
+                                          "mob_22cm_lm_th35_8percent_wood_double_interior_10cm_th32"
+                                        ]
+                                      },
+                                      "simplified_id": {
+                                        "type": "string",
+                                        "enum": [
+                                          "wall_isolation_inside",
+                                          "wall_isolation_outside"
+                                        ]
+                                      },
+                                      "label": {
+                                        "type": "string",
+                                        "enum": [
+                                          "ITE avec 12 cm LM",
+                                          "ITE avec 16 cm PSE",
+                                          "Rajouter équivalent 10 cm Th32 à l'extérieur",
+                                          "Béton 18 cm + PSE 26 cm Th32 + enduit 1,5 cm (ITE)",
+                                          "ITI avec 10 cm PUR",
+                                          "ITI avec 12 cm LM",
+                                          "ITI avec 14 cm LdB",
+                                          "ITI avec 16 cm PSE",
+                                          "Rajouter équivalent 10 cm Th32 à l'intérieur",
+                                          "MOB 22 cm LM Th35 (8% bois) + doublage intérieur 10 cm Th32"
+                                        ]
+                                      },
+                                      "quantity": {
+                                        "type": "integer",
+                                        "description": "Surface en m²"
+                                      }
+                                    }
+                                  },
+                                  "windows": {
+                                    "type": "object",
+                                    "properties": {
+                                      "id": {
+                                        "type": "string",
+                                        "enum": [
+                                          "wood_or_pvc_windows_dv_4_20_4",
+                                          "wood_or_pvc_windows_dv_4_20_4_mh_zone",
+                                          "passive_windows_tv_4_16_4_16_4_itr",
+                                          "passive_windows_tv_4_16_4_16_4_itr_mh_zone"
+                                        ]
+                                      },
+                                      "simplified_id": {
+                                        "type": "string",
+                                        "enum": [
+                                          "install_double_glazed_windows",
+                                          "install_triple_glazed_windows"
+                                        ]
+                                      },
+                                      "label": {
+                                        "type": "string",
+                                        "enum": [
+                                          "Menuiserie bois ou PVC avec DV 4/20/4",
+                                          "Menuiserie bois ou PVC avec DV 4/20/4 - MH zone",
+                                          "Menuiserie passive avec TV, 4/16/4/16/4, ITR",
+                                          "Menuiserie passive avec TV, 4/16/4/16/4, ITR - MH zone"
+                                        ]
+                                      },
+                                      "quantity": {
+                                        "type": "integer",
+                                        "description": "Nombre d'unités"
+                                      }
+                                    }
+                                  },
+                                  "low_floor": {
+                                    "type": "object",
+                                    "properties": {
+                                      "id": {
+                                        "type": "string",
+                                        "enum": [
+                                          "underfloor_insulation_14cm_th35",
+                                          "underfloor_insulation_16cm_fibrasyrène_th36",
+                                          "under_screed_insulation_10cm_pur",
+                                          "20cm_insulating_hollow_block_r4_5_on_crawl_space_8cm_pur"
+                                        ]
+                                      },
+                                      "simplified_id": {
+                                        "type": "string",
+                                        "enum": [
+                                          "low_floor_isolation"
+                                        ]
+                                      },
+                                      "label": {
+                                        "type": "string",
+                                        "enum": [
+                                          "Isolation en sous-face avec 14 cm Th35",
+                                          "Isolation en sous-face avec 16 cm Fibrasyrène Th36",
+                                          "Isolation sous chape avec 10 cm PUR",
+                                          "20 cm entrevous isolant R=4,5 sur vide sanitaire + 8 cm PUR"
+                                        ]
+                                      },
+                                      "quantity": {
+                                        "type": "integer",
+                                        "description": "Surface en m²"
+                                      }
+                                    }
+                                  },
+                                  "high_floor": {
+                                    "type": "object",
+                                    "properties": {
+                                      "id": {
+                                        "type": "string",
+                                        "enum": [
+                                          "add_10cm_th32_outside_or_inside",
+                                          "insulation_rampants_12cm_lm_between_rafters_18cm_fdb",
+                                          "insulation_flat_roof_20cm_pur",
+                                          "insulation_30cm_lm_high_floor",
+                                          "add_8cm_th32_outside_or_inside",
+                                          "add_10cm_th32",
+                                          "wooden_floor_to_attic_30cm_lm_th32_above",
+                                          "flat_roof_20cm_concrete_24cm_pur_th24",
+                                          "iti_16cm_pse"
+                                        ]
+                                      },
+                                      "simplified_id": {
+                                        "type": "string",
+                                        "enum": [
+                                          "roof_high_floor_isolation"
+                                        ]
+                                      },
+                                      "label": {
+                                        "type": "string",
+                                        "enum": [
+                                          "Rajouter équivalent 10 cm Th32 à l'extérieur ou à l'intérieur",
+                                          "Isolation des rampants avec 12 cm LM entre chevrons + 18 cm FdB",
+                                          "Isolation sur toiture terrasse avec 20 cm PUR",
+                                          "Isolation 30 cm LM sur plancher haut",
+                                          "Rajouter équivalent 8 cm Th32 à l'extérieur ou à l'intérieur",
+                                          "Rajouter équivalent 10 cm Th32",
+                                          "Plancher bois vers combles avec 30 cm LM Th32 au-dessus",
+                                          "Toiture terrasse 20 cm béton + 24 cm PUR Th24",
+                                          "ITI avec 16 cm PSE"
+                                        ]
+                                      },
+                                      "quantity": {
+                                        "type": "integer",
+                                        "description": "Surface en m²"
+                                      }
+                                    }
+                                  },
+                                  "generator_type": {
+                                    "type": "object",
+                                    "properties": {
+                                      "id": {
+                                        "type": "string",
+                                        "enum": [
+                                          "pac_air_air",
+                                          "pac_other_than_air_air",
+                                          "double_service_heat_pump",
+                                          "electric_joule_effect_generators"
+                                        ]
+                                      },
+                                      "simplified_id": {
+                                        "type": "string",
+                                        "enum": [
+                                          "install_electric_joule_effect_generators",
+                                          "install_heat_pump_air_water",
+                                          "install_heat_pump_air_air",
+                                          "install_double_service_heat_pump"
+                                        ]
+                                      },
+                                      "label": {
+                                        "type": "string",
+                                        "enum": [
+                                          "Installation d'une pompe à chaleur (air/air)",
+                                          "Installation d'une pompe à chaleur (air/eau)",
+                                          "Installation d'une pompe à chaleur double service",
+                                          "Installation d'un générateur électrique à effet joule"
+                                        ]
+                                      },
+                                      "quantity": {
+                                        "type": "integer",
+                                        "description": "Nombre d'unités"
+                                      }
+                                    }
+                                  },
+                                  "generator_energy": {
+                                    "type": "object",
+                                    "properties": {
+                                      "id": {
+                                        "type": "string",
+                                        "enum": [
+                                          "electricity",
+                                          "gas",
+                                          "wood",
+                                          "fuel",
+                                          "urban_heating_or_biomass"
+                                        ]
+                                      },
+                                      "label": {
+                                        "type": "string",
+                                        "enum": [
+                                          "Électricité",
+                                          "Gaz",
+                                          "Bois",
+                                          "Fioul",
+                                          "Chauffage urbain ou biomasse"
+                                        ]
+                                      }
+                                    }
+                                  },
+                                  "hot_water_type": {
+                                    "type": "object",
+                                    "properties": {
+                                      "id": {
+                                        "type": "string",
+                                        "enum": [
+                                          "electric_water_heater",
+                                          "thermodynamic_water_heater"
+                                        ]
+                                      },
+                                      "simplified_id": {
+                                        "type": "string",
+                                        "enum": [
+                                          "install_heat_pump",
+                                          "install_water_tank",
+                                          "install_thermodynamic_water_tank"
+                                        ]
+                                      },
+                                      "label": {
+                                        "type": "string",
+                                        "enum": [
+                                          "Installation d'un ballon électrique",
+                                          "Installation d'un ballon thermodynamique"
+                                        ]
+                                      }
+                                    }
+                                  },
+                                  "hot_water_energy": {
+                                    "type": "object",
+                                    "properties": {
+                                      "id": {
+                                        "type": "string",
+                                        "enum": [
+                                          "electricity",
+                                          "gas",
+                                          "wood",
+                                          "fuel",
+                                          "urban_heating_or_biomass"
+                                        ]
+                                      },
+                                      "label": {
+                                        "type": "string",
+                                        "enum": [
+                                          "Électricité",
+                                          "Gaz",
+                                          "Bois",
+                                          "Fioul",
+                                          "Chauffage urbain ou biomasse"
+                                        ]
+                                      }
+                                    }
+                                  }
+                                }
+                              }
+                            },
+                            "required": [
+                              "id",
+                              "name",
+                              "type",
+                              "dpe_after_renovation",
+                              "yearly_energy_savings",
+                              "yearly_energy_cost",
+                              "budget",
+                              "subsidies",
+                              "renovation_plan"
+                            ]
+                          }
+                        }
+                      },
+                      "required": [
+                        "renovation_plans"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "status"
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "example": "Unauthorized"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "example": "Forbidden"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "example": "Could not find the simulation",
+                      "description": "Error message indicating the issue."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflit",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "example": "The simulation has not been run yet",
+                      "description": "Error message indicating the issue."
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v2/simulations/{simulation_id}/projected-state/renovation-plans": {
+      "post": {
+        "summary": "Créer un plan de rénovation personnalisé",
+        "description": "Crée un plan de rénovation basé sur une sélection spécifique de gestes. L'opération est asynchrone : l'API retourne immédiatement une réponse confirmant la création, mais le plan complet n'est pas disponible dans l'instant. Pour consulter le plan généré une fois le traitement terminé, utilisez le endpoint 'Récupérer le plan de rénovation personnalisé'.",
+        "tags": [
+          "Qualification"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "simulation_id",
+            "in": "path",
+            "required": true,
+            "example": "hjjcm1qp28",
+            "description": "L'identifiant de simulation renvoyé par l'appel au endpoint créer",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "renovation_plan_id": {
+                      "type": "string",
+                      "example": "hjjcm1qp28",
+                      "description": "L'identifiant du plan de rénovation personnalisé."
+                    }
+                  },
+                  "required": [
+                    "renovation_plan_id"
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "example": "Error message indicating the issue."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "example": "Unauthorized"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "example": "Forbidden"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "example": "Could not find the simulation",
+                      "description": "Error message indicating the issue."
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "example": "Mon plan personnalisé",
+                    "description": "Le nom du plan de rénovation personnalisé."
+                  },
+                  "renovation_plan": {
+                    "type": "object",
+                    "properties": {
+                      "vents": {
+                        "type": "object",
+                        "properties": {
+                          "simplified_id": {
+                            "type": "string",
+                            "enum": [
+                              "install_vmc_hygro_b"
+                            ]
+                          },
+                          "quantity": {
+                            "type": "integer",
+                            "description": "Nombre d'unités"
+                          },
+                          "price_per_unit": {
+                            "type": "number",
+                            "description": "Prix par unité"
+                          }
+                        },
+                        "required": [
+                          "simplified_id"
+                        ]
+                      },
+                      "walls": {
+                        "type": "object",
+                        "properties": {
+                          "simplified_id": {
+                            "type": "string",
+                            "enum": [
+                              "wall_isolation_inside",
+                              "wall_isolation_outside"
+                            ]
+                          },
+                          "quantity": {
+                            "type": "integer",
+                            "description": "Surface en m²"
+                          },
+                          "price_per_unit": {
+                            "type": "number",
+                            "description": "Prix par m²"
+                          },
+                          "error_margin": {
+                            "type": "integer",
+                            "example": 15,
+                            "description": "Marge d'erreur (en pourcentage, 15 = 15%)"
+                          }
+                        },
+                        "required": [
+                          "simplified_id"
+                        ]
+                      },
+                      "windows": {
+                        "type": "object",
+                        "properties": {
+                          "simplified_id": {
+                            "type": "string",
+                            "enum": [
+                              "install_double_glazed_windows",
+                              "install_triple_glazed_windows"
+                            ]
+                          },
+                          "quantity": {
+                            "type": "integer",
+                            "description": "Surface en m²"
+                          },
+                          "price_per_unit": {
+                            "type": "number",
+                            "description": "Prix par m²"
+                          }
+                        },
+                        "required": [
+                          "simplified_id"
+                        ]
+                      },
+                      "low_floor": {
+                        "type": "object",
+                        "properties": {
+                          "simplified_id": {
+                            "type": "string",
+                            "enum": [
+                              "low_floor_isolation"
+                            ]
+                          },
+                          "quantity": {
+                            "type": "integer",
+                            "description": "Surface en m²"
+                          },
+                          "price_per_unit": {
+                            "type": "number",
+                            "description": "Prix par m²"
+                          },
+                          "error_margin": {
+                            "type": "integer",
+                            "example": 15,
+                            "description": "Marge d'erreur (en pourcentage, 15 = 15%)"
+                          }
+                        },
+                        "required": [
+                          "simplified_id"
+                        ]
+                      },
+                      "high_floor": {
+                        "type": "object",
+                        "properties": {
+                          "simplified_id": {
+                            "type": "string",
+                            "enum": [
+                              "roof_high_floor_isolation"
+                            ]
+                          },
+                          "quantity": {
+                            "type": "integer",
+                            "description": "Surface en m²"
+                          },
+                          "price_per_unit": {
+                            "type": "number",
+                            "description": "Prix par m²"
+                          },
+                          "error_margin": {
+                            "type": "number",
+                            "example": 15,
+                            "description": "Marge d'erreur (en pourcentage, 15 = 15%)"
+                          }
+                        },
+                        "required": [
+                          "simplified_id"
+                        ]
+                      },
+                      "generator_type": {
+                        "type": "object",
+                        "properties": {
+                          "simplified_id": {
+                            "type": "string",
+                            "enum": [
+                              "install_electric_joule_effect_generators",
+                              "install_heat_pump_air_water",
+                              "install_heat_pump_air_air",
+                              "install_double_service_heat_pump"
+                            ]
+                          },
+                          "quantity": {
+                            "type": "integer",
+                            "description": "Nombre d'unités"
+                          },
+                          "price_per_unit": {
+                            "type": "number",
+                            "description": "Prix par unité"
+                          }
+                        },
+                        "required": [
+                          "simplified_id"
+                        ]
+                      },
+                      "hot_water_type": {
+                        "type": "object",
+                        "properties": {
+                          "simplified_id": {
+                            "type": "string",
+                            "enum": [
+                              "install_heat_pump",
+                              "install_water_tank",
+                              "install_thermodynamic_water_tank"
+                            ]
+                          },
+                          "quantity": {
+                            "type": "integer",
+                            "description": "Nombre d'unités"
+                          },
+                          "price_per_unit": {
+                            "type": "number",
+                            "description": "Prix par unité"
+                          }
+                        },
+                        "required": [
+                          "simplified_id"
+                        ]
+                      }
+                    }
+                  }
+                },
+                "required": [
+                  "renovation_plan"
+                ]
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v2/simulations/{simulation_id}/projected-state/renovation-plans/{renovation_plan_id}": {
+      "get": {
+        "summary": "Récupérer le plan de rénovation personnalisé",
+        "description": "Les informations du plan de rénovation personnalisé.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "tags": [
+          "Qualification"
+        ],
+        "parameters": [
+          {
+            "name": "simulation_id",
+            "in": "path",
+            "required": true,
+            "example": "hjjcm1qp28",
+            "description": "L'identifiant de simulation renvoyé par l'appel au endpoint créer",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "renovation_plan_id",
+            "in": "path",
+            "required": true,
+            "example": "hjjcm1qp28",
+            "description": "L'identifiant du plan de rénovation personnalisé.",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "enum": [
+                        "pending",
+                        "processing",
+                        "completed",
+                        "failed"
+                      ],
+                      "example": "completed",
+                      "description": "Le statut de l'opération de génération de résultat."
+                    },
+                    "id": {
+                      "type": "string",
+                      "example": "hjjcm1qp28",
+                      "description": "L'identifiant du plan de rénovation personnalisé."
+                    },
+                    "name": {
+                      "type": "string",
+                      "example": "Mon plan personnalisé",
+                      "description": "Le nom du plan de rénovation personnalisé."
+                    },
+                    "type": {
+                      "type": "string",
+                      "enum": [
+                        "normal",
+                        "customized",
+                        "optimized"
+                      ],
+                      "example": "customized",
+                      "description": "Le type de plan de rénovation personnalisé."
+                    },
+                    "dpe_after_renovation": {
+                      "type": "string",
+                      "enum": [
+                        "A",
+                        "B",
+                        "C",
+                        "D",
+                        "E",
+                        "F",
+                        "G"
+                      ],
+                      "example": "B",
+                      "description": "Le DPE après rénovation."
+                    },
+                    "yearly_energy_savings": {
+                      "type": "integer",
+                      "description": "Économies d'énergie annuelles estimées en Euros.",
+                      "example": 600
+                    },
+                    "yearly_energy_cost": {
+                      "type": "integer",
+                      "description": "Coût énergétique annuel estimé en Euros.",
+                      "example": 12000
+                    },
+                    "budget": {
+                      "type": "integer",
+                      "example": 400,
+                      "description": "Le budget total du plan de rénovation personnalisé."
+                    },
+                    "subsidies": {
+                      "type": "integer",
+                      "example": 400,
+                      "description": "Le montant des aides du plan de rénovation personnalisé."
+                    },
+                    "renovation_plan": {
+                      "type": "object",
+                      "description": "Liste des tâches du plan de rénovation.",
+                      "properties": {
+                        "vents": {
+                          "type": "object",
+                          "properties": {
+                            "id": {
+                              "type": "string",
+                              "enum": [
+                                "vmc_sf_hygro_b"
+                              ]
+                            },
+                            "simplified_id": {
+                              "type": "string",
+                              "enum": [
+                                "install_vmc_hygro_b"
+                              ]
+                            },
+                            "label": {
+                              "type": "string",
+                              "enum": [
+                                "Installation d'une VMC hygro B"
+                              ]
+                            },
+                            "quantity": {
+                              "type": "integer",
+                              "description": "Nombre d'unités"
+                            }
+                          }
+                        },
+                        "walls": {
+                          "type": "object",
+                          "properties": {
+                            "id": {
+                              "type": "string",
+                              "enum": [
+                                "ite_12cm_lm",
+                                "ite_16cm_pse",
+                                "add_10cm_th32_outside",
+                                "concrete_18cm_pse_26cm_th32_coating_1_5cm_ite",
+                                "iti_10cm_pur",
+                                "iti_12cm_lm",
+                                "iti_14cm_ldb",
+                                "iti_16cm_pse",
+                                "add_10cm_th32_inside",
+                                "mob_22cm_lm_th35_8percent_wood_double_interior_10cm_th32"
+                              ]
+                            },
+                            "simplified_id": {
+                              "type": "string",
+                              "enum": [
+                                "wall_isolation_inside",
+                                "wall_isolation_outside"
+                              ]
+                            },
+                            "label": {
+                              "type": "string",
+                              "enum": [
+                                "ITE avec 12 cm LM",
+                                "ITE avec 16 cm PSE",
+                                "Rajouter équivalent 10 cm Th32 à l'extérieur",
+                                "Béton 18 cm + PSE 26 cm Th32 + enduit 1,5 cm (ITE)",
+                                "ITI avec 10 cm PUR",
+                                "ITI avec 12 cm LM",
+                                "ITI avec 14 cm LdB",
+                                "ITI avec 16 cm PSE",
+                                "Rajouter équivalent 10 cm Th32 à l'intérieur",
+                                "MOB 22 cm LM Th35 (8% bois) + doublage intérieur 10 cm Th32"
+                              ]
+                            },
+                            "quantity": {
+                              "type": "integer",
+                              "description": "Surface en m²"
+                            }
+                          }
+                        },
+                        "windows": {
+                          "type": "object",
+                          "properties": {
+                            "id": {
+                              "type": "string",
+                              "enum": [
+                                "wood_or_pvc_windows_dv_4_20_4",
+                                "wood_or_pvc_windows_dv_4_20_4_mh_zone",
+                                "passive_windows_tv_4_16_4_16_4_itr",
+                                "passive_windows_tv_4_16_4_16_4_itr_mh_zone"
+                              ]
+                            },
+                            "simplified_id": {
+                              "type": "string",
+                              "enum": [
+                                "install_double_glazed_windows",
+                                "install_triple_glazed_windows"
+                              ]
+                            },
+                            "label": {
+                              "type": "string",
+                              "enum": [
+                                "Menuiserie bois ou PVC avec DV 4/20/4",
+                                "Menuiserie bois ou PVC avec DV 4/20/4 - MH zone",
+                                "Menuiserie passive avec TV, 4/16/4/16/4, ITR",
+                                "Menuiserie passive avec TV, 4/16/4/16/4, ITR - MH zone"
+                              ]
+                            },
+                            "quantity": {
+                              "type": "integer",
+                              "description": "Nombre d'unités"
+                            }
+                          }
+                        },
+                        "low_floor": {
+                          "type": "object",
+                          "properties": {
+                            "id": {
+                              "type": "string",
+                              "enum": [
+                                "underfloor_insulation_14cm_th35",
+                                "underfloor_insulation_16cm_fibrasyrène_th36",
+                                "under_screed_insulation_10cm_pur",
+                                "20cm_insulating_hollow_block_r4_5_on_crawl_space_8cm_pur"
+                              ]
+                            },
+                            "simplified_id": {
+                              "type": "string",
+                              "enum": [
+                                "low_floor_isolation"
+                              ]
+                            },
+                            "label": {
+                              "type": "string",
+                              "enum": [
+                                "Isolation en sous-face avec 14 cm Th35",
+                                "Isolation en sous-face avec 16 cm Fibrasyrène Th36",
+                                "Isolation sous chape avec 10 cm PUR",
+                                "20 cm entrevous isolant R=4,5 sur vide sanitaire + 8 cm PUR"
+                              ]
+                            },
+                            "quantity": {
+                              "type": "integer",
+                              "description": "Surface en m²"
+                            }
+                          }
+                        },
+                        "high_floor": {
+                          "type": "object",
+                          "properties": {
+                            "id": {
+                              "type": "string",
+                              "enum": [
+                                "add_10cm_th32_outside_or_inside",
+                                "insulation_rampants_12cm_lm_between_rafters_18cm_fdb",
+                                "insulation_flat_roof_20cm_pur",
+                                "insulation_30cm_lm_high_floor",
+                                "add_8cm_th32_outside_or_inside",
+                                "add_10cm_th32",
+                                "wooden_floor_to_attic_30cm_lm_th32_above",
+                                "flat_roof_20cm_concrete_24cm_pur_th24",
+                                "iti_16cm_pse"
+                              ]
+                            },
+                            "simplified_id": {
+                              "type": "string",
+                              "enum": [
+                                "roof_high_floor_isolation"
+                              ]
+                            },
+                            "label": {
+                              "type": "string",
+                              "enum": [
+                                "Rajouter équivalent 10 cm Th32 à l'extérieur ou à l'intérieur",
+                                "Isolation des rampants avec 12 cm LM entre chevrons + 18 cm FdB",
+                                "Isolation sur toiture terrasse avec 20 cm PUR",
+                                "Isolation 30 cm LM sur plancher haut",
+                                "Rajouter équivalent 8 cm Th32 à l'extérieur ou à l'intérieur",
+                                "Rajouter équivalent 10 cm Th32",
+                                "Plancher bois vers combles avec 30 cm LM Th32 au-dessus",
+                                "Toiture terrasse 20 cm béton + 24 cm PUR Th24",
+                                "ITI avec 16 cm PSE"
+                              ]
+                            },
+                            "quantity": {
+                              "type": "integer",
+                              "description": "Surface en m²"
+                            }
+                          }
+                        },
+                        "generator_type": {
+                          "type": "object",
+                          "properties": {
+                            "id": {
+                              "type": "string",
+                              "enum": [
+                                "pac_air_air",
+                                "pac_other_than_air_air",
+                                "double_service_heat_pump",
+                                "electric_joule_effect_generators"
+                              ]
+                            },
+                            "simplified_id": {
+                              "type": "string",
+                              "enum": [
+                                "install_electric_joule_effect_generators",
+                                "install_heat_pump_air_water",
+                                "install_heat_pump_air_air",
+                                "install_double_service_heat_pump"
+                              ]
+                            },
+                            "label": {
+                              "type": "string",
+                              "enum": [
+                                "Installation d'une pompe à chaleur (air/air)",
+                                "Installation d'une pompe à chaleur (air/eau)",
+                                "Installation d'une pompe à chaleur double service",
+                                "Installation d'un générateur électrique à effet joule"
+                              ]
+                            },
+                            "quantity": {
+                              "type": "integer",
+                              "description": "Nombre d'unités"
+                            }
+                          }
+                        },
+                        "generator_energy": {
+                          "type": "object",
+                          "properties": {
+                            "id": {
+                              "type": "string",
+                              "enum": [
+                                "electricity",
+                                "gas",
+                                "wood",
+                                "fuel",
+                                "urban_heating_or_biomass"
+                              ]
+                            },
+                            "label": {
+                              "type": "string",
+                              "enum": [
+                                "Électricité",
+                                "Gaz",
+                                "Bois",
+                                "Fioul",
+                                "Chauffage urbain ou biomasse"
+                              ]
+                            }
+                          }
+                        },
+                        "hot_water_type": {
+                          "type": "object",
+                          "properties": {
+                            "id": {
+                              "type": "string",
+                              "enum": [
+                                "electric_water_heater",
+                                "thermodynamic_water_heater"
+                              ]
+                            },
+                            "simplified_id": {
+                              "type": "string",
+                              "enum": [
+                                "install_heat_pump",
+                                "install_water_tank",
+                                "install_thermodynamic_water_tank"
+                              ]
+                            },
+                            "label": {
+                              "type": "string",
+                              "enum": [
+                                "Installation d'un ballon électrique",
+                                "Installation d'un ballon thermodynamique"
+                              ]
+                            }
+                          }
+                        },
+                        "hot_water_energy": {
+                          "type": "object",
+                          "properties": {
+                            "id": {
+                              "type": "string",
+                              "enum": [
+                                "electricity",
+                                "gas",
+                                "wood",
+                                "fuel",
+                                "urban_heating_or_biomass"
+                              ]
+                            },
+                            "label": {
+                              "type": "string",
+                              "enum": [
+                                "Électricité",
+                                "Gaz",
+                                "Bois",
+                                "Fioul",
+                                "Chauffage urbain ou biomasse"
+                              ]
+                            }
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "required": [
+                    "status",
+                    "id"
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "example": "Unauthorized"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "example": "Forbidden"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "example": "Could not find the simulation",
+                      "description": "Error message indicating the issue."
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v2/simulations/{simulation_id}/report": {
+      "post": {
+        "summary": "Lancer la génération du rapport PDF",
+        "description": "Endpoint pour démarrer la génération asynchrone du rapport PDF de la simulation. Le rapport peut optionnellement inclure les informations du client.",
+        "tags": [
+          "Qualification"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "simulation_id",
+            "in": "path",
+            "required": true,
+            "example": "hjjcm1qp28",
+            "description": "L'identifiant de simulation renvoyé par l'appel au endpoint créer",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "No Content - La génération du rapport a été lancée avec succès."
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "example": "Unauthorized"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "example": "Forbidden"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "example": "Could not find the simulation"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict - La simulation n'est pas encore terminée.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "example": "The simulation has not been run yet"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "client": {
+                    "type": "object",
+                    "description": "Les informations du client (nom, prénom, email, téléphone)",
+                    "properties": {
+                      "first_name": {
+                        "type": "string",
+                        "example": "Jean",
+                        "description": "Le prénom du client"
+                      },
+                      "last_name": {
+                        "type": "string",
+                        "example": "Dupont",
+                        "description": "Le nom de famille du client"
+                      },
+                      "email": {
+                        "type": "string",
+                        "example": "jean.dupont@example.com",
+                        "description": "L'email du client"
+                      },
+                      "phone_number": {
+                        "type": "string",
+                        "example": "+33600112233",
+                        "description": "Le téléphone du client"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "summary": "Récupérer le statut du rapport PDF",
+        "description": "Le statut de la génération du rapport PDF et l'URL de téléchargement.",
+        "tags": [
+          "Qualification"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "simulation_id",
+            "in": "path",
+            "required": true,
+            "example": "hjjcm1qp28",
+            "description": "L'identifiant de simulation renvoyé par l'appel au endpoint créer",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "enum": [
+                        "pending",
+                        "processing",
+                        "completed",
+                        "failed"
+                      ],
+                      "example": "completed",
+                      "description": "Le statut de la génération du rapport."
+                    },
+                    "download_url": {
+                      "type": "string",
+                      "example": "https://app.go-kelvin.com/rails/active_storage/blobs/redirect/xxx/report.pdf",
+                      "description": "L'URL de téléchargement du rapport PDF. Présent uniquement lorsque le statut est 'completed'."
+                    }
+                  },
+                  "required": [
+                    "status"
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "example": "Unauthorized"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "example": "Forbidden"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found - Aucune génération de rapport n'a été demandée.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "example": "No report generation has been requested"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict - La simulation n'est pas encore terminée.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "example": "The simulation has not been run yet"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "servers": [
+    {
+      "url": "{protocol}://{defaultHost}",
+      "variables": {
+        "protocol": {
+          "default": "https"
+        },
+        "defaultHost": {
+          "default": "app.go-kelvin.com"
+        }
+      }
+    }
+  ],
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "description": "Le token commence par 'team-api-key-'"
+      }
+    }
+  },
+  "security": [
+    {
+      "bearerAuth": []
+    }
+  ]
+}

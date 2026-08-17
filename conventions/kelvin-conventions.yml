@@ -1,0 +1,164 @@
+generated: '2026-08-14'
+method: derived
+source: >-
+  openapi/kelvin-api-openapi.yml (kelvin API v3, harvested from
+  https://app.go-kelvin.com/api/docs) plus live unauthenticated response headers
+  observed on https://app.go-kelvin.com/api/v3/simulations (HTTP 401)
+docs: https://app.go-kelvin.com/api/docs
+api: kelvin API
+authentication:
+  style: bearer-token
+  header: 'Authorization: Bearer <token>'
+  scheme: http bearer
+  token_prefix: team-api-key-
+  note: >-
+    One long-lived API key per team ("équipe"). The spec documents the prefix
+    "team-api-key-" on the bearerAuth scheme. No OAuth 2.0 flow, no client
+    credentials exchange, no refresh — see authentication/kelvin-authentication.yml.
+  detail: authentication/kelvin-authentication.yml
+tenancy:
+  unit: team
+  identifier_field: team_id
+  note: >-
+    Every simulation, document and catalog entry is scoped to a team_id. The API key
+    itself carries the team, so tenancy is implicit in the credential rather than
+    passed as a parameter.
+idempotency:
+  supported: false
+  note: >-
+    No Idempotency-Key header, no idempotent-replay semantics and no client-supplied
+    request identifier appear anywhere in the v2 or v3 specification, and none is
+    documented. POST /api/v3/simulations and the five document-generation endpoints
+    are therefore not safe to retry blindly — a repeated call creates a second
+    simulation or a second document. Recorded as an honest absence; no Idempotency
+    pointer is emitted for this repo.
+pagination:
+  style: page-number
+  request_params:
+  - name: page
+    in: query
+    type: integer
+    operations:
+    - GET /api/v3/simulations
+    - GET /api/v3/simulations/{simulation_id}/documents
+  - name: per_page
+    in: query
+    type: integer
+    operations:
+    - GET /api/v3/simulations/{simulation_id}/documents
+  response_envelope:
+    data: array of resources
+    meta:
+      current_page: integer
+      total_pages: integer
+      total_count: integer
+  note: >-
+    Classic Rails/Kaminari page-number pagination. No cursor, no Link header. GET
+    /api/v3/simulations accepts `page` but the harvested spec does not document a
+    per_page parameter for it.
+filtering:
+  style: query-parameter
+  examples:
+  - 'GET /api/v3/simulations?status='
+  - 'GET /api/v3/dpes?dpe_id=&ban_id=&building_type=&surface=&report_date=&energy_class='
+  - 'GET /api/v3/simulations/{simulation_id}/documents?type=&begin=&end=&full='
+  - 'GET /api/v3/catalog/enabled/gestures?gesture_technical_ids[]='
+  note: >-
+    Catalog and DPE lookups filter on repeatable array query parameters of technical
+    identifiers. GET /api/v3/catalog/enabled/references returns 422 when no filter at
+    all is supplied — the only endpoint that requires a filter.
+field_expansion:
+  supported: partial
+  parameter: full
+  operations:
+  - GET /api/v3/simulations/{simulation_id}/documents
+  note: >-
+    A boolean `full` query parameter on the documents listing is the only expansion
+    control in the spec. There is no sparse-fieldset or `expand[]` mechanism.
+metadata:
+  supported: true
+  fields:
+  - tracking_context
+  - metadata
+  note: >-
+    Simulations carry a `tracking_context` object that preserves marketing attribution
+    captured at simulation launch (utm_source, utm_medium, utm_campaign, utm_content,
+    utm_term, gad_source, gclid, fbclid, gbraid, msclkid, cuid, referer, and the
+    kelvin-native krid/krsrc/ksid). Generated documents carry a `metadata` object
+    (format, scenario_ids, type, report_template). Neither is a free-form
+    customer-writable key/value store.
+request_tracing:
+  header: x-request-id
+  observed: true
+  example: 64bc232f-96f7-46a1-a994-6ad317151a0f
+  note: >-
+    Every response carries an x-request-id UUID (Rails default) plus x-runtime and
+    x-envoy-upstream-service-time. Observed on a live unauthenticated 401. Not
+    documented in the specification.
+versioning:
+  style: uri-path
+  current: v3
+  path_prefix: /api/v3/
+  previous:
+  - version: v2
+    path_prefix: /api/v2/
+    status: still-served
+  response_header: x-api-version
+  header_values_observed:
+    /api/v3/: 3.0.0
+    /api/v2/: 2.0.0
+  note: >-
+    Major version in the URI path. The runtime also echoes an x-api-version response
+    header carrying a semantic version (3.0.0 / 2.0.0) that is finer-grained than the
+    path — the only minor/patch signal the API exposes. See
+    lifecycle/kelvin-lifecycle.yml.
+errors:
+  envelope:
+    shape: '{"error": "<message>"}'
+    format: proprietary
+    rfc9457: false
+    content_type: application/json
+  note: >-
+    A single flat `error` string. No type URI, no title/detail/instance, no
+    machine-readable error code, no per-field validation array. Observed live:
+    401 -> {"error":"unauthorized"} on v3 and {"error":"Unauthorized"} on v2 — the
+    casing is not even consistent between versions.
+  detail: errors/kelvin-problem-types.yml
+rate_limiting:
+  documented: false
+  response_headers_observed: []
+  note: >-
+    No X-RateLimit-*, no RateLimit-*, no Retry-After on the live 401 response, and no
+    limits published in the docs. See rate-limits/kelvin-rate-limits.yml.
+async_operations:
+  pattern: submit-then-poll
+  note: >-
+    Document generation is asynchronous. The five POST
+    /api/v3/simulations/{id}/documents/* endpoints return 202 Accepted, and the caller
+    polls GET /api/v3/simulations/{id}/documents/{id} for status and a download_url.
+    The legacy POST /api/v3/simulations/{id}/report returns 204 and is polled via GET
+    .../report. There is no callback/webhook delivery for completion in the spec.
+  note_run: >-
+    POST /api/v3/simulations/{id}/run returns 201 and is also asynchronous — the
+    initial-state and projected-state reads return 409 Conflit while the simulation is
+    still computing.
+webhooks:
+  documented: false
+  note: >-
+    Kelvin's own resources pages describe pushing qualified leads into a CRM "via
+    Zapier ou API", but no webhook catalog, no subscription endpoint and no event
+    payload schema is published. No AsyncAPI or Webhooks artifact is emitted.
+security_headers_observed:
+  strict-transport-security: max-age=63072000; includeSubDomains
+  x-content-type-options: nosniff
+  x-frame-options: SAMEORIGIN
+  referrer-policy: strict-origin-when-cross-origin
+  x-permitted-cross-domain-policies: none
+  source: https://app.go-kelvin.com/api/v3/simulations (401, 2026-08-14)
+cross_links:
+  errors: errors/kelvin-problem-types.yml
+  lifecycle: lifecycle/kelvin-lifecycle.yml
+  authentication: authentication/kelvin-authentication.yml
+  rate_limits: rate-limits/kelvin-rate-limits.yml
+  scopes: scopes/kelvin-scopes.yml
+  data_model: data-model/kelvin-data-model.yml

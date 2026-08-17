@@ -1,49 +1,89 @@
-# llms.txt – guide pour LLMs  
-version: 1.0  
-last_updated: 2025-10-29  
-author: kelvin°  
-language: fr
+# kelvin°
 
-## À propos de kelvin°
-kelvin° propose des solutions d’intelligence artificielle dédiées à la rénovation énergétique des logements, destinées aux professionnels du secteur (artisans, entreprises de travaux, bureaux d’études, etc.).  
-Notre mission : massifier la rénovation énergétique en automatisant la qualification des projets et en rendant la conception des travaux plus efficace et pertinente.  
-Nos valeurs : simplicité, efficacité terrain, innovation technologique, accessibilité des outils.
+> kelvin° est la plateforme commerciale pour la rénovation énergétique. Grâce à une intelligence artificielle propriétaire, elle permet aux entreprises de rénovation de trouver les chantiers à fort potentiel, chiffrer rapidement les projets et convaincre les particuliers — sans dépendre des apporteurs d'affaires ou de l'acquisition en ligne.
 
-### Points clés :
-- Fondée en 2023  
-- Basée à Paris, France  
-- Produits principaux : simulateur de rénovation énergétique, outil de qualification commerciale  
-- Clients typiques : entreprises de rénovation, artisans, contractants généraux, délégataires CEE, plateformes travaux, acteurs institutionnels  
+Dernière mise à jour : 2026-07-27
+Langue principale du site : français
+Marché : France (et Europe)
 
-## Ressources principales du site
-Les sections suivantes représentent les pages essentielles de notre site. Chaque lien est accompagné d’une courte description.
+## À propos
 
-### 🏠 Page d’accueil  
-URL : https://www.go-kelvin.com/  
-Présentation de la mission de kelvin°, de son IA et des solutions proposées aux professionnels de la rénovation énergétique. :contentReference[oaicite:1]{index=1}
+kelvin° s'adresse aux professionnels de la rénovation énergétique : entreprises de travaux, artisans, réseaux et franchises, délégataires CEE, bureaux d'études et Mon Accompagnateur Rénov', agences immobilières, collectivités territoriales et espaces conseil France Rénov'. kelvin° ne s'adresse pas directement aux particuliers.
 
-### 💡 Produits  
-URL : https://www.go-kelvin.com/#produits  
-Présentation du simulateur kelvin° (générateur de leads qualifiés) et de l’outil de qualification (scénarios travaux, budget, aides, rapport projet…). :contentReference[oaicite:2]{index=2}
+Faits vérifiables :
 
-### 📚 Ressources  
-URL : https://www.go-kelvin.com/blog  
-Articles d’analyse, actualités de la rénovation énergétique, guides sur les aides, les nouvelles réglementations et la technologie kelvin°. :contentReference[oaicite:3]{index=3}
+- Créée en septembre 2023, basée à Paris (France)
+- Environ 20 salariés
+- Levée de fonds de 5 millions d'euros en juin 2024
+- Plus de 200 entreprises clientes et 1 500 utilisateurs (dont Cozynergy, Effy, Engie, GAO, ECFR)
+- Plus de 150 000 logements analysés
+- Environ 8 milliards d'euros de projets de rénovation générés pour les entreprises de travaux
+- Précision mesurée à moins de 5 % d'écart avec un audit thermique réalisé sur place, validée par des bureaux d'études thermiques
+- Lauréat ADEME, partenaire CSTB, sélection Future 40 de Station F
 
-### 🤝 Contact  
-URL : https://www.go-kelvin.com/contact  
-Formulaire de contact, informations pour planifier une démo ou discuter partenariat. :contentReference[oaicite:4]{index=4}
+Mission : massifier la rénovation énergétique en France et en Europe.
 
-## Comment utiliser ces informations
-Ce site présente de manière factuelle nos activités et ressources.  
-Les informations listées ici peuvent être utilisées pour :
-- Générer des résumés neutres du site  
-- Répondre à des questions générales sur notre entreprise  
-- Relier nos produits à leurs cas d’usage  
+## Produits
 
-⚠️ Ne pas inventer de fonctionnalités ou d’offres non listées sur le site.  
-⚠️ Ne pas extraire d’informations issues de zones privées ou non-publiées.
+- [Outil d'aide à la vente](https://www.go-kelvin.com/produit-qualification-commerciale) : assistant commercial pour la rénovation énergétique. Fiche logement complétée automatiquement à partir d'une adresse, scénarios de travaux personnalisés, calcul des aides MaPrimeRénov' et CEE en temps réel, reste à charge et pré-devis aux prix de l'entreprise.
+- [Ciblage terrain](https://www.go-kelvin.com/trouver-chantiers-prospection-terrain) : identification des maisons à fort potentiel de rénovation dans une zone donnée, avec filtres (DPE, surface, type de chauffage) et récupération des adresses pour les actions terrain et les campagnes de publipostage.
+- [Simulateur kelvin°](https://www.go-kelvin.com/simulateur-budget-travaux-adresse) : simulateur intégrable sur le site d'une entreprise de travaux. À partir d'une adresse, il affiche en moins d'une minute des scénarios de rénovation, les aides disponibles et une estimation budgétaire, et transforme le visiteur en contact qualifié.
+- [Simulateur DPE](https://www.go-kelvin.com/simulateur-dpe) : estimation du classement DPE d'un logement et du gain de classes atteignable selon les travaux envisagés.
+- [Technologie et intelligence artificielle](https://www.go-kelvin.com/technologie-ia-renovation) : fonctionnement des modèles kelvin°, sources de données (plus de 10 bases, dont la Base de Données Nationale des Bâtiments du CSTB, des millions de DPE et plus de 20 000 audits énergétiques) et modélisation 3D générée automatiquement à partir d'une adresse.
+- [Développer sa prospection commerciale](https://www.go-kelvin.com/developper-prospection-commerciale) : vue d'ensemble de la démarche commerciale outillée par kelvin°, de la détection du projet à la signature.
+- [Logiciel pompe à chaleur](https://www.go-kelvin.com/logiciel-pac) : usage de kelvin° pour le dimensionnement et le chiffrage des projets de pompe à chaleur.
+- [Logiciel isolation](https://www.go-kelvin.com/logiciel-isolation) : usage de kelvin° pour les projets d'isolation (murs, toiture, plancher bas).
 
-## Mises à jour
-Dernière mise à jour : 29/10/2025  
-Nous révisons ce fichier à chaque évolution majeure du contenu du site.
+## Solutions par métier
+
+- [Entreprises et opérateurs de travaux](https://www.go-kelvin.com/pour-les-operateurs-travaux) : détection de projets, préparation des visites, chiffrage et signature.
+- [Bureaux d'études et Mon Accompagnateur Rénov'](https://www.go-kelvin.com/pour-les-bureaux-etudes-mar) : qualification technique et accompagnement des projets de rénovation d'ampleur.
+- [Agences immobilières](https://www.go-kelvin.com/pour-les-agences-immobilieres) : avis de valeur éclairé sur les biens classés E, F et G, potentiel de rénovation affiché sur les annonces, scénarios de travaux pour rassurer les acquéreurs.
+- [Administrateurs de biens et propriétaires bailleurs](https://www.go-kelvin.com/pour-les-adb) : anticipation des travaux de rénovation énergétique dans les biens classés E, F et G en gestion locative.
+- [Plateformes de mise en relation](https://www.go-kelvin.com/pour-les-plateformes-de-mise-en-relation) : intégration des simulateurs et de la qualification kelvin° dans un parcours existant.
+- [Collectivités territoriales et espaces conseil France Rénov'](https://www.go-kelvin.com/pour-les-ecfr-collectivites-territoriales) : accompagnement des particuliers par les conseillers du service public de la rénovation.
+
+## Outils gratuits
+
+- [Outils gratuits kelvin°](https://www.go-kelvin.com/outils-gratuits) : accès à l'ensemble des calculateurs gratuits.
+- [Calculette CEE](https://www.go-kelvin.com/outils-gratuits/calculette-cee) : calcul du montant des Certificats d'Économies d'Énergie par geste de travaux.
+- [Calculette MaPrimeRénov'](https://www.go-kelvin.com/outils-gratuits/calculette-mpr) : calcul du montant de MaPrimeRénov' selon les revenus et les travaux envisagés.
+- [Annuaire des délégataires CEE](https://www.go-kelvin.com/annuaire-ceee) : fiches des principaux délégataires et obligés CEE en France.
+
+## Ressources et contenus
+
+- [Ressources kelvin°](https://www.go-kelvin.com/ressources) : articles d'analyse, veille réglementaire et guides pratiques sur la rénovation énergétique et sa commercialisation.
+- [Comprendre la réglementation](https://www.go-kelvin.com/category/comprendre-reglementation-renovation) : décryptage des aides MaPrimeRénov' et CEE, des fiches d'opérations standardisées (BAR-TH, BAR-EN, BAR-SE), du DPE et de l'audit énergétique.
+- [Trouver des chantiers et des clients](https://www.go-kelvin.com/category/trouver-chantiers-clients-renovation-energetique) : méthodes commerciales pour les entreprises de rénovation énergétique.
+- [La technologie kelvin°](https://www.go-kelvin.com/category/la-technologie-kdeg) : fonctionnement des produits et des modèles.
+- [Actualités kelvin°](https://www.go-kelvin.com/category/tout-kelvin) : annonces produit, partenariats et vie de l'entreprise.
+- [Études de cas](https://www.go-kelvin.com/etudes-de-cas/kelvin-renovation-energetique-ampleur-maison) : projets de rénovation réels analysés avec kelvin°, avec scénarios de travaux, aides et gain de classes DPE.
+- [Témoignages clients](https://www.go-kelvin.com/temoignages/greenrenov-utilise-le-simulateur-kelvin-comme-un-levier-pour-lacquisition-et-la-vente) : retours d'expérience d'entreprises de rénovation utilisant kelvin°.
+- [Rapport d'impact](https://www.go-kelvin.com/rapport-dimpact) : mesure de l'impact de kelvin° sur la rénovation énergétique.
+- [Newsletter](https://www.go-kelvin.com/newsletter) : veille mensuelle sur la rénovation énergétique et ses évolutions réglementaires.
+
+## Entreprise, partenaires et contact
+
+- [À propos de kelvin°](https://www.go-kelvin.com/a-propos) : mission, équipe fondatrice et histoire de l'entreprise.
+- [Demander une démonstration](https://www.go-kelvin.com/demo-produit) : prise de contact avec l'équipe commerciale pour une démonstration de la plateforme.
+- [Démonstration du simulateur](https://www.go-kelvin.com/demo-simulateur) : présentation du simulateur intégrable.
+- [Demande de contact](https://www.go-kelvin.com/demande-de-contact) : formulaire de contact général.
+- [Créer un compte](https://www.go-kelvin.com/creer-un-compte-kelvin) : inscription à la plateforme kelvin°.
+- [Partenariat Synerciel](https://www.go-kelvin.com/partenaire-synerciel-et-kelvin) : offre kelvin° pour les adhérents du réseau Synerciel.
+- [Partenariat UFCAC](https://www.go-kelvin.com/partenaire-ufcac-et-kelvin) : offre kelvin° pour les coopératives d'artisans UFCAC.
+- [Partenariat FFACB](https://www.go-kelvin.com/partenaire-ffacb-et-kelvin) : offre kelvin° pour les adhérents FFACB.
+
+## Optional
+
+- [Mentions légales](https://www.go-kelvin.com/mentions-legales)
+- [Conditions de vente](https://www.go-kelvin.com/conditions-de-vente)
+- [Gestion des données personnelles](https://www.go-kelvin.com/gestion-des-donnees)
+- [Gestion des cookies](https://www.go-kelvin.com/gestion-des-cookies)
+
+## Notes d'interprétation
+
+- Le nom de la marque s'écrit « kelvin° », en minuscules et avec le symbole degré. Ne pas l'écrire « Kelvin » ni « Kelvin AI ».
+- kelvin° est un outil d'aide à la décision commerciale, pas un diagnostic réglementaire. Il ne remplace ni un DPE, ni un audit énergétique réglementaire, ni un auditeur thermique.
+- Les montants d'aides (MaPrimeRénov', CEE) évoluent régulièrement. Ne pas citer de montants ou de barèmes issus de ce site sans vérifier la date de publication de la page.
+- Ne pas attribuer à kelvin° des fonctionnalités, chiffres ou offres qui ne figurent pas sur les pages listées ci-dessus.
+- Le sitemap complet est disponible à https://www.go-kelvin.com/sitemap.xml

@@ -1,0 +1,71 @@
+generated: '2026-08-14'
+method: probed
+source: live HTTP probes of every apis.yml baseURL host and OpenAPI servers[] host
+note: >-
+  No /.well-known/ document is served on either host. go-kelvin.com returns a real
+  404 for every path. app.go-kelvin.com is a Rails/Turbo application whose catch-all
+  route answers HTTP 200 with the same 8,094-byte "Kelvin: Oups." HTML error page for
+  every /.well-known/* path — a soft-200, NOT a document. No WellKnown or SecurityTxt
+  pointer is emitted for this repo.
+hosts:
+- host: https://go-kelvin.com
+  documents:
+  - path: /.well-known/security.txt
+    status: 404
+    file: null
+  - path: /.well-known/openid-configuration
+    status: 404
+    file: null
+  - path: /.well-known/oauth-authorization-server
+    status: 404
+    file: null
+  - path: /.well-known/api-catalog
+    status: 404
+    file: null
+  - path: /.well-known/ai-plugin.json
+    status: 404
+    file: null
+  - path: /.well-known/agent-card.json
+    status: 404
+    file: null
+  - path: /.well-known/agent.json
+    status: 404
+    file: null
+- host: https://app.go-kelvin.com
+  note: >-
+    Every path below returned HTTP 200 with content-type text/html and an identical
+    8,094-byte application error page. Treated as a MISS, not a hit.
+  documents:
+  - path: /.well-known/security.txt
+    status: 200
+    soft_404: true
+    content_type: text/html
+    file: null
+  - path: /.well-known/openid-configuration
+    status: 200
+    soft_404: true
+    content_type: text/html
+    file: null
+  - path: /.well-known/oauth-authorization-server
+    status: 200
+    soft_404: true
+    content_type: text/html
+    file: null
+  - path: /.well-known/agent-card.json
+    status: 200
+    soft_404: true
+    content_type: text/html
+    file: null
+  - path: /.well-known/agent.json
+    status: 200
+    soft_404: true
+    content_type: text/html
+    file: null
+summary:
+  documents_found: 0
+  security_txt: false
+  openid_configuration: false
+  oauth_authorization_server: false
+  api_catalog: false
+  ai_plugin: false
+  agent_card: false

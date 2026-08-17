@@ -1,0 +1,142 @@
+overlay: 1.0.0
+info:
+  title: API Evangelist enhancements for the kelvin API
+  version: 1.0.0
+extends: ../openapi/kelvin-api-openapi.yml
+x-generated: '2026-08-14'
+x-method: generated
+x-source: >-
+  Enhancements derived by the API Evangelist enrichment pipeline from the kelvin API
+  v3 specification harvested at https://app.go-kelvin.com/api/docs, from live response
+  headers observed on https://app.go-kelvin.com/api/v3/simulations (401, 2026-08-14),
+  and from the repo artifacts in conventions/, errors/, lifecycle/ and data-model/.
+  This overlay never mutates the original document.
+actions:
+- target: $.info
+  description: Record the machine-readable contact and licence facts the published spec omits.
+  update:
+    x-api-evangelist:
+      profile: https://apis.io/provider/kelvin
+      harvested_from: https://app.go-kelvin.com/api/docs
+      harvested_on: '2026-08-14'
+      note: >-
+        The specification is published only as embedded Redoc state on the docs page —
+        there is no direct openapi.json/yaml URL. Every /openapi.json, /swagger.json and
+        /api-docs path on both hosts returns the application error page.
+- target: $.info
+  description: >-
+    info carries no contact and no licence block, so no generator, catalogue or agent
+    can attribute or licence-check this API from the document itself.
+  update:
+    x-missing:
+    - info.contact
+    - info.license
+    - info.termsOfService
+- target: $.servers
+  description: >-
+    Annotate the templated server. The default host is correct and reachable; the
+    template exists only to allow http in local development.
+  update:
+    x-verified:
+      host: https://app.go-kelvin.com
+      probed: '2026-08-14'
+      status: 401
+      x_api_version: 3.0.0
+- target: $.paths['/api/v3/simulations'].get
+  description: >-
+    The only untagged operation in the document — it renders outside every section of
+    the reference. Tag it with the offer it belongs to.
+  update:
+    tags:
+    - Simulateur
+- target: $.paths..*[?(@.summary)]
+  description: >-
+    No operation in the published document declares an operationId, so every code
+    generator, MCP tool forge and agent binding must synthesise names from method+path.
+    Flag it rather than invent identifiers kelvin has not committed to.
+  update:
+    x-operationid-missing: true
+- target: $.components
+  description: >-
+    Record the runtime response headers the API actually returns but does not document,
+    so an agent knows what tracing and version signal it can rely on.
+  update:
+    x-response-headers:
+      x-api-version:
+        description: >-
+          Semantic version of the serving API (3.0.0 on /api/v3/, 2.0.0 on /api/v2/) —
+          finer-grained than the URI path and the only minor/patch signal published.
+        observed: '3.0.0'
+      x-request-id:
+        description: Per-request UUID for support correlation.
+        observed: 64bc232f-96f7-46a1-a994-6ad317151a0f
+      x-runtime:
+        description: Server processing time in seconds.
+      strict-transport-security:
+        observed: max-age=63072000; includeSubDomains
+- target: $.components
+  description: >-
+    Record the cross-cutting semantics the document leaves implicit, as measured in
+    conventions/kelvin-conventions.yml.
+  update:
+    x-conventions:
+      error_envelope: '{"error": "<message>"}'
+      rfc9457: false
+      pagination: page-number with meta{current_page,total_pages,total_count}
+      idempotency: not supported — no Idempotency-Key, POSTs are not replay-safe
+      rate_limit_headers: none published or observed
+      status_codes_never_declared:
+      - 429
+      - 500
+      - 503
+      async_pattern: >-
+        submit-then-poll; 202/204 on trigger, 409 while the simulation is still
+        computing, no Retry-After
+- target: $.paths['/api/v3/simulations'].post
+  description: >-
+    The creation endpoint is not idempotent and has no client-supplied request key, so
+    a retried call creates a duplicate simulation.
+  update:
+    x-idempotent: false
+    x-retry-safe: false
+- target: $.paths['/api/v3/simulations/{simulation_id}/run'].post
+  description: Mark the asynchronous entry point and its documented polling contract.
+  update:
+    x-async: true
+    x-poll:
+      endpoints:
+      - GET /api/v3/simulations/{simulation_id}/initial-state
+      - GET /api/v3/simulations/{simulation_id}/projected-state
+      until: the endpoint stops returning 409
+    x-precondition: >-
+      PUT /api/v3/simulations/{simulation_id}/qualification must be called first.
+- target: $.paths['/api/v3/simulations/{simulation_id}/documents/commercial-offer'].post
+  description: Mark the asynchronous document generators and their polling contract.
+  update:
+    x-async: true
+    x-poll:
+      endpoint: GET /api/v3/simulations/{simulation_id}/documents/{id}
+      until: the response carries a download_url
+- target: $.paths['/api/v3/catalog/enabled/gestures'].get
+  description: >-
+    Surface the one scope kelvin names in prose so it is machine-readable. The
+    remaining scopes are unpublished — see scopes/kelvin-scopes.yml.
+  update:
+    x-required-scope: catalog:read
+- target: $.paths['/api/v3/simulations'].get
+  description: >-
+    Flag the personal data the response carries, so agent and pipeline consumers apply
+    the right handling. The client block holds a named French residential occupant with
+    email, phone, household size and income band.
+  update:
+    x-data-classification:
+      pii: true
+      fields:
+      - client.first_name
+      - client.last_name
+      - client.email
+      - client.phone_number
+      - client.household_size
+      - client.income_range
+      - client.tax_residence_department
+      regime: GDPR / RGPD

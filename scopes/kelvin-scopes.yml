@@ -1,0 +1,59 @@
+generated: '2026-08-14'
+method: derived
+source: >-
+  openapi/kelvin-api-openapi.yml — 403 response descriptions on the kelvin API v3
+  specification harvested from https://app.go-kelvin.com/api/docs
+docs: https://app.go-kelvin.com/api/docs
+api: kelvin API
+model: api-key-scopes
+oauth2: false
+note: >-
+  kelvin does not run OAuth 2.0 — there is no authorization server, no securityScheme
+  of type oauth2 and no scopes map in either spec, so derive-oauth-scopes.py finds
+  nothing. Authorization is nevertheless scope-based: the team API key carries scopes,
+  and the specification's 403 descriptions name one of them explicitly and refer to
+  others generically ("Scope manquant"). Only the scope kelvin actually names is
+  recorded below; the rest are recorded as an unenumerated set rather than guessed.
+scopes:
+- name: catalog:read
+  documented: true
+  source: >-
+    403 description "Forbidden - scope catalog:read manquant" on the three
+    /api/v3/catalog/enabled/* operations
+  grants:
+  - GET /api/v3/catalog/enabled/gestures
+  - GET /api/v3/catalog/enabled/references
+  - GET /api/v3/catalog/enabled/services
+  description: >-
+    Read the team's enabled catalogue of work gestures, services and pricing
+    references.
+unenumerated_scopes:
+  count: unknown
+  evidence:
+  - description: 'Forbidden - Scope manquant ou document désactivé pour l''équipe.'
+    operations:
+    - POST /api/v3/simulations/{simulation_id}/documents/report
+    - POST /api/v3/simulations/{simulation_id}/documents/contribution-framework
+    - POST /api/v3/simulations/{simulation_id}/documents/dimensioning-note
+    - POST /api/v3/simulations/{simulation_id}/documents/sworn-statement
+  - description: 'Forbidden - Scope manquant ou devis désactivés pour l''équipe.'
+    operations:
+    - POST /api/v3/simulations/{simulation_id}/documents/commercial-offer
+  note: >-
+    Document generation and quote generation are gated by scopes whose names kelvin
+    does not publish, and the same 403 also fires when the feature is merely disabled
+    for the team. A caller cannot determine from the response which of the two applies,
+    and cannot request a scope by name because no name exists in the documentation.
+entitlement_tiers:
+  note: >-
+    The specification's tags double as commercial offers — "Endpoints disponibles dans
+    l'offre Simulateur", "Endpoints disponibles dans l'offre Qualification", plus a
+    Documents group. Access therefore depends on the purchased offer as well as the
+    scope on the key. See plans/kelvin-plans-pricing.yml.
+  tiers:
+  - name: Simulateur
+    operations: 6
+  - name: Qualification
+    operations: 12
+  - name: Documents
+    operations: 7

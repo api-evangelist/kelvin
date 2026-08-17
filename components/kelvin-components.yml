@@ -1,0 +1,100 @@
+generated: '2026-08-14'
+method: searched
+source: >-
+  https://www.go-kelvin.com/ressources/comment-integrer-le-simulateur-dpe-kelvin,
+  https://www.go-kelvin.com/simulateur-budget-travaux-adresse,
+  https://www.go-kelvin.com/pour-les-plateformes-de-mise-en-relation and the
+  polygon-selection iframe referenced in info.description of the kelvin API v3 spec
+api: kelvin API
+note: >-
+  kelvin's primary distribution channel is not an SDK — it is embeddable, hosted UI.
+  The company ships no client library on any registry, and instead gives customers a
+  hosted simulator they place on their own site plus an iframe component the API
+  documentation itself tells integrators to embed. No component here is distributed as
+  an npm/CDN package: each is a hosted surface reached by URL or iframe, and the
+  embed snippets are issued per customer rather than published, so no verbatim code is
+  recorded below.
+families:
+- name: Simulateur kelvin°
+  description: >-
+    The address-based renovation simulator. A prospect enters an address, and within a
+    minute the component returns renovation scenarios, available public aid and a
+    budget estimate, converting the visitor into a qualified contact for the customer's
+    sales team.
+  url: https://www.go-kelvin.com/simulateur-budget-travaux-adresse
+  distribution: hosted
+  variants:
+  - name: Hosted link
+    mode: standalone-url
+    description: >-
+      A personalised web address for the customer's simulator, usable directly in a
+      site CTA, a social post or an ad campaign. No code required.
+  - name: Address widget + redirect
+    mode: embedded-widget
+    description: >-
+      An address-entry widget placed on the customer's own page that hands off to the
+      hosted simulator.
+  - name: iframe embed
+    mode: iframe
+    description: >-
+      The whole simulator experience runs inside a frame on the customer's domain, or
+      inside their own software, so the visitor never leaves the site. kelvin's
+      resources page states the full iframe integration documentation is supplied on
+      request rather than published.
+  - name: API-only
+    mode: api
+    description: >-
+      For customers building their own interface, the same AI engine is reachable
+      through the kelvin API — the simulator's UI is skipped and only the building-data
+      enrichment and scenario generation are consumed.
+    spec: openapi/kelvin-api-openapi.yml
+- name: Simulateur DPE
+  description: >-
+    A narrower calculator estimating a dwelling's DPE class and the class gain
+    achievable from a given set of works.
+  url: https://www.go-kelvin.com/simulateur-dpe
+  distribution: hosted
+- name: Iframe de sélection de polygone
+  description: >-
+    An interactive map component that lets a user pick their building visually and
+    yields the latitude, longitude and ban_id required by POST /api/v3/simulations. The
+    API description points integrators at it directly — it is the intended companion to
+    the simulation-creation endpoint, not an optional extra.
+  docs: https://app.go-kelvin.com/docs/simulator-map-iframe
+  distribution: iframe
+  gated: true
+  gate:
+    probed_url: https://app.go-kelvin.com/docs/simulator-map-iframe
+    status: 401
+    mechanism: HTTP Basic authentication
+    checked: '2026-08-14'
+    note: >-
+      The component's documentation sits behind HTTP Basic auth even though the API
+      reference that links to it is public. An integrator reading the public spec is
+      told to use a component whose documentation they cannot open.
+- name: Calculateurs gratuits
+  description: >-
+    Free, no-account web calculators kelvin hosts on its marketing site: CEE amount per
+    work gesture, MaPrimeRénov' amount by income and works, and a CEE-delegatee
+    directory. Hosted pages, not embeddable components.
+  urls:
+  - https://www.go-kelvin.com/outils-gratuits
+  - https://www.go-kelvin.com/outils-gratuits/calculette-cee
+  - https://www.go-kelvin.com/outils-gratuits/calculette-mpr
+  - https://www.go-kelvin.com/annuaire-ceee
+  distribution: hosted
+loader_libraries: []
+downstream_integrations:
+  note: >-
+    kelvin documents delivering qualified leads into a customer's CRM "via Zapier ou
+    API". No public Zapier app listing exists (zapier.com/apps/kelvin/integrations
+    returns 404 as of 2026-08-14), so the connector appears to be private or
+    invite-only. The documented Zapier payload fields — simulation id, creation date,
+    contact details, property type, address, Google Maps link, simulation URL, gclid and
+    fbclid — match the Simulation + Client + TrackingContext entities in
+    data-model/kelvin-data-model.yml.
+  evidence:
+  - url: https://www.go-kelvin.com/ressources/comment-suivre-la-performance-de-mon-simulateur-kelvin
+    status: 200
+  - url: https://zapier.com/apps/kelvin/integrations
+    status: 404

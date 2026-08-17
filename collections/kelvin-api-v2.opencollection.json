@@ -1,0 +1,387 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "kelvin API",
+    "version": "v2"
+  },
+  "request": {
+    "auth": {
+      "type": "bearer",
+      "token": "{{bearerToken}}"
+    }
+  },
+  "items": [
+    {
+      "info": {
+        "name": "Qualification",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Rechercher des DPE par clé d'interopérabilité ou par numéro DPE.",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "{protocol}://{defaultHost}/api/v2/dpes",
+            "params": [
+              {
+                "name": "dpe_id",
+                "value": "2331E2555868X",
+                "type": "query"
+              },
+              {
+                "name": "building_type",
+                "value": "house",
+                "type": "query",
+                "description": "Le type de bâtiment:\n * `apartment` \n * `house` \n * `building` \n * `unknown` \n "
+              },
+              {
+                "name": "ban_id",
+                "value": "31157_0790_00009",
+                "type": "query"
+              },
+              {
+                "name": "surface",
+                "value": "100",
+                "type": "query"
+              },
+              {
+                "name": "report_date",
+                "value": "2024-01-01",
+                "type": "query"
+              },
+              {
+                "name": "energy_class",
+                "value": "E",
+                "type": "query"
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Cet endpoint permet de rechercher des DPE par clé d'interopérabilité ou par numéro de DPE.\n\n**Fonctionnalités :** Il est obligatoire de fournir au moins un des deux paramètres \"ban_id\" ou \"dpe_id\".\n- **Recherche par clé d'interopérabilité** : Il est possible de rechercher les DPE par la clé d'interopérabilité (ban_id) d'une adresse. Par exemple \"31157_0790_00009\".\n- **Recherche par Numéro de DPE** : Il est également possible de rechercher un DPE en utilisant son numéro unique. Cela permet de réc"
+        },
+        {
+          "info": {
+            "name": "Récupérer l'état initial",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "{protocol}://{defaultHost}/api/v2/simulations/:simulation_id/initial-state",
+            "params": [
+              {
+                "name": "simulation_id",
+                "value": "hjjcm1qp28",
+                "type": "path",
+                "description": "L'identifiant de simulation renvoyé par l'appel au endpoint créer"
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Les informations de l'état initial."
+        },
+        {
+          "info": {
+            "name": "Mettre à jour l'état initial",
+            "type": "http"
+          },
+          "http": {
+            "method": "PUT",
+            "url": "{protocol}://{defaultHost}/api/v2/simulations/:simulation_id/initial-state",
+            "params": [
+              {
+                "name": "simulation_id",
+                "value": "hjjcm1qp28",
+                "type": "path",
+                "description": "L'identifiant de simulation renvoyé par l'appel au endpoint créer"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            },
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Endpoint pour mettre à jour les informations de l'état initial"
+        },
+        {
+          "info": {
+            "name": "Créer un plan de rénovation personnalisé",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "{protocol}://{defaultHost}/api/v2/simulations/:simulation_id/projected-state/renovation-plans",
+            "params": [
+              {
+                "name": "simulation_id",
+                "value": "hjjcm1qp28",
+                "type": "path",
+                "description": "L'identifiant de simulation renvoyé par l'appel au endpoint créer"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            },
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Crée un plan de rénovation basé sur une sélection spécifique de gestes. L'opération est asynchrone : l'API retourne immédiatement une réponse confirmant la création, mais le plan complet n'est pas disponible dans l'instant. Pour consulter le plan généré une fois le traitement terminé, utilisez le endpoint 'Récupérer le plan de rénovation personnalisé'."
+        },
+        {
+          "info": {
+            "name": "Récupérer le plan de rénovation personnalisé",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "{protocol}://{defaultHost}/api/v2/simulations/:simulation_id/projected-state/renovation-plans/:renovation_plan_id",
+            "params": [
+              {
+                "name": "simulation_id",
+                "value": "hjjcm1qp28",
+                "type": "path",
+                "description": "L'identifiant de simulation renvoyé par l'appel au endpoint créer"
+              },
+              {
+                "name": "renovation_plan_id",
+                "value": "hjjcm1qp28",
+                "type": "path",
+                "description": "L'identifiant du plan de rénovation personnalisé."
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Les informations du plan de rénovation personnalisé."
+        },
+        {
+          "info": {
+            "name": "Récupérer le statut du rapport PDF",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "{protocol}://{defaultHost}/api/v2/simulations/:simulation_id/report",
+            "params": [
+              {
+                "name": "simulation_id",
+                "value": "hjjcm1qp28",
+                "type": "path",
+                "description": "L'identifiant de simulation renvoyé par l'appel au endpoint créer"
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Le statut de la génération du rapport PDF et l'URL de téléchargement."
+        },
+        {
+          "info": {
+            "name": "Lancer la génération du rapport PDF",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "{protocol}://{defaultHost}/api/v2/simulations/:simulation_id/report",
+            "params": [
+              {
+                "name": "simulation_id",
+                "value": "hjjcm1qp28",
+                "type": "path",
+                "description": "L'identifiant de simulation renvoyé par l'appel au endpoint créer"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            },
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Endpoint pour démarrer la génération asynchrone du rapport PDF de la simulation. Le rapport peut optionnellement inclure les informations du client."
+        }
+      ]
+    },
+    {
+      "info": {
+        "name": "Default",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Lister les simulations",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "{protocol}://{defaultHost}/api/v2/simulations",
+            "params": [
+              {
+                "name": "status",
+                "value": "with_contact_details",
+                "type": "query",
+                "description": "Filtrer les simulations avec des informations de contact:\n * `with_contact_details` \n "
+              },
+              {
+                "name": "page",
+                "value": "1",
+                "type": "query"
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Endpoint pour lister les simulations."
+        }
+      ]
+    },
+    {
+      "info": {
+        "name": "Simulateur",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Créer une simulation",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "{protocol}://{defaultHost}/api/v2/simulations",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            },
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Endpoint pour créer une simulation à partir d'un ban_id et des coordonnées GPS."
+        },
+        {
+          "info": {
+            "name": "Récupérer les informations de la propriété",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "{protocol}://{defaultHost}/api/v2/simulations/:simulation_id/housing",
+            "params": [
+              {
+                "name": "simulation_id",
+                "value": "hjjcm1qp28",
+                "type": "path",
+                "description": "L'identifiant de simulation renvoyé par l'appel au endpoint créer"
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Les informations de la propriété."
+        },
+        {
+          "info": {
+            "name": "Mettre à jour les informations de la propriété",
+            "type": "http"
+          },
+          "http": {
+            "method": "PUT",
+            "url": "{protocol}://{defaultHost}/api/v2/simulations/:simulation_id/housing",
+            "params": [
+              {
+                "name": "simulation_id",
+                "value": "hjjcm1qp28",
+                "type": "path",
+                "description": "L'identifiant de simulation renvoyé par l'appel au endpoint créer"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            },
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Endpoint pour mettre à jour les informations de la propriété"
+        },
+        {
+          "info": {
+            "name": "Lancer la simulation",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "{protocol}://{defaultHost}/api/v2/simulations/:simulation_id/run",
+            "params": [
+              {
+                "name": "simulation_id",
+                "value": "hjjcm1qp28",
+                "type": "path",
+                "description": "L'identifiant de simulation renvoyé par l'appel au endpoint créer"
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Endpoint pour lancer la simulation."
+        },
+        {
+          "info": {
+            "name": "Récupérer l'état projeté",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "{protocol}://{defaultHost}/api/v2/simulations/:simulation_id/projected-state",
+            "params": [
+              {
+                "name": "simulation_id",
+                "value": "hjjcm1qp28",
+                "type": "path",
+                "description": "L'identifiant de simulation renvoyé par l'appel au endpoint créer"
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Les informations de l'état projeté."
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

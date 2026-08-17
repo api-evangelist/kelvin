@@ -1,0 +1,765 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "kelvin API",
+    "version": "v3"
+  },
+  "request": {
+    "auth": {
+      "type": "bearer",
+      "token": "{{bearerToken}}"
+    }
+  },
+  "items": [
+    {
+      "info": {
+        "name": "Qualification",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Lister les gestes activés pour l'équipe",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "{protocol}://{defaultHost}/api/v3/catalog/enabled/gestures",
+            "params": [
+              {
+                "name": "gesture_technical_ids",
+                "value": "roof_windows_double_glazed",
+                "type": "query",
+                "description": "Filtre optionnel : limite le résultat aux gestes correspondant à ces identifiants techniques."
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Retourne la liste des gestes de rénovation activés pour l'équipe.\n\nUn geste est considéré comme activé tant qu'il n'a pas été explicitement désactivé\npour l'équipe (ou l'une de ses équipes parentes) dans les paramètres du catalogue.\n\nChaque geste inclut, le cas échéant, sa prestation par défaut (`default_service`)\nainsi que la référence par défaut associée pour l'équipe.\n"
+        },
+        {
+          "info": {
+            "name": "Lister les références activées pour l'équipe",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "{protocol}://{defaultHost}/api/v3/catalog/enabled/references",
+            "params": [
+              {
+                "name": "service_technical_ids",
+                "value": "french_doors_double_glazed_wood_aluminium",
+                "type": "query",
+                "description": "Filtre par identifiants techniques de prestations."
+              },
+              {
+                "name": "gestures_technical_ids",
+                "value": "french_doors_double_glazed",
+                "type": "query",
+                "description": "Filtre par identifiants techniques de gestes."
+              },
+              {
+                "name": "reference_ids",
+                "value": "919ce243-1385-46d7-afd6-41ea8629a40d",
+                "type": "query",
+                "description": "Filtre par identifiants (UUID) de références."
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Retourne la liste des références (produits) activées pour l'équipe.\n\nAu moins un filtre est requis parmi `service_technical_ids`, `gestures_technical_ids`\nou `reference_ids`. Ce endpoint s'inscrit dans le parcours de qualification :\nrécupérer les gestes activés, puis les prestations activées, puis les références activées\npour la prestation choisie.\n\nChaque référence inclut son prix pour l'équipe (héritant de la hiérarchie d'équipes le cas échéant).\n"
+        },
+        {
+          "info": {
+            "name": "Lister les prestations activées pour l'équipe",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "{protocol}://{defaultHost}/api/v3/catalog/enabled/services",
+            "params": [
+              {
+                "name": "service_technical_ids",
+                "value": "french_doors_double_glazed_wood_aluminium",
+                "type": "query",
+                "description": "Filtre optionnel : limite le résultat aux prestations correspondant à ces identifiants techniques."
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Retourne la liste des prestations (services) activées pour l'équipe.\n\nUne prestation est considérée comme activée tant qu'elle n'a pas été explicitement\ndésactivée pour l'équipe (ou l'une de ses équipes parentes) dans les paramètres du catalogue.\n\nChaque prestation inclut, le cas échéant, sa référence par défaut (`default_reference`)\npour l'équipe.\n"
+        },
+        {
+          "info": {
+            "name": "Rechercher des DPE par clé d'interopérabilité ou par numéro DPE.",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "{protocol}://{defaultHost}/api/v3/dpes",
+            "params": [
+              {
+                "name": "dpe_id",
+                "value": "2331E2555868X",
+                "type": "query"
+              },
+              {
+                "name": "building_type",
+                "value": "house",
+                "type": "query",
+                "description": "Le type de bâtiment:\n * `apartment` \n * `house` \n * `building` \n * `unknown` \n "
+              },
+              {
+                "name": "ban_id",
+                "value": "31157_0790_00009",
+                "type": "query"
+              },
+              {
+                "name": "surface",
+                "value": "100",
+                "type": "query"
+              },
+              {
+                "name": "report_date",
+                "value": "2024-01-01",
+                "type": "query"
+              },
+              {
+                "name": "energy_class",
+                "value": "E",
+                "type": "query"
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Cet endpoint permet de rechercher des DPE par clé d'interopérabilité ou par numéro de DPE.\n\n**Fonctionnalités :** Il est obligatoire de fournir au moins un des deux paramètres \"ban_id\" ou \"dpe_id\".\n- **Recherche par clé d'interopérabilité** : Il est possible de rechercher les DPE par la clé d'interopérabilité (ban_id) d'une adresse. Par exemple \"31157_0790_00009\".\n- **Recherche par Numéro de DPE** : Il est également possible de rechercher un DPE en utilisant son numéro unique. Cela permet de réc"
+        },
+        {
+          "info": {
+            "name": "Récupérer l'état initial",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "{protocol}://{defaultHost}/api/v3/simulations/:simulation_id/initial-state",
+            "params": [
+              {
+                "name": "simulation_id",
+                "value": "hjjcm1qp28",
+                "type": "path",
+                "description": "L'identifiant de simulation renvoyé par l'appel au endpoint créer"
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Les informations de l'état initial."
+        },
+        {
+          "info": {
+            "name": "Mettre à jour l'état initial",
+            "type": "http"
+          },
+          "http": {
+            "method": "PUT",
+            "url": "{protocol}://{defaultHost}/api/v3/simulations/:simulation_id/initial-state",
+            "params": [
+              {
+                "name": "simulation_id",
+                "value": "hjjcm1qp28",
+                "type": "path",
+                "description": "L'identifiant de simulation renvoyé par l'appel au endpoint créer"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            },
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Endpoint pour mettre à jour les informations de l'état initial"
+        },
+        {
+          "info": {
+            "name": "Créer un plan de rénovation personnalisé",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "{protocol}://{defaultHost}/api/v3/simulations/:simulation_id/projected-state/renovation-plans",
+            "params": [
+              {
+                "name": "simulation_id",
+                "value": "hjjcm1qp28",
+                "type": "path",
+                "description": "L'identifiant de simulation renvoyé par l'appel au endpoint créer"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            },
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Crée un plan de rénovation basé sur une sélection spécifique de gestes. L'opération est asynchrone : l'API retourne immédiatement une réponse confirmant la création, mais le plan complet n'est pas disponible dans l'instant. Pour consulter le plan généré une fois le traitement terminé, utilisez le endpoint 'Récupérer le plan de rénovation personnalisé'."
+        },
+        {
+          "info": {
+            "name": "Récupérer le plan de rénovation personnalisé",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "{protocol}://{defaultHost}/api/v3/simulations/:simulation_id/projected-state/renovation-plans/:renovation_plan_id",
+            "params": [
+              {
+                "name": "simulation_id",
+                "value": "hjjcm1qp28",
+                "type": "path",
+                "description": "L'identifiant de simulation renvoyé par l'appel au endpoint créer"
+              },
+              {
+                "name": "renovation_plan_id",
+                "value": "hjjcm1qp28",
+                "type": "path",
+                "description": "L'identifiant du plan de rénovation personnalisé."
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Les informations du plan de rénovation personnalisé."
+        },
+        {
+          "info": {
+            "name": "Modifier un plan de rénovation personnalisé",
+            "type": "http"
+          },
+          "http": {
+            "method": "PATCH",
+            "url": "{protocol}://{defaultHost}/api/v3/simulations/:simulation_id/projected-state/renovation-plans/:renovation_plan_id",
+            "params": [
+              {
+                "name": "simulation_id",
+                "value": "hjjcm1qp28",
+                "type": "path",
+                "description": "L'identifiant de simulation renvoyé par l'appel au endpoint créer"
+              },
+              {
+                "name": "renovation_plan_id",
+                "value": "hjjcm1qp28",
+                "type": "path",
+                "description": "L'identifiant du plan de rénovation personnalisé à modifier."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            },
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Modifie un plan de rénovation existant en mode avancé (choix de la prestation et de la référence catalogue). Un nouveau plan est créé à partir de l'original afin de conserver l'historique. L'opération est asynchrone : consultez le plan via le endpoint 'Récupérer le plan de rénovation personnalisé' une fois le traitement terminé."
+        },
+        {
+          "info": {
+            "name": "Récupérer le statut du rapport PDF",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "{protocol}://{defaultHost}/api/v3/simulations/:simulation_id/report",
+            "params": [
+              {
+                "name": "simulation_id",
+                "value": "hjjcm1qp28",
+                "type": "path",
+                "description": "L'identifiant de simulation renvoyé par l'appel au endpoint créer"
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Le statut de la génération du rapport PDF et l'URL de téléchargement."
+        },
+        {
+          "info": {
+            "name": "Lancer la génération du rapport PDF",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "{protocol}://{defaultHost}/api/v3/simulations/:simulation_id/report",
+            "params": [
+              {
+                "name": "simulation_id",
+                "value": "hjjcm1qp28",
+                "type": "path",
+                "description": "L'identifiant de simulation renvoyé par l'appel au endpoint créer"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            },
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Endpoint pour démarrer la génération asynchrone du rapport PDF de la simulation. Le rapport peut optionnellement inclure les informations du client."
+        }
+      ]
+    },
+    {
+      "info": {
+        "name": "Default",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Lister les simulations",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "{protocol}://{defaultHost}/api/v3/simulations",
+            "params": [
+              {
+                "name": "status",
+                "value": "with_contact_details",
+                "type": "query",
+                "description": "Filtrer les simulations avec des informations de contact:\n * `with_contact_details` \n "
+              },
+              {
+                "name": "page",
+                "value": "1",
+                "type": "query"
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Endpoint pour lister les simulations."
+        }
+      ]
+    },
+    {
+      "info": {
+        "name": "Simulateur",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Créer une simulation",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "{protocol}://{defaultHost}/api/v3/simulations",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            },
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Endpoint pour créer une simulation à partir d'un ban_id et des coordonnées GPS."
+        },
+        {
+          "info": {
+            "name": "Récupérer les informations de la propriété",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "{protocol}://{defaultHost}/api/v3/simulations/:simulation_id/housing",
+            "params": [
+              {
+                "name": "simulation_id",
+                "value": "hjjcm1qp28",
+                "type": "path",
+                "description": "L'identifiant de simulation renvoyé par l'appel au endpoint créer"
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Les informations de la propriété."
+        },
+        {
+          "info": {
+            "name": "Mettre à jour les informations de la propriété",
+            "type": "http"
+          },
+          "http": {
+            "method": "PUT",
+            "url": "{protocol}://{defaultHost}/api/v3/simulations/:simulation_id/housing",
+            "params": [
+              {
+                "name": "simulation_id",
+                "value": "hjjcm1qp28",
+                "type": "path",
+                "description": "L'identifiant de simulation renvoyé par l'appel au endpoint créer"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            },
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Endpoint pour mettre à jour les informations de la propriété"
+        },
+        {
+          "info": {
+            "name": "Qualifier le profil de l'utilisateur",
+            "type": "http"
+          },
+          "http": {
+            "method": "PUT",
+            "url": "{protocol}://{defaultHost}/api/v3/simulations/:simulation_id/qualification",
+            "params": [
+              {
+                "name": "simulation_id",
+                "value": "hjjcm1qp28",
+                "type": "path",
+                "description": "L'identifiant de la simulation."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            },
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Enregistre les informations de qualification du profil utilisateur.\n\n**Comportement de `primary_residence` selon `profile` :**\n- `owner_resident` : `primary_residence` est automatiquement défini à `true` (la valeur fournie est ignorée).\n- `owner_non_resident` : `primary_residence` est automatiquement défini à `false` (la valeur fournie est ignorée).\n- `renter` ou `lessor` : `primary_residence` est **obligatoire** ; son absence retourne une erreur `400`.\n\n**Effet sur la simulation :**\nAprès une m"
+        },
+        {
+          "info": {
+            "name": "Lancer la simulation",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "{protocol}://{defaultHost}/api/v3/simulations/:simulation_id/run",
+            "params": [
+              {
+                "name": "simulation_id",
+                "value": "hjjcm1qp28",
+                "type": "path",
+                "description": "L'identifiant de simulation renvoyé par l'appel au endpoint créer"
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Endpoint pour lancer la simulation."
+        },
+        {
+          "info": {
+            "name": "Récupérer l'état projeté",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "{protocol}://{defaultHost}/api/v3/simulations/:simulation_id/projected-state",
+            "params": [
+              {
+                "name": "simulation_id",
+                "value": "hjjcm1qp28",
+                "type": "path",
+                "description": "L'identifiant de simulation renvoyé par l'appel au endpoint créer"
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Les informations de l'état projeté."
+        }
+      ]
+    },
+    {
+      "info": {
+        "name": "Documents",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Lister les documents de la simulation",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "{protocol}://{defaultHost}/api/v3/simulations/:simulation_id/documents",
+            "params": [
+              {
+                "name": "simulation_id",
+                "value": "hjjcm1qp28",
+                "type": "path",
+                "description": "L'identifiant de simulation renvoyé par l'appel au endpoint créer"
+              },
+              {
+                "name": "full",
+                "value": "",
+                "type": "query",
+                "description": "Renvoie tous les documents au lieu du seul dernier document."
+              },
+              {
+                "name": "id",
+                "value": "",
+                "type": "query",
+                "description": "Renvoie uniquement le document correspondant à cet identifiant."
+              },
+              {
+                "name": "type",
+                "value": "",
+                "type": "query",
+                "description": "Ne renvoie que les documents du type donné.:\n * `report` \n * `commercial_offer` \n * `contribution_framework` \n * `dimensioning_note` \n * `sworn_statement` \n "
+              },
+              {
+                "name": "begin",
+                "value": "",
+                "type": "query",
+                "description": "Ne renvoie que les documents générés à partir de cette date (ISO 8601)."
+              },
+              {
+                "name": "end",
+                "value": "",
+                "type": "query",
+                "description": "Ne renvoie que les documents générés jusqu'à cette date (ISO 8601)."
+              },
+              {
+                "name": "page",
+                "value": "",
+                "type": "query",
+                "description": "Numéro de page."
+              },
+              {
+                "name": "per_page",
+                "value": "",
+                "type": "query",
+                "description": "Nombre de documents par page (par défaut 1000)."
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Liste paginée des documents générés pour la simulation (rapports PDF, offres commerciales, cadres de contribution, notes de dimensionnement, attestations sur l'honneur). Par défaut, seul le dernier document est renvoyé. Utilisez `full=true` pour tous les documents, `id` pour un document précis, `type` pour filtrer par type de document, et `begin`/`end` pour filtrer par date de génération.\n"
+        },
+        {
+          "info": {
+            "name": "Lancer la génération du document : Rapport complet",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "{protocol}://{defaultHost}/api/v3/simulations/:simulation_id/documents/report",
+            "params": [
+              {
+                "name": "simulation_id",
+                "value": "hjjcm1qp28",
+                "type": "path",
+                "description": "L'identifiant de simulation renvoyé par l'appel au endpoint créer"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            },
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Lance la génération asynchrone du document PDF « Rapport complet » pour la simulation. Renvoie l'identifiant de la génération à utiliser pour interroger son statut. Répond 403 si le document dépend d'une configuration d'équipe désactivée, et 422 si les données de la simulation ne permettent pas de produire le document."
+        },
+        {
+          "info": {
+            "name": "Lancer la génération du document : Cadre de contribution",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "{protocol}://{defaultHost}/api/v3/simulations/:simulation_id/documents/contribution-framework",
+            "params": [
+              {
+                "name": "simulation_id",
+                "value": "hjjcm1qp28",
+                "type": "path",
+                "description": "L'identifiant de simulation renvoyé par l'appel au endpoint créer"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            },
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Lance la génération asynchrone du document PDF « Cadre de contribution » pour la simulation. Renvoie l'identifiant de la génération à utiliser pour interroger son statut. Répond 403 si le document dépend d'une configuration d'équipe désactivée, et 422 si les données de la simulation ne permettent pas de produire le document."
+        },
+        {
+          "info": {
+            "name": "Lancer la génération du document : Note de dimensionnement",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "{protocol}://{defaultHost}/api/v3/simulations/:simulation_id/documents/dimensioning-note",
+            "params": [
+              {
+                "name": "simulation_id",
+                "value": "hjjcm1qp28",
+                "type": "path",
+                "description": "L'identifiant de simulation renvoyé par l'appel au endpoint créer"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            },
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Lance la génération asynchrone du document PDF « Note de dimensionnement » pour la simulation. Renvoie l'identifiant de la génération à utiliser pour interroger son statut. Répond 403 si le document dépend d'une configuration d'équipe désactivée, et 422 si les données de la simulation ne permettent pas de produire le document."
+        },
+        {
+          "info": {
+            "name": "Lancer la génération du document : Attestation sur l'honneur",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "{protocol}://{defaultHost}/api/v3/simulations/:simulation_id/documents/sworn-statement",
+            "params": [
+              {
+                "name": "simulation_id",
+                "value": "hjjcm1qp28",
+                "type": "path",
+                "description": "L'identifiant de simulation renvoyé par l'appel au endpoint créer"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            },
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Lance la génération asynchrone du document PDF « Attestation sur l'honneur » pour la simulation. Renvoie l'identifiant de la génération à utiliser pour interroger son statut. Répond 403 si le document dépend d'une configuration d'équipe désactivée, et 422 si les données de la simulation ne permettent pas de produire le document."
+        },
+        {
+          "info": {
+            "name": "Lancer la génération du document : Offre commerciale",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "{protocol}://{defaultHost}/api/v3/simulations/:simulation_id/documents/commercial-offer",
+            "params": [
+              {
+                "name": "simulation_id",
+                "value": "hjjcm1qp28",
+                "type": "path",
+                "description": "L'identifiant de simulation renvoyé par l'appel au endpoint créer"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            },
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Crée un devis à partir d'un plan de rénovation, puis lance la génération asynchrone du PDF « Offre commerciale ». Renvoie l'identifiant de la génération à utiliser pour interroger son statut, ainsi que l'identifiant du devis créé. Répond 403 si les devis sont désactivés pour l'équipe, et 422 si le plan de rénovation est inconnu."
+        },
+        {
+          "info": {
+            "name": "Récupérer le statut d'une génération de document",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "{protocol}://{defaultHost}/api/v3/simulations/:simulation_id/documents/:id",
+            "params": [
+              {
+                "name": "simulation_id",
+                "value": "hjjcm1qp28",
+                "type": "path",
+                "description": "L'identifiant de simulation renvoyé par l'appel au endpoint créer"
+              },
+              {
+                "name": "id",
+                "value": "op1a2b3c4d",
+                "type": "path",
+                "description": "L'identifiant de génération renvoyé par le endpoint de lancement"
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Récupère le statut de la génération d'un document et l'URL de téléchargement lorsqu'il est prêt."
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

@@ -1,0 +1,163 @@
+generated: '2026-08-14'
+method: derived
+source: >-
+  openapi/kelvin-api-openapi.yml + openapi/kelvin-api-v2-openapi.yml, live response
+  headers from https://app.go-kelvin.com/api/v3/simulations (401, 2026-08-14),
+  security/kelvin-domain-security.yml, and a read of
+  https://www.go-kelvin.com/gestion-des-donnees and
+  https://www.go-kelvin.com/mentions-legales
+api: kelvin API
+note: >-
+  Cross-cutting and industry standards asserted against what kelvin actually publishes.
+  Every `conforms: false` below is a recorded absence, not a defect claim. kelvin
+  publishes no certification, no compliance page and no trust centre, so no Compliance
+  pointer is emitted for this repo.
+standards:
+- id: openapi
+  name: OpenAPI Specification
+  version: 3.1.0
+  conforms: true
+  evidence: >-
+    Both published documents declare openapi 3.1.0 and parse cleanly — v3 with 20 paths
+    / 25 operations, v2 with 13 operations. Rendered by Redoc 2.5.0 at
+    https://app.go-kelvin.com/api/docs with a working version selector.
+- id: openapi-operationid
+  name: OpenAPI operationId coverage
+  conforms: false
+  evidence: >-
+    Not one of the 25 v3 operations declares an operationId. Every code generator, MCP
+    tool forge and agent binding therefore has to synthesise names from method+path.
+    The cheapest single fix available on this API.
+- id: openapi-tags
+  name: OpenAPI tag coverage
+  conforms: false
+  evidence: >-
+    Three tags are declared (Simulateur, Qualification, Documents) and used, but
+    GET /api/v3/simulations — the collection entry point — carries no tag at all in
+    either v2 or v3, so it renders outside every section of the reference.
+- id: oauth2
+  name: OAuth 2.0
+  conforms: false
+  evidence: >-
+    No oauth2 securityScheme, no authorization server, no /.well-known/
+    oauth-authorization-server. Authentication is a static per-team bearer key
+    prefixed team-api-key-.
+- id: oidc
+  name: OpenID Connect
+  conforms: false
+  evidence: No openIdConnect scheme and no discovery document on either host.
+- id: rfc9457
+  name: RFC 9457 Problem Details for HTTP APIs
+  conforms: false
+  evidence: >-
+    Errors are a flat {"error": "<message>"} object served as application/json. No
+    application/problem+json, no type/title/detail/instance, no machine-readable code.
+    See errors/kelvin-problem-types.yml.
+- id: rfc8594
+  name: RFC 8594 Sunset header / deprecation signalling
+  conforms: false
+  evidence: >-
+    v2 remains served alongside v3 with no Sunset header, no Deprecation header, no
+    `deprecated: true` on any operation and no published end-of-life date.
+- id: rfc9116
+  name: RFC 9116 security.txt
+  conforms: false
+  evidence: >-
+    /.well-known/security.txt returns 404 on go-kelvin.com and a soft-200 HTML error
+    page on app.go-kelvin.com. See well-known/kelvin-well-known.yml.
+- id: rate-limit-headers
+  name: RateLimit header fields for HTTP
+  conforms: false
+  evidence: >-
+    No RateLimit-*, X-RateLimit-* or Retry-After on the live response, and no 429
+    declared anywhere in either spec.
+- id: idempotency
+  name: Idempotency key for safe retries
+  conforms: false
+  evidence: >-
+    No Idempotency-Key header or equivalent. POST /simulations and the five document
+    generators are not replay-safe.
+- id: pagination
+  name: Pagination
+  conforms: true
+  evidence: >-
+    Page-number pagination with `page` (+ `per_page` on documents) and a
+    meta{current_page,total_pages,total_count} envelope. Consistent across the two
+    collection endpoints, though there is no Link header and no cursor option.
+- id: json-schema
+  name: JSON Schema (2020-12, via OpenAPI 3.1)
+  conforms: true
+  evidence: >-
+    Schemas are inline JSON Schema with nullable union types (["string","null"]),
+    enums, formats (date-time, uri) and examples on most fields. Only two schemas are
+    lifted into components, so reuse is minimal.
+- id: async-callback
+  name: Async completion callback / webhooks
+  conforms: false
+  evidence: >-
+    Document and simulation generation are asynchronous but completion is polled, not
+    pushed. No `callbacks`, no `webhooks` block, no event catalogue.
+- id: tls
+  name: TLS + HSTS
+  conforms: true
+  evidence: >-
+    TLS 1.3 on both hosts; app.go-kelvin.com returns strict-transport-security
+    max-age=63072000; includeSubDomains, together with nosniff, SAMEORIGIN and
+    strict-origin-when-cross-origin.
+- id: dnssec
+  name: DNSSEC
+  conforms: false
+  evidence: 'security/kelvin-domain-security.yml: dnssec false, no CAA records.'
+- id: dmarc
+  name: DMARC
+  conforms: partial
+  evidence: >-
+    SPF and DMARC records exist for go-kelvin.com, but the DMARC policy is p=none —
+    monitoring only, nothing is enforced.
+- id: gdpr
+  name: GDPR / RGPD
+  conforms: claimed
+  evidence: >-
+    kelvin publishes a French personal-data page
+    (https://www.go-kelvin.com/gestion-des-donnees), a cookie-management page and legal
+    notices, and the API carries direct personal data (client name, email, phone,
+    household size, income band) — but no DPA, no sub-processor list, no data-residency
+    statement and no privacy contact in machine-readable form were found. Claimed by
+    policy page only; not verified.
+- id: soc2
+  name: SOC 2
+  conforms: false
+  evidence: No certification, audit report or trust centre published.
+- id: iso27001
+  name: ISO/IEC 27001
+  conforms: false
+  evidence: No certification published.
+sector_standards:
+  note: >-
+    kelvin operates inside the French energy-renovation regulatory frame. These are
+    domain reference systems the API is aligned to, not conformance certifications.
+  aligned_to:
+  - id: dpe-ademe
+    name: DPE / ADEME reference system
+    evidence: >-
+      The v3 changelog states the generator, hot-water, energy, wall-material and
+      ventilation enums were revised "pour correspondre au référentiel DPE/ADEME". The
+      model returns energy_rating and carbon_rating on the A–G DPE scale with
+      kWh/m²/an and kg CO₂/m²/an.
+  - id: maprimerenov
+    name: MaPrimeRénov'
+    evidence: FinancialSupport.mpr is a first-class field on every plan and work item.
+  - id: cee
+    name: Certificats d'Économies d'Énergie (CEE)
+    evidence: >-
+      FinancialSupport.cee, plus a contribution-framework ("cadre de contribution") and
+      a sworn-statement ("attestation sur l'honneur") document generator — the two CEE
+      paperwork artefacts.
+  - id: ecoptz
+    name: Éco-prêt à taux zéro
+    evidence: FinancialSupport.ecoptz.
+  - id: ban
+    name: Base Adresse Nationale
+    evidence: >-
+      ban_id is the address interoperability key used to create a simulation and to
+      search DPEs.

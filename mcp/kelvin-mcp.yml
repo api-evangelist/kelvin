@@ -1,0 +1,173 @@
+generated: '2026-08-14'
+method: derived
+source: >-
+  openapi/kelvin-api-openapi.yml (kelvin API v3). Searched first for a published MCP
+  server: no /mcp, /sse or /messages endpoint on go-kelvin.com or app.go-kelvin.com, no
+  npm/PyPI package, no GitHub organisation, no mention of MCP in the API reference or
+  in the provider's own llms.txt.
+status: candidate
+api: kelvin API
+deployment:
+  mode: none
+  endpoint: null
+  install: null
+  package: null
+  auth: unknown
+  verified: derived
+  note: >-
+    kelvin ships no MCP server, hosted or local. Everything below is a DERIVED
+    candidate tool set showing what an MCP server over the existing v3 REST API would
+    expose — it is not a surface an agent can call today, and no endpoint URL is
+    invented for it.
+constraints:
+- >-
+  The v3 specification declares no operationId on any of its 25 operations, so tool
+  names below are synthesised from method + path. Any real server would need kelvin to
+  mint stable operationIds first.
+- >-
+  Authentication would be a static per-team bearer key (team-api-key-…), not OAuth, so
+  a hosted server would need per-tenant key handling.
+- >-
+  Six of the flows are asynchronous (run, and the five document generators), which an
+  MCP server must model as submit-then-poll or as a long-running tool.
+candidate_tools:
+- name: create_simulation
+  rest: POST /api/v3/simulations
+  description: >-
+    Create an energy-renovation simulation for a dwelling from latitude, longitude and
+    an optional BAN address key.
+  offer: Simulateur
+- name: list_simulations
+  rest: GET /api/v3/simulations
+  description: List the team's simulations, filterable by status and paged.
+  offer: Simulateur
+- name: get_housing
+  rest: GET /api/v3/simulations/{simulation_id}/housing
+  description: Read the declared physical facts about the dwelling.
+  offer: Simulateur
+- name: update_housing
+  rest: PUT /api/v3/simulations/{simulation_id}/housing
+  description: Set dwelling type, surface, floor level, exterior walls and DPE number.
+  offer: Simulateur
+- name: set_qualification
+  rest: PUT /api/v3/simulations/{simulation_id}/qualification
+  description: >-
+    Record the occupant profile — owner/tenant status, household size, income range,
+    fiscal department, project maturity. Required before running the simulation.
+  offer: Simulateur
+- name: run_simulation
+  rest: POST /api/v3/simulations/{simulation_id}/run
+  description: Launch the model. Asynchronous; poll the state endpoints until they stop returning 409.
+  offer: Simulateur
+  async: true
+- name: get_initial_state
+  rest: GET /api/v3/simulations/{simulation_id}/initial-state
+  description: >-
+    Read the dwelling's current energy performance — DPE letters, consumption, carbon,
+    insulation, heating systems and the per-field `sources` provenance map.
+  offer: Qualification
+- name: update_initial_state
+  rest: PUT /api/v3/simulations/{simulation_id}/initial-state
+  description: Override any modelled fact about the dwelling's current state.
+  offer: Qualification
+- name: get_projected_state
+  rest: GET /api/v3/simulations/{simulation_id}/projected-state
+  description: Read the post-renovation scenarios with budgets, aid and valuation KPIs.
+  offer: Simulateur
+- name: create_renovation_plan
+  rest: POST /api/v3/simulations/{simulation_id}/projected-state/renovation-plans
+  description: Create a custom costed renovation scenario.
+  offer: Qualification
+- name: get_renovation_plan
+  rest: GET /api/v3/simulations/{simulation_id}/projected-state/renovation-plans/{renovation_plan_id}
+  description: Read one custom renovation scenario.
+  offer: Qualification
+- name: update_renovation_plan
+  rest: PATCH /api/v3/simulations/{simulation_id}/projected-state/renovation-plans/{renovation_plan_id}
+  description: Modify a custom renovation scenario.
+  offer: Qualification
+- name: search_dpes
+  rest: GET /api/v3/dpes
+  description: >-
+    Search published French DPE certificates by DPE number or BAN key, filtered by
+    building type, surface, report date and energy class.
+  offer: Qualification
+- name: list_enabled_gestures
+  rest: GET /api/v3/catalog/enabled/gestures
+  description: List the work gestures enabled for the team.
+  offer: Qualification
+  scope: catalog:read
+- name: list_enabled_services
+  rest: GET /api/v3/catalog/enabled/services
+  description: List the services enabled for the team.
+  offer: Qualification
+  scope: catalog:read
+- name: list_enabled_references
+  rest: GET /api/v3/catalog/enabled/references
+  description: >-
+    List the team's priced reference lines. At least one filter is required or the API
+    returns 422.
+  offer: Qualification
+  scope: catalog:read
+- name: list_documents
+  rest: GET /api/v3/simulations/{simulation_id}/documents
+  description: List generated documents for a simulation, filtered by type and date range.
+  offer: Documents
+- name: get_document
+  rest: GET /api/v3/simulations/{simulation_id}/documents/{id}
+  description: Poll one document generation for status and download URL.
+  offer: Documents
+- name: generate_report
+  rest: POST /api/v3/simulations/{simulation_id}/documents/report
+  description: Generate the full PDF study for selected scenarios.
+  offer: Documents
+  async: true
+- name: generate_contribution_framework
+  rest: POST /api/v3/simulations/{simulation_id}/documents/contribution-framework
+  description: Generate the CEE contribution-framework document.
+  offer: Documents
+  async: true
+- name: generate_dimensioning_note
+  rest: POST /api/v3/simulations/{simulation_id}/documents/dimensioning-note
+  description: Generate the equipment dimensioning note.
+  offer: Documents
+  async: true
+- name: generate_sworn_statement
+  rest: POST /api/v3/simulations/{simulation_id}/documents/sworn-statement
+  description: Generate the attestation sur l'honneur.
+  offer: Documents
+  async: true
+- name: generate_commercial_offer
+  rest: POST /api/v3/simulations/{simulation_id}/documents/commercial-offer
+  description: Create the quote (devis) for a renovation plan and generate its PDF.
+  offer: Documents
+  async: true
+- name: request_report_legacy
+  rest: POST /api/v3/simulations/{simulation_id}/report
+  description: Legacy report trigger, superseded by the documents/* family.
+  offer: Qualification
+  async: true
+- name: get_report_status_legacy
+  rest: GET /api/v3/simulations/{simulation_id}/report
+  description: Legacy report status poll.
+  offer: Qualification
+probes:
+- url: https://go-kelvin.com/mcp
+  status: 301
+  note: Redirects to the marketing site; no MCP surface.
+- url: https://app.go-kelvin.com/mcp
+  method: GET
+  status: 200
+  soft_404: true
+  note: >-
+    Rails catch-all returns the 8,094-byte application error page as text/html; not an
+    MCP endpoint.
+- url: https://app.go-kelvin.com/mcp
+  method: POST
+  body: '{"jsonrpc":"2.0","id":1,"method":"tools/list"}'
+  status: 404
+  note: JSON-RPC tools/list is rejected outright — no MCP server behind this path.
+- url: https://mcp.go-kelvin.com/
+  status: 000
+  note: DNS does not resolve.
+checked: '2026-08-14'

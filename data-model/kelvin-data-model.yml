@@ -1,0 +1,387 @@
+generated: '2026-08-14'
+method: derived
+source: >-
+  openapi/kelvin-api-openapi.yml — path structure, request/response schemas, $ref
+  components and id-reference fields of the kelvin API v3 specification harvested from
+  https://app.go-kelvin.com/api/docs
+docs: https://app.go-kelvin.com/api/docs
+api: kelvin API
+note: >-
+  The model is a single aggregate root — the Simulation — with everything else hanging
+  off it as a sub-resource. There are no top-level collections other than /simulations,
+  /dpes and the three read-only /catalog/enabled/* lookups, so every write path is
+  /simulations/{simulation_id}/… . The specification declares only two named component
+  schemas (FinancialSupport, GestureFinancialSupport); every other entity below is
+  inlined, which is why the entities are derived from path + schema shape rather than
+  from components.
+id_conventions:
+- entity: Simulation
+  field: simulation_id / id
+  type: string
+  shape: 10-character lowercase alphanumeric slug
+  example: 1fh9vrmd2c
+- entity: Team
+  field: team_id
+  type: string
+  shape: 10-character lowercase alphanumeric slug
+  example: 4732fnd4mt
+- entity: User
+  field: user_id
+  type: string
+  nullable: true
+  example: 9ab3cd2ef1
+- entity: RenovationPlan
+  field: renovation_plan_id / id
+  type: string
+- entity: Document
+  field: id
+  type: integer
+  example: 42
+  note: The only integer identifier in the model; everything else is a slug.
+- entity: DPE
+  field: dpe_id / epc_id
+  type: string
+  note: The French DPE (energy performance certificate) number, an external identifier.
+- entity: Address
+  field: ban_id
+  type: string
+  note: >-
+    Base Adresse Nationale interoperability key — an external French government
+    identifier, not minted by kelvin.
+entities:
+- name: Simulation
+  root: true
+  path: /api/v3/simulations
+  description: >-
+    An energy-renovation study of one dwelling, created from a latitude/longitude
+    (optionally a ban_id) and then computed by kelvin's model.
+  key_fields:
+  - id
+  - team_id
+  - created_at
+  - simulation_url
+  - source
+  - tracking_context
+  - client
+  enums:
+    source:
+    - simulator
+    - qualification
+    - api
+    - prospection
+  operations:
+  - GET /api/v3/simulations
+  - POST /api/v3/simulations
+- name: Client
+  embedded_in: Simulation
+  description: >-
+    The occupant/prospect attached to a simulation — identity and qualification
+    profile. Written by PUT /qualification, read back on the simulation listing.
+  key_fields:
+  - first_name
+  - last_name
+  - email
+  - phone_number
+  - profile
+  - primary_residence
+  - household_size
+  - income_range
+  - tax_residence_department
+  - project_maturity
+  enums:
+    profile:
+    - owner_resident
+    - owner_non_resident
+    - renter
+    - lessor
+  pii: true
+  note: >-
+    Contains direct personal data (name, email, phone) plus household size and income
+    band for a French residential occupant — in GDPR terms this is the sensitive part
+    of the model.
+- name: TrackingContext
+  embedded_in: Simulation
+  description: >-
+    Marketing attribution captured at simulation launch and carried through to the CRM
+    handoff.
+  key_fields:
+  - utm_source
+  - utm_medium
+  - utm_campaign
+  - utm_content
+  - utm_term
+  - gad_source
+  - gclid
+  - fbclid
+  - gbraid
+  - msclkid
+  - cuid
+  - referer
+  - krid
+  - krsrc
+  - ksid
+- name: Housing
+  path: /api/v3/simulations/{simulation_id}/housing
+  description: Declared physical facts about the dwelling, settable before the run.
+  key_fields:
+  - epc_id
+  - housing_type
+  - surface
+  - floor_level
+  - number_of_exterior_wall
+  operations:
+  - GET /api/v3/simulations/{simulation_id}/housing
+  - PUT /api/v3/simulations/{simulation_id}/housing
+- name: InitialState
+  path: /api/v3/simulations/{simulation_id}/initial-state
+  description: >-
+    The dwelling's energy performance as it stands today — the output of kelvin's
+    model, overridable by the caller.
+  key_fields:
+  - overall_rating
+  - energy_rating
+  - energy_consumption
+  - carbon_rating
+  - carbon_emissions
+  - epc_id
+  - confidence_score
+  - annual_energy_consumption
+  - position_percentage_neighborhood
+  - energy_loss_percentage
+  - living_area
+  - construction_year
+  - wall_material
+  - generator_type
+  - generator_energy
+  - secondary_generator_type
+  - secondary_generator_energy
+  - hot_water_type
+  - hot_water_energy
+  - vents_type
+  - collective_heating
+  - collective_hot_water
+  - walls_insulation
+  - windows_insulation
+  - high_floor_insulation
+  - low_floor_insulation
+  - sources
+  operations:
+  - GET /api/v3/simulations/{simulation_id}/initial-state
+  - PUT /api/v3/simulations/{simulation_id}/initial-state
+  note: >-
+    `sources` reports, per field, whether the value came from `ai`, `user` or `dpe` —
+    an unusually explicit provenance mechanism inside a payload, and the field an agent
+    should read before trusting any number here. Insulation fields are objects of
+    {level, u_value}. annual_energy_cost_range.min/max are marked [Déprécié] in their
+    own descriptions.
+- name: ProjectedState
+  path: /api/v3/simulations/{simulation_id}/projected-state
+  description: The post-renovation outcome, expressed as a set of renovation plans.
+  key_fields:
+  - status
+  - renovation_plans
+  operations:
+  - GET /api/v3/simulations/{simulation_id}/projected-state
+- name: RenovationPlan
+  path: /api/v3/simulations/{simulation_id}/projected-state/renovation-plans
+  description: >-
+    One costed scenario of works with its resulting rating, budget, aid package and
+    valuation KPIs.
+  key_fields:
+  - id
+  - name
+  - type
+  - overall_rating
+  - energy_rating
+  - energy_consumption
+  - carbon_rating
+  - carbon_emissions
+  - yearly_energy_savings
+  - yearly_energy_cost
+  - budget
+  - financial_support
+  - kpi
+  - renovation_plan
+  categories:
+  - heating
+  - hot_water
+  - ventilation
+  - walls
+  - doors_windows
+  - low_floor
+  - high_floor
+  - renewable_energy
+  - summer_comfort
+  - winter_comfort
+  - thermal_bridge_treatment
+  - lighting
+  - sobriety
+  operations:
+  - POST /api/v3/simulations/{simulation_id}/projected-state/renovation-plans
+  - GET /api/v3/simulations/{simulation_id}/projected-state/renovation-plans/{renovation_plan_id}
+  - PATCH /api/v3/simulations/{simulation_id}/projected-state/renovation-plans/{renovation_plan_id}
+- name: FinancialSupport
+  component: '#/components/schemas/FinancialSupport'
+  description: >-
+    The French public-aid package attached to a plan and to each work item — MaPrimeRénov',
+    CEE, éco-PTZ and a map of named local aids.
+  key_fields:
+  - mpr
+  - cee
+  - ecoptz
+  - local
+  note: One of only two named component schemas in the specification.
+- name: GestureFinancialSupport
+  component: '#/components/schemas/GestureFinancialSupport'
+  description: The same aid breakdown at the level of a single work gesture.
+- name: Document
+  path: /api/v3/simulations/{simulation_id}/documents
+  description: An asynchronously generated PDF deliverable for a simulation.
+  key_fields:
+  - id
+  - team_id
+  - user_id
+  - simulation_id
+  - source_simulation_id
+  - generated_at
+  - type
+  - metadata
+  - download_url
+  enums:
+    type:
+    - report
+    - commercial_offer
+    - contribution_framework
+    - dimensioning_note
+    - sworn_statement
+    metadata.report_template:
+    - current_state
+    - full
+  operations:
+  - GET /api/v3/simulations/{simulation_id}/documents
+  - GET /api/v3/simulations/{simulation_id}/documents/{id}
+  - POST /api/v3/simulations/{simulation_id}/documents/report
+  - POST /api/v3/simulations/{simulation_id}/documents/contribution-framework
+  - POST /api/v3/simulations/{simulation_id}/documents/dimensioning-note
+  - POST /api/v3/simulations/{simulation_id}/documents/sworn-statement
+  - POST /api/v3/simulations/{simulation_id}/documents/commercial-offer
+- name: DPE
+  path: /api/v3/dpes
+  description: >-
+    A published French Diagnostic de Performance Énergétique, searchable by DPE number
+    or by BAN interoperability key.
+  key_fields:
+  - dpe_id
+  - ban_id
+  - building_type
+  - surface
+  - report_date
+  - energy_class
+  external: true
+  operations:
+  - GET /api/v3/dpes
+- name: CatalogGesture
+  path: /api/v3/catalog/enabled/gestures
+  description: A work gesture enabled for the team, addressed by technical_id.
+  scope: catalog:read
+- name: CatalogService
+  path: /api/v3/catalog/enabled/services
+  description: A service/prestation enabled for the team.
+  scope: catalog:read
+- name: CatalogReference
+  path: /api/v3/catalog/enabled/references
+  description: >-
+    A priced reference line attached to services and gestures — the team's own price
+    book, which is what makes the generated quote reflect the company's real prices.
+  scope: catalog:read
+- name: Team
+  implicit: true
+  description: >-
+    The tenant. Never addressable as a resource; present only as team_id on other
+    entities and carried implicitly by the team-api-key- credential.
+relationships:
+- from: Team
+  to: Simulation
+  type: has_many
+  via: team_id
+- from: Simulation
+  to: Housing
+  type: has_one
+  via: sub-resource /housing
+- from: Simulation
+  to: InitialState
+  type: has_one
+  via: sub-resource /initial-state
+- from: Simulation
+  to: ProjectedState
+  type: has_one
+  via: sub-resource /projected-state
+- from: Simulation
+  to: Client
+  type: has_one
+  via: embedded client object, written by PUT /qualification
+- from: Simulation
+  to: TrackingContext
+  type: has_one
+  via: embedded tracking_context object
+- from: ProjectedState
+  to: RenovationPlan
+  type: has_many
+  via: renovation_plans[]
+- from: RenovationPlan
+  to: FinancialSupport
+  type: has_one
+  via: financial_support
+- from: RenovationPlan
+  to: GestureFinancialSupport
+  type: has_many
+  via: per-item financial_support inside renovation_plan categories
+- from: Simulation
+  to: Document
+  type: has_many
+  via: simulation_id
+- from: Document
+  to: Simulation
+  type: belongs_to
+  via: source_simulation_id
+  note: >-
+    A document is attached to a child or root simulation via source_simulation_id while
+    simulation_id names the root — the model supports simulation trees even though no
+    endpoint exposes the parent/child link directly.
+- from: Document
+  to: RenovationPlan
+  type: belongs_to
+  via: renovation_plan_id (commercial-offer) / metadata.scenario_ids
+- from: InitialState
+  to: DPE
+  type: belongs_to
+  via: epc_id
+  optional: true
+- from: Simulation
+  to: Address
+  type: belongs_to
+  via: ban_id
+  external: true
+- from: RenovationPlan
+  to: CatalogGesture
+  type: references
+  via: technical_id
+- from: CatalogReference
+  to: CatalogService
+  type: belongs_to
+  via: service_technical_ids
+- from: CatalogReference
+  to: CatalogGesture
+  type: belongs_to
+  via: gestures_technical_ids
+lifecycle_flow:
+  note: >-
+    The canonical order the API enforces, derived from the 409/422 conditions.
+  steps:
+  - POST /api/v3/simulations (latitude, longitude, ban_id) -> simulation_id
+  - PUT /api/v3/simulations/{id}/housing (optional declared facts)
+  - PUT /api/v3/simulations/{id}/qualification (required before run)
+  - POST /api/v3/simulations/{id}/run
+  - poll GET /initial-state and /projected-state until they stop returning 409
+  - POST /projected-state/renovation-plans (optional custom scenario)
+  - POST /documents/{type} -> 202, then poll GET /documents/{id} for download_url

@@ -1,0 +1,44 @@
+generated: '2026-08-14'
+method: searched
+source: >-
+  npm registry search, PyPI, RubyGems, Packagist, crates.io, pkg.go.dev, NuGet and
+  Maven Central lookups for kelvin / go-kelvin; GitHub org and repository search;
+  https://app.go-kelvin.com/api/docs; https://www.go-kelvin.com/ and its sitemap
+package_count: 0
+packages: []
+official_sdks: 0
+note: >-
+  kelvin publishes no client library in any language. The API reference contains no SDK
+  section and no code samples beyond raw request/response JSON; there is no GitHub
+  organisation (api.github.com/orgs/go-kelvin and /orgs/kelvin-technologies both 404)
+  and no repository search hit belongs to this company. npm results for "kelvin" are
+  unrelated projects (@kelvininc/* is Kelvin Inc, an industrial-AI company, not
+  kelvin°). No SDKs pointer is emitted — an honest zero, checked rather than assumed.
+  kelvin's integration story is instead hosted UI and iframes; see
+  components/kelvin-components.yml.
+registries_checked:
+- registry: npm
+  query: kelvin renovation / go-kelvin
+  first_party_hits: 0
+- registry: pypi
+  first_party_hits: 0
+- registry: rubygems
+  first_party_hits: 0
+- registry: packagist
+  first_party_hits: 0
+- registry: crates.io
+  first_party_hits: 0
+- registry: pkg.go.dev
+  first_party_hits: 0
+- registry: nuget
+  first_party_hits: 0
+- registry: maven-central
+  first_party_hits: 0
+evidence:
+- url: https://api.github.com/orgs/go-kelvin
+  status: 404
+- url: https://api.github.com/orgs/kelvin-technologies
+  status: 404
+- url: https://app.go-kelvin.com/api/docs
+  status: 200
+checked: '2026-08-14'

@@ -1,0 +1,14 @@
+generated: '2026-08-14'
+method: derived
+source: openapi/kelvin-api-openapi.yml, openapi/kelvin-api-v2-openapi.yml
+summary:
+  types:
+  - http
+schemes:
+- name: bearerAuth
+  type: http
+  scheme: bearer
+  description: Le token commence par 'team-api-key-'
+  sources:
+  - openapi/kelvin-api-openapi.yml
+  - openapi/kelvin-api-v2-openapi.yml

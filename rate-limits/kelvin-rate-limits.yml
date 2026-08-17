@@ -1,0 +1,32 @@
+generated: '2026-08-14'
+method: probed
+source: >-
+  https://app.go-kelvin.com/api/v3/simulations (HTTP 401, unauthenticated, 2026-08-14)
+  and a full read of https://app.go-kelvin.com/api/docs
+docs: https://app.go-kelvin.com/api/docs
+api: kelvin API
+limit_count: 0
+limits: []
+response_headers: []
+status_on_exhaustion: null
+note: >-
+  kelvin publishes no rate limits. The API reference contains no quota, throttle or
+  fair-use section, no operation declares a 429 response in either the v2 or the v3
+  specification, and the live unauthenticated response carries no X-RateLimit-*, no
+  RateLimit-* (RFC 9239 draft), and no Retry-After. An honest zero: an integrator has
+  no published ceiling and no runtime signal to back off against, which matters most
+  on the asynchronous document-generation endpoints where polling is the documented
+  access pattern.
+headers_observed_on_probe:
+- x-api-version
+- x-request-id
+- x-runtime
+- x-envoy-upstream-service-time
+- strict-transport-security
+- vary
+- cache-control
+evidence:
+- url: https://app.go-kelvin.com/api/v3/simulations
+  status: 401
+  rate_limit_headers: none
+  checked: '2026-08-14'

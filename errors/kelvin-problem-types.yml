@@ -1,0 +1,172 @@
+generated: '2026-08-14'
+method: derived
+source: >-
+  openapi/kelvin-api-openapi.yml (kelvin API v3) 4xx/5xx responses, plus a live
+  unauthenticated request to https://app.go-kelvin.com/api/v3/simulations
+docs: https://app.go-kelvin.com/api/docs
+api: kelvin API
+format: proprietary
+rfc9457: false
+envelope:
+  content_type: application/json
+  schema:
+    type: object
+    properties:
+      error:
+        type: string
+  example: '{"error":"unauthorized"}'
+  note: >-
+    A single flat `error` string with a human-readable message. There is no stable
+    machine-readable code, no type URI, no field-level validation detail, and no
+    request identifier inside the body (the id is only in the x-request-id header).
+    An integrating agent must branch on the HTTP status code, because the message
+    string is the only other signal and it is not enumerated anywhere.
+notes:
+- >-
+  Casing is inconsistent across versions: v3 returns {"error":"unauthorized"} and v2
+  returns {"error":"Unauthorized"} for the same condition.
+- >-
+  No 5xx response is declared on any operation in either the v2 or the v3
+  specification. Server-error behaviour is undocumented.
+- >-
+  Only response DESCRIPTIONS are enumerated below — kelvin publishes no separate error
+  reference page, so remediation text is derived from the operation semantics in the
+  spec, not quoted from a docs error table.
+problem_types:
+- status: 400
+  title: Bad Request
+  operations:
+  - GET /api/v3/dpes
+  - GET /api/v3/simulations
+  - POST /api/v3/simulations
+  - PUT /api/v3/simulations/{simulation_id}/housing
+  - PUT /api/v3/simulations/{simulation_id}/qualification
+  - PUT /api/v3/simulations/{simulation_id}/initial-state
+  - POST /api/v3/simulations/{simulation_id}/projected-state/renovation-plans
+  - PATCH /api/v3/simulations/{simulation_id}/projected-state/renovation-plans/{renovation_plan_id}
+  meaning: Malformed request — a parameter or body field failed basic validation.
+  known_variants:
+  - operation: PUT /api/v3/simulations/{simulation_id}/qualification
+    description: 'Bad Request - code département fiscal invalide'
+    remediation: >-
+      tax_residence_department must be a valid French fiscal department code.
+  remediation: Correct the offending parameter or body field and resend.
+- status: 401
+  title: Unauthorized
+  operations: all
+  meaning: >-
+    Missing, malformed or unknown bearer token. Declared on every operation in v2 and
+    v3.
+  observed_body: '{"error":"unauthorized"}'
+  remediation: >-
+    Send Authorization: Bearer team-api-key-… . The credential is issued per team from
+    the kelvin application; there is no self-serve key endpoint.
+- status: 403
+  title: Forbidden
+  operations: all
+  meaning: >-
+    The token is valid but the team lacks the scope, offer or feature flag the
+    operation requires. This is kelvin's entitlement boundary, and it is where the
+    product tiers (offre Simulateur / offre Qualification / Documents) are enforced.
+  known_variants:
+  - operations:
+    - GET /api/v3/catalog/enabled/gestures
+    - GET /api/v3/catalog/enabled/references
+    - GET /api/v3/catalog/enabled/services
+    description: 'Forbidden - scope catalog:read manquant'
+    remediation: The team's key must carry the catalog:read scope.
+  - operations:
+    - POST /api/v3/simulations/{simulation_id}/documents/report
+    - POST /api/v3/simulations/{simulation_id}/documents/contribution-framework
+    - POST /api/v3/simulations/{simulation_id}/documents/dimensioning-note
+    - POST /api/v3/simulations/{simulation_id}/documents/sworn-statement
+    description: 'Forbidden - Scope manquant ou document désactivé pour l''équipe.'
+    remediation: >-
+      Either the scope is absent from the key or that document type is switched off
+      for the team. Both surface as the same 403 with no distinguishing code, so the
+      caller cannot tell a permission problem from a configuration problem.
+  - operation: POST /api/v3/simulations/{simulation_id}/documents/commercial-offer
+    description: 'Forbidden - Scope manquant ou devis désactivés pour l''équipe.'
+    remediation: Quotes (devis) must be enabled for the team.
+  remediation: Contact kelvin to have the scope or the feature enabled for the team.
+- status: 404
+  title: Not Found
+  operations:
+  - GET /api/v3/simulations/{simulation_id}/housing
+  - PUT /api/v3/simulations/{simulation_id}/qualification
+  - POST /api/v3/simulations/{simulation_id}/run
+  - GET /api/v3/simulations/{simulation_id}/initial-state
+  - PUT /api/v3/simulations/{simulation_id}/initial-state
+  - GET /api/v3/simulations/{simulation_id}/projected-state
+  - POST /api/v3/simulations/{simulation_id}/projected-state/renovation-plans
+  - GET /api/v3/simulations/{simulation_id}/projected-state/renovation-plans/{renovation_plan_id}
+  - PATCH /api/v3/simulations/{simulation_id}/projected-state/renovation-plans/{renovation_plan_id}
+  - POST /api/v3/simulations/{simulation_id}/report
+  - GET /api/v3/simulations/{simulation_id}/report
+  - GET /api/v3/simulations/{simulation_id}/documents
+  - GET /api/v3/simulations/{simulation_id}/documents/{id}
+  - POST /api/v3/simulations/{simulation_id}/documents/*
+  meaning: >-
+    The simulation, renovation plan or document does not exist, or belongs to another
+    team.
+  known_variants:
+  - operation: GET /api/v3/simulations/{simulation_id}/report
+    description: 'Not Found - Aucune génération de rapport n''a été demandée.'
+    remediation: >-
+      POST the report first. A 404 here means "not requested yet", not "unknown
+      simulation" — the same status carries two meanings.
+  - operation: GET /api/v3/simulations/{simulation_id}/documents/{id}
+    description: 'Not Found - Aucune génération de document ne correspond.'
+  remediation: Verify the identifier and that the key's team owns the resource.
+- status: 409
+  title: Conflict
+  operations:
+  - GET /api/v3/simulations/{simulation_id}/initial-state
+  - GET /api/v3/simulations/{simulation_id}/projected-state
+  - POST /api/v3/simulations/{simulation_id}/report
+  - GET /api/v3/simulations/{simulation_id}/report
+  - POST /api/v3/simulations/{simulation_id}/documents/*
+  meaning: >-
+    The simulation has not finished computing. Declared as "Conflit" on the state reads
+    and as "Conflict - La simulation n'est pas encore terminée." on the report and
+    document endpoints.
+  remediation: >-
+    This is the retry signal for the whole asynchronous flow: after POST /run, poll
+    until the state reads stop returning 409. No Retry-After header is sent, so the
+    caller must choose its own backoff.
+- status: 422
+  title: Unprocessable Entity
+  operations:
+  - GET /api/v3/catalog/enabled/references
+  - POST /api/v3/simulations
+  - POST /api/v3/simulations/{simulation_id}/run
+  - PUT /api/v3/simulations/{simulation_id}/initial-state
+  - POST /api/v3/simulations/{simulation_id}/documents/commercial-offer
+  meaning: >-
+    The request was well-formed but semantically rejected — e.g. the coordinates
+    cannot be resolved to a building, the simulation cannot be run in its current
+    state, or the referenced renovation plan is unknown.
+  known_variants:
+  - operation: GET /api/v3/catalog/enabled/references
+    description: Aucun filtre fourni
+    remediation: >-
+      Supply at least one of service_technical_ids, gestures_technical_ids or
+      reference_ids.
+  - operation: POST /api/v3/simulations/{simulation_id}/documents/commercial-offer
+    description: 'Unprocessable Content - Plan de rénovation inconnu.'
+    remediation: renovation_plan_id must reference a plan on this simulation.
+  remediation: Fix the semantic problem described in the message; do not retry as-is.
+summary:
+  status_codes_declared:
+  - 400
+  - 401
+  - 403
+  - 404
+  - 409
+  - 422
+  status_codes_missing:
+  - 429
+  - 500
+  - 503
+  machine_readable_codes: false
+  problem_json: false

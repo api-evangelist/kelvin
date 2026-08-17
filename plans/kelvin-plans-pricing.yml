@@ -1,0 +1,68 @@
+generated: '2026-08-14'
+method: searched
+source: >-
+  https://www.go-kelvin.com/ (full site + sitemap.xml review), plus the offer names
+  published as tag descriptions in https://app.go-kelvin.com/api/docs
+docs: https://www.go-kelvin.com/demo-produit
+plan_count: 0
+plans: []
+pricing_published: false
+currency: EUR
+note: >-
+  kelvin publishes no price, no tier table and no self-serve checkout. There is no
+  /tarifs, /prix or /pricing page — all three return 404 — and none of the 55 marketing
+  URLs in sitemap.xml is a pricing page. Every commercial path on the site funnels to
+  "Demander une démonstration" or a contact form, and account creation
+  (/creer-un-compte-kelvin) leads to a sales-qualified onboarding rather than a
+  published plan. This is a sales-gated B2B SaaS sold to renovation companies,
+  artisan networks, CEE delegatees and estate agencies; plan_count: 0 is the accurate
+  measurement, not a gap in the search.
+offers_named_without_price:
+  note: >-
+    The API specification does name commercial offers, because entitlement is enforced
+    per offer at the 403 boundary. These are product packages, NOT priced plans — no
+    amount, quota or billing period is published for any of them.
+  offers:
+  - name: Simulateur
+    source: 'OpenAPI tag description: "Endpoints disponibles dans l''offre Simulateur"'
+    description: >-
+      The embeddable address-based renovation simulator — lead capture, property
+      lookup, scenario generation.
+    price: null
+  - name: Qualification
+    source: 'OpenAPI tag description: "Endpoints disponibles dans l''offre Qualification"'
+    description: >-
+      The commercial qualification tool — catalogue of enabled gestures/services/price
+      references, custom renovation plans, DPE search, project reports.
+    price: null
+  - name: Documents
+    source: 'OpenAPI tag: Documents'
+    description: >-
+      Generated deliverables (full report, contribution framework, dimensioning note,
+      sworn statement, commercial offer/quote), individually switchable per team.
+    price: null
+free_tools:
+  note: >-
+    kelvin publishes genuinely free, no-account calculators on its marketing site.
+    They are web tools, not API plans.
+  tools:
+  - name: Calculette CEE
+    url: https://www.go-kelvin.com/outils-gratuits/calculette-cee
+  - name: Calculette MaPrimeRénov'
+    url: https://www.go-kelvin.com/outils-gratuits/calculette-mpr
+  - name: Simulateur DPE
+    url: https://www.go-kelvin.com/simulateur-dpe
+  - name: Annuaire des délégataires CEE
+    url: https://www.go-kelvin.com/annuaire-ceee
+evidence:
+- url: https://www.go-kelvin.com/tarifs
+  status: 404
+- url: https://www.go-kelvin.com/prix
+  status: 404
+- url: https://www.go-kelvin.com/pricing
+  status: 404
+- url: https://www.go-kelvin.com/sitemap.xml
+  status: 200
+- url: https://www.go-kelvin.com/demo-produit
+  status: 200
+checked: '2026-08-14'

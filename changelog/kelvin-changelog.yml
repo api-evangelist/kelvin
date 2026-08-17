@@ -1,0 +1,95 @@
+generated: '2026-08-14'
+method: searched
+source: >-
+  https://app.go-kelvin.com/api/docs — the "Changelog v2 → v3" section published by
+  kelvin inside info.description of the kelvin API v3 OpenAPI document
+docs: https://app.go-kelvin.com/api/docs
+api: kelvin API
+scheme: major-version-narrative
+current_version: v3
+dated: false
+note: >-
+  kelvin publishes no dated changelog page and no release feed. The only change record
+  is the migration narrative embedded in the v3 API description, reproduced faithfully
+  below. Entries therefore carry no dates — that is the finding, not an omission on
+  our side. The runtime x-api-version header (3.0.0 / 2.0.0) implies a semantic
+  minor/patch stream that is not published anywhere.
+entries:
+- version: v3
+  date: null
+  breaking: true
+  summary: >-
+    All endpoints migrated from /api/v2/ to /api/v3/, with renamed and restructured
+    energy-performance, insulation, subsidy and renovation-plan fields.
+  breaking_changes:
+  - id: path-migration
+    detail: 'Tous les endpoints ont été migrés de /api/v2/ vers /api/v3/.'
+  - id: energy-performance-fields-renamed
+    detail: >-
+      dpe_class renamed energy_rating on both the initial and the projected state.
+      Three new mandatory fields added: energy_consumption (kWh/m²/an), carbon_rating
+      (GES letter A–G) and carbon_emissions (kg CO₂/m²/an).
+  - id: insulation-fields-restructured
+    detail: >-
+      walls_insulation_level, windows_insulation_level, high_floor_insulation_level
+      and low_floor_insulation_level change from strings to objects carrying a `level`
+      and a numeric `u_value` in W/m²K — e.g. {"level": "partially_insulated",
+      "u_value": 0.35}.
+  - id: financial-support-restructured
+    detail: >-
+      `subsidies` (a single total) is replaced by a detailed `financial_support`
+      object present on each renovation plan and on each work item — mpr, cee, ecoptz
+      and a `local` map of named regional aids.
+  - id: renovation-plan-items-are-arrays
+    detail: >-
+      Each work category in renovation_plan is now an array of items rather than a
+      single object. Each item replaces id/simplified_id/label with technical_id and
+      name.
+  - id: enum-values-revised
+    detail: >-
+      generator_type / secondary_generator_type go from 4 generic values to 26 precise
+      ones plus `unknown`; hot_water_type from 5 to 24 plus `unknown`;
+      generator_energy / hot_water_energy / secondary_generator_energy split
+      urban_heating_or_biomass into district_heating, biomass_wood, others and
+      unknown; wall_material from 5 to 9 values; vents_type codes renamed (e.g.
+      vmc_sf_hygro_b -> sf_hygro_b_vmc). Aligned to the DPE/ADEME reference.
+  - id: windows-renamed
+    detail: >-
+      `windows` renamed `doors_windows` in renovation_plan; the category now covers
+      windows, doors, french windows and roof windows (18 technical_id values).
+  - id: fields-removed
+    detail: >-
+      recently_renovated removed from the initial state and the housing update
+      endpoint; has_vents removed in favour of vents_type; subsidies replaced by
+      financial_support.
+  additions:
+  - id: qualification-endpoint
+    detail: >-
+      New PUT /api/v3/simulations/{id}/qualification records the occupant profile
+      (owner/tenant status, household size, income range, fiscal department, project
+      maturity). It must be called before POST /run.
+  - id: initial-state-fields
+    detail: >-
+      New initial-state fields: epc_id, secondary_generator_type,
+      secondary_generator_energy, collective_heating, collective_hot_water,
+      high_floor_surface, low_floor_surface, windows_surface, high_floor_kinds /
+      low_floor_kinds (arrays replacing high_floor_type / low_floor_type), and
+      `sources`, which reports per field whether the value came from `ai`, `user` or
+      `dpe`.
+  - id: renovation-plan-categories
+    detail: >-
+      Beyond ventilation, walls, doors_windows, low_floor and high_floor, the plan now
+      returns heating, hot_water, renewable_energy, summer_comfort, winter_comfort,
+      thermal_bridge_treatment, lighting and sobriety.
+  - id: kpi-block
+    detail: >-
+      Each renovation plan now includes a `kpi` object with property_value_increase —
+      estimated property valuation uplift as a percentage, in €/m², and as m² of
+      surface loss.
+- version: v2
+  date: null
+  breaking: null
+  summary: >-
+    Previous major version, still served and still documented at
+    https://app.go-kelvin.com/api/docs/v2.html (13 operations). No changelog exists for
+    v2 itself or for anything before it.

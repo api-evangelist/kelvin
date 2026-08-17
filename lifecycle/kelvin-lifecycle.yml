@@ -1,0 +1,92 @@
+generated: '2026-08-14'
+method: derived
+source: >-
+  openapi/kelvin-api-openapi.yml + openapi/kelvin-api-v2-openapi.yml (both harvested
+  from https://app.go-kelvin.com/api/docs), the v2->v3 changelog published inside
+  info.description of the v3 spec, and live probes of both version prefixes on
+  2026-08-14
+docs: https://app.go-kelvin.com/api/docs
+api: kelvin API
+versioning:
+  scheme: uri-path-major
+  current: v3
+  path_prefix: /api/v3/
+  runtime_header: x-api-version
+  runtime_header_values:
+    /api/v3/: 3.0.0
+    /api/v2/: 2.0.0
+  note: >-
+    The docs page carries a version selector with exactly two entries — v3
+    (/api/docs/index.html) and v2 (/api/docs/v2.html). Both prefixes answer live; a
+    request to /api/v2/simulations returns 401 with x-api-version: 2.0.0, confirming
+    v2 is still routed rather than retired.
+versions:
+- version: v3
+  status: current
+  path_prefix: /api/v3/
+  spec: openapi/kelvin-api-openapi.yml
+  docs: https://app.go-kelvin.com/api/docs/index.html
+  operations: 25
+  probed:
+    url: https://app.go-kelvin.com/api/v3/simulations
+    status: 401
+    x_api_version: 3.0.0
+    checked: '2026-08-14'
+- version: v2
+  status: superseded
+  path_prefix: /api/v2/
+  spec: openapi/kelvin-api-v2-openapi.yml
+  docs: https://app.go-kelvin.com/api/docs/v2.html
+  operations: 13
+  probed:
+    url: https://app.go-kelvin.com/api/v2/simulations
+    status: 401
+    x_api_version: 2.0.0
+    checked: '2026-08-14'
+  note: >-
+    Still served and still documented. kelvin publishes no sunset date, no Deprecation
+    header and no end-of-life commitment for v2 — the only public statement is the
+    breaking-change list in the v3 description.
+deprecation:
+  policy_published: false
+  sunset_header: false
+  deprecation_header: false
+  rfc8594: false
+  deprecated_operations: []
+  note: >-
+    No operation in either spec carries `deprecated: true`. There is no deprecation
+    policy page, no Sunset/Deprecation response header on the live 401, and no notice
+    period stated. A v2 integrator has no published signal telling them when the
+    prefix stops answering. This is the single largest lifecycle gap on this API and
+    it is entirely the provider's to close. No Deprecation pointer is emitted.
+breaking_changes:
+- from: v2
+  to: v3
+  summary: >-
+    Every endpoint moved from /api/v2/ to /api/v3/. Energy-performance fields renamed
+    (dpe_class -> energy_rating, plus three new mandatory fields), insulation fields
+    restructured from strings to objects carrying a level and a numeric u_value,
+    `subsidies` replaced by a structured `financial_support` object, each
+    renovation_plan category changed from a single object to an array of items,
+    several enums entirely revised against the DPE/ADEME reference, `windows` renamed
+    `doors_windows`, and three fields removed (recently_renovated, has_vents,
+    subsidies).
+  source: info.description of the v3 specification
+  detail: changelog/kelvin-changelog.yml
+sla:
+  published: false
+  note: No service-level agreement or uptime commitment is published.
+status_page:
+  published: false
+  probed:
+  - url: https://status.go-kelvin.com/
+    status: 000
+    note: DNS does not resolve
+  note: >-
+    No status page, no incident history and no uptime feed could be found on any
+    kelvin host. No StatusPage pointer is emitted.
+support:
+  channel: https://www.go-kelvin.com/demande-de-contact
+  note: >-
+    Support is a contact form and a phone number on the marketing site. There is no
+    developer-specific support channel, forum or issue tracker.
