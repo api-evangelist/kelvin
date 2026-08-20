@@ -75,6 +75,17 @@ apis:
   humanURL: https://app.go-kelvin.com/api/docs
   baseURL: https://app.go-kelvin.com
   tags:
+  - Energy Efficiency
+  - Home Renovation
+  - Building Data
+  - energy-simulation
+  - dpe
+  - France
+  - government-incentives
+  - Lead Generation
+  - Document Generation
+  - Construction
+  tags_raw:
   - energy-efficiency
   - home-renovation
   - building-data
