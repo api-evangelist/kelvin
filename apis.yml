@@ -57,56 +57,20 @@ tags:
 - France
 - Sustainability
 apis:
-- name: kelvin API
-  description: >-
-    REST API for kelvin's energy-renovation engine. Create a simulation from a
-    latitude/longitude (and optionally a Base Adresse Nationale key), record the
-    occupant's qualification profile, run kelvin's model, then read back the dwelling's
-    current energy performance (DPE energy and carbon letters, consumption, insulation
-    U-values, heating and hot-water systems, with a per-field provenance map saying
-    whether each value came from AI, the user or a filed DPE) and a set of costed
-    renovation scenarios carrying MaPrimeRenov', CEE, eco-PTZ and local aid amounts plus
-    a property-valuation KPI. Also searches published French DPE certificates, exposes
-    the team's own enabled catalogue of work gestures, services and price references,
-    and asynchronously generates the paperwork a renovation company needs - full study,
-    CEE contribution framework, dimensioning note, sworn statement and the commercial
-    quote. Authenticated with a per-team bearer key prefixed team-api-key-. Current
-    version v3 (25 operations); v2 remains served and documented.
+- aid: kelvin:kelvin-documents-api
+  name: Kelvin Documents API
+  description: Endpoints pour consulter les documents générés pour une simulation
   humanURL: https://app.go-kelvin.com/api/docs
   baseURL: https://app.go-kelvin.com
   tags:
-  - Energy Efficiency
-  - Home Renovation
-  - Building Data
-  - energy-simulation
-  - dpe
-  - France
-  - government-incentives
-  - Lead Generation
-  - Document Generation
-  - Construction
-  tags_raw:
-  - energy-efficiency
-  - home-renovation
-  - building-data
-  - energy-simulation
-  - dpe
-  - france
-  - government-incentives
-  - lead-generation
-  - document-generation
-  - construction
+  - Documents
   properties:
+  - type: OpenAPI
+    url: openapi/kelvin-documents-api-openapi.yml
   - type: Documentation
     url: https://app.go-kelvin.com/api/docs
   - type: APIReference
     url: https://app.go-kelvin.com/api/docs
-  - type: OpenAPI
-    url: openapi/kelvin-api-openapi.yml
-  - type: OpenAPI
-    url: openapi/kelvin-api-v2-openapi.yml
-  - type: Overlay
-    url: overlays/kelvin-api-overlay.yaml
   - type: Authentication
     url: authentication/kelvin-authentication.yml
   - type: OAuthScopes
@@ -125,16 +89,114 @@ apis:
     url: rate-limits/kelvin-rate-limits.yml
   - type: Conformance
     url: conformance/kelvin-conformance.yml
-  - type: MCPServer
-    url: mcp/kelvin-mcp.yml
-  - type: AgentSkill
-    url: skills/_index.yml
+- aid: kelvin:kelvin-qualification-api
+  name: Kelvin Qualification API
+  description: Endpoints disponibles dans l'offre Qualification
+  humanURL: https://app.go-kelvin.com/api/docs
+  baseURL: https://app.go-kelvin.com
+  tags:
+  - Qualification
+  properties:
+  - type: OpenAPI
+    url: openapi/kelvin-qualification-api-openapi.yml
+  - type: Documentation
+    url: https://app.go-kelvin.com/api/docs
+  - type: APIReference
+    url: https://app.go-kelvin.com/api/docs
+  - type: Authentication
+    url: authentication/kelvin-authentication.yml
+  - type: OAuthScopes
+    url: scopes/kelvin-scopes.yml
+  - type: Conventions
+    url: conventions/kelvin-conventions.yml
+  - type: ErrorCatalog
+    url: errors/kelvin-problem-types.yml
+  - type: DataModel
+    url: data-model/kelvin-data-model.yml
+  - type: Lifecycle
+    url: lifecycle/kelvin-lifecycle.yml
+  - type: ChangeLog
+    url: changelog/kelvin-changelog.yml
+  - type: RateLimits
+    url: rate-limits/kelvin-rate-limits.yml
+  - type: Conformance
+    url: conformance/kelvin-conformance.yml
+- aid: kelvin:kelvin-simulateur-api
+  name: Kelvin Simulateur API
+  description: Endpoints disponibles dans l'offre Simulateur
+  humanURL: https://app.go-kelvin.com/api/docs
+  baseURL: https://app.go-kelvin.com
+  tags:
+  - Simulateur
+  properties:
+  - type: OpenAPI
+    url: openapi/kelvin-simulateur-api-openapi.yml
+  - type: Documentation
+    url: https://app.go-kelvin.com/api/docs
+  - type: APIReference
+    url: https://app.go-kelvin.com/api/docs
+  - type: Authentication
+    url: authentication/kelvin-authentication.yml
+  - type: OAuthScopes
+    url: scopes/kelvin-scopes.yml
+  - type: Conventions
+    url: conventions/kelvin-conventions.yml
+  - type: ErrorCatalog
+    url: errors/kelvin-problem-types.yml
+  - type: DataModel
+    url: data-model/kelvin-data-model.yml
+  - type: Lifecycle
+    url: lifecycle/kelvin-lifecycle.yml
+  - type: ChangeLog
+    url: changelog/kelvin-changelog.yml
+  - type: RateLimits
+    url: rate-limits/kelvin-rate-limits.yml
+  - type: Conformance
+    url: conformance/kelvin-conformance.yml
+- aid: kelvin:kelvin-simulations-api
+  name: Kelvin Simulations API
+  description: The Simulations API from Kelvin — 2 operation(s) for simulations.
+  humanURL: https://app.go-kelvin.com/api/docs
+  baseURL: https://app.go-kelvin.com
+  tags:
+  - Simulations
+  properties:
+  - type: OpenAPI
+    url: openapi/kelvin-simulations-api-openapi.yml
+  - type: Documentation
+    url: https://app.go-kelvin.com/api/docs
+  - type: APIReference
+    url: https://app.go-kelvin.com/api/docs
+  - type: Authentication
+    url: authentication/kelvin-authentication.yml
+  - type: OAuthScopes
+    url: scopes/kelvin-scopes.yml
+  - type: Conventions
+    url: conventions/kelvin-conventions.yml
+  - type: ErrorCatalog
+    url: errors/kelvin-problem-types.yml
+  - type: DataModel
+    url: data-model/kelvin-data-model.yml
+  - type: Lifecycle
+    url: lifecycle/kelvin-lifecycle.yml
+  - type: ChangeLog
+    url: changelog/kelvin-changelog.yml
+  - type: RateLimits
+    url: rate-limits/kelvin-rate-limits.yml
+  - type: Conformance
+    url: conformance/kelvin-conformance.yml
 maintainers:
 - FN: Kin Lane
   email: kin@apievangelist.com
 - FN: APIs.json
   email: info@apis.io
 common:
+- type: Overlay
+  url: overlays/kelvin-api-overlay.yaml
+- type: MCPServer
+  url: mcp/kelvin-mcp.yml
+- type: AgentSkill
+  url: skills/_index.yml
 - type: Authentication
   url: authentication/kelvin-authentication.yml
 - type: Website
