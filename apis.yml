@@ -20,6 +20,18 @@ x-tier-reason: >-
   Promoted from stub 2026-08-14: a real, live, versioned OpenAPI 3.1.0 contract (kelvin
   API v3, 25 operations) was found published at https://app.go-kelvin.com/api/docs and
   harvested, along with v2.
+deliveryModel:
+  model: saas
+  open_source: false
+  commercial: true
+  callable_host: false
+  label: Hosted service · you call their endpoint
+  confidence: medium
+  source:
+  - openapi
+  - pricing
+  generated: '2026-08-28'
+  method: derived
 accessModel:
   pricing: enterprise
   onboarding: sales
