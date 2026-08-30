@@ -1,0 +1,2588 @@
+openapi: 3.2.0
+info:
+  title: Kelvin Simulations API
+  version: '1.0'
+  description: 'Operations tagged Simulations across 2 of this provider''s published API definitions: kelvin-api-openapi.yml, kelvin-api-v2-openapi.yml. Each path carries the servers of the definition it was published in.'
+servers:
+- url: '{protocol}://{defaultHost}'
+  variables:
+    protocol:
+      default: https
+    defaultHost:
+      default: app.go-kelvin.com
+security:
+- bearerAuth: []
+tags:
+- name: Simulations
+paths:
+  /api/v3/simulations:
+    get:
+      summary: Lister les simulations
+      description: Endpoint pour lister les simulations.
+      security:
+      - bearerAuth: []
+      parameters:
+      - name: status
+        in: query
+        required: false
+        example: with_contact_details
+        description: "Filtrer les simulations avec des informations de contact:\n * `with_contact_details` \n "
+        schema:
+          type: string
+          enum:
+          - with_contact_details
+      - name: page
+        in: query
+        required: false
+        example: 1
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: string
+                          example: 1fh9vrmd2c
+                          description: L'identifiant de la simulation
+                        created_at:
+                          type: string
+                          format: date-time
+                          example: '2024-10-08T10:00:54Z'
+                          description: La date de création de la simulation
+                        simulation_url:
+                          type: string
+                          format: uri
+                          example: https://app.go-kelvin.com/simulator/4732fnd4mt/simulations/1fh9vrmd2c
+                          description: L'adresse web du résultat de la simulation
+                        team_id:
+                          type: string
+                          example: 4732fnd4mt
+                          description: L'identifiant de l'équipe
+                        source:
+                          type: string
+                          enum:
+                          - simulator
+                          - qualification
+                          - api
+                          - prospection
+                          example: api
+                          description: La source de la simulation
+                        tracking_context:
+                          type: object
+                          description: Les informations de tracking extraites du contexte de lancement de la simulation
+                          properties:
+                            utm_source:
+                              type:
+                              - string
+                              - 'null'
+                            utm_medium:
+                              type:
+                              - string
+                              - 'null'
+                            utm_campaign:
+                              type:
+                              - string
+                              - 'null'
+                            utm_content:
+                              type:
+                              - string
+                              - 'null'
+                            utm_term:
+                              type:
+                              - string
+                              - 'null'
+                            gad_source:
+                              type:
+                              - string
+                              - 'null'
+                            gclid:
+                              type:
+                              - string
+                              - 'null'
+                            fbclid:
+                              type:
+                              - string
+                              - 'null'
+                            cuid:
+                              type:
+                              - string
+                              - 'null'
+                            referer:
+                              type:
+                              - string
+                              - 'null'
+                            gbraid:
+                              type:
+                              - string
+                              - 'null'
+                            msclkid:
+                              type:
+                              - string
+                              - 'null'
+                            krid:
+                              type:
+                              - string
+                              - 'null'
+                            krsrc:
+                              type:
+                              - string
+                              - 'null'
+                            ksid:
+                              type:
+                              - string
+                              - 'null'
+                        client:
+                          type: object
+                          description: Les informations du client
+                          properties:
+                            first_name:
+                              type:
+                              - string
+                              - 'null'
+                              example: Jean
+                              description: Le prénom du client
+                            last_name:
+                              type:
+                              - string
+                              - 'null'
+                              example: Dupont
+                              description: Le nom de famille du client
+                            email:
+                              type:
+                              - string
+                              - 'null'
+                              example: jean.dupont@example.com
+                              description: L'email du client
+                            phone_number:
+                              type:
+                              - string
+                              - 'null'
+                              example: '+33600112233'
+                              description: Le téléphone du client
+                            profile:
+                              type:
+                              - string
+                              - 'null'
+                              enum:
+                              - owner_resident
+                              - owner_non_resident
+                              - renter
+                              - lessor
+                              - null
+                              example: owner_resident
+                              description: Le profil de l'utilisateur.
+                            primary_residence:
+                              type:
+                              - boolean
+                              - 'null'
+                              example: true
+                              description: Indique si c'est une résidence principale.
+                            household_size:
+                              type:
+                              - number
+                              - 'null'
+                              example: 4
+                              description: Nombre de personnes dans le foyer.
+                            tax_residence_department:
+                              type:
+                              - string
+                              - 'null'
+                              example: '75'
+                              description: Département de résidence fiscale.
+                            income_range:
+                              type:
+                              - string
+                              - 'null'
+                              enum:
+                              - very_modest
+                              - modest
+                              - intermediate
+                              - superior
+                              - null
+                              example: modest
+                              description: La tranche de revenus du foyer.
+                            project_maturity:
+                              type:
+                              - string
+                              - 'null'
+                              enum:
+                              - curious
+                              - searching
+                              - signed
+                              - estimated
+                              - null
+                              example: curious
+                              description: Maturité du projet.
+                        housing:
+                          type: object
+                          description: Les informations du logement (type, latitude, longitude, adresse, adresse détaillée, BAN, lien Google Maps)
+                          properties:
+                            kind:
+                              type:
+                              - string
+                              - 'null'
+                              enum:
+                              - apartment
+                              - house
+                              - null
+                              description: Le type de logement
+                            latitude:
+                              type: number
+                              format: float
+                              example: 48.8487743
+                              description: La latitude des coordonnées GPS du logement
+                            longitude:
+                              type: number
+                              format: float
+                              example: 2.328388
+                              description: La longitude des coordonnées GPS du logement
+                            address:
+                              type:
+                              - string
+                              - 'null'
+                              example: 10 rue du Regard, 75006, Paris
+                              description: L'adresse du logement
+                            address_parts:
+                              type: object
+                              description: Les parties de l'adresse du logement (numéro, rue, ville, code postal, pays, latitude, longitude)
+                              properties:
+                                street_number:
+                                  type: string
+                                  example: '10'
+                                  description: Le numéro de la rue
+                                address_line_1:
+                                  type: string
+                                  example: rue du Regard
+                                  description: La rue
+                                address_line_2:
+                                  type:
+                                  - string
+                                  - 'null'
+                                  example: Appartement 2
+                                  description: Le complément d'adresse
+                                city:
+                                  type: string
+                                  example: Paris
+                                  description: La ville
+                                postal_code:
+                                  type: string
+                                  example: '75006'
+                                  description: Le code postal
+                                country_number:
+                                  type: integer
+                                  example: 250
+                                  description: Le code pays (ISO 3166-1 alpha-3)
+                                latitude:
+                                  type: number
+                                  format: float
+                                  example: 48.8487743
+                                  description: La latitude des coordonnées GPS du logement
+                                longitude:
+                                  type: number
+                                  format: float
+                                  example: 2.328388
+                                  description: La longitude des coordonnées GPS du logement
+                            ban_id:
+                              type:
+                              - string
+                              - 'null'
+                              example: '75106_8092_00010'
+                              description: L'identifiant BAN du logement
+                            google_maps_link:
+                              type: string
+                              example: https://maps.google.com/
+                              description: Le lien Google Maps du logement
+                        initial_state:
+                          type: object
+                          properties:
+                            overall_rating:
+                              type: string
+                              enum:
+                              - A
+                              - B
+                              - C
+                              - D
+                              - E
+                              - F
+                              - G
+                              example: B
+                              description: La lettre DPE globale (la plus défavorable entre énergie et GES).
+                            energy_rating:
+                              type: string
+                              enum:
+                              - A
+                              - B
+                              - C
+                              - D
+                              - E
+                              - F
+                              - G
+                              example: B
+                              description: La lettre énergie
+                            energy_consumption:
+                              type: integer
+                              example: 201
+                              description: La consommation énergétique en kWh/m²/an.
+                            carbon_rating:
+                              type: string
+                              enum:
+                              - A
+                              - B
+                              - C
+                              - D
+                              - E
+                              - F
+                              - G
+                              example: C
+                              description: La lettre GES
+                            carbon_emissions:
+                              type: integer
+                              example: 40
+                              description: Les émissions de gaz à effet de serre en kg CO2/m²/an.
+                            epc_id:
+                              type:
+                              - string
+                              - 'null'
+                              example: 2169E0063000A
+                              description: Le numéro du DPE s'il y a un DPE attaché à la simulation.
+                            confidence_score:
+                              type: number
+                              format: float
+                              example: 0.85
+                              description: Le score de confiance concernant la lettre du DPE.
+                            annual_energy_cost_range:
+                              type: object
+                              properties:
+                                min:
+                                  type: integer
+                                  example: 500
+                                  description: '[Déprécié] Le minimum du prix annuel estimé de chauffage.'
+                                max:
+                                  type: number
+                                  format: float
+                                  example: 1200
+                                  description: '[Déprécié] Le maximum du prix annuel estimé de chauffage.'
+                            annual_energy_consumption:
+                              type: integer
+                              example: 150
+                              description: La consommation énergétique annuelle exprimée en kWh/m²/an.
+                            position_percentage_neighborhood:
+                              type: number
+                              format: float
+                              example: 0.75
+                              description: Le pourcentage de logements du quartier qui consomment plus que le logement en question.
+                            energy_loss_percentage:
+                              type: object
+                              properties:
+                                walls:
+                                  type: number
+                                  format: float
+                                  example: 0.15
+                                  description: Le pourcentage de perte d'énergie des murs.
+                                openings:
+                                  type: number
+                                  format: float
+                                  example: 0.2
+                                  description: Le pourcentage de perte d'énergie des ouvrants.
+                                low_floor:
+                                  type: number
+                                  format: float
+                                  example: 0.3
+                                  description: Le pourcentage de perte d'énergie des planchers bas.
+                                high_floor:
+                                  type: number
+                                  format: float
+                                  example: 0.35
+                                  description: Le pourcentage de perte d'énergie des plafonds.
+                            close_to_historical_monument:
+                              type: boolean
+                              example: false
+                              description: Proximité d'un monument historique.
+                            living_area:
+                              type: number
+                              example: 120
+                              description: La surface habitable en mètres carrés.
+                            exterior_walls_surface:
+                              type: integer
+                              example: 100
+                              description: La surface extérieure des murs en mètres carrés.
+                            house_number_of_levels:
+                              type: integer
+                              example: 1
+                              description: Le nombre de niveaux dans la maison.
+                            shared_walls:
+                              type: boolean
+                              example: true
+                              description: Présence de murs mitoyens.
+                            wall_material:
+                              type: string
+                              enum:
+                              - lightweight_concrete
+                              - insulating_concrete
+                              - stone
+                              - brick
+                              - hollow_or_perforated_bricks
+                              - wood
+                              - wood_with_insulating_infill
+                              - rammed_or_cob_earth
+                              - traditional_old_material
+                              - others
+                              example: brick
+                              description: Le matériau principal des murs.
+                            construction_year:
+                              type: integer
+                              example: 1985
+                              description: L'année de construction du bâtiment.
+                            number_of_windows:
+                              type: integer
+                              example: 8
+                              description: Le nombre total de fenêtres.
+                            generator_type:
+                              type: string
+                              enum:
+                              - air_to_air_heat_pump
+                              - air_to_water_heat_pump
+                              - classic_gas_boiler
+                              - closed_fireplace_insert
+                              - coal_boiler
+                              - condensing_gas_boiler
+                              - electric_boiler_or_underfloor_heating
+                              - electric_convector_heater
+                              - electric_radiator
+                              - fossil_fueled_district_heating_network
+                              - fuel_boiler
+                              - fuel_stove
+                              - geothermal_heat_pump
+                              - hybrid_heat_pump
+                              - insulated_district_heating_network
+                              - lpg_propane_butane_boiler_with_external_tank
+                              - low_temperature_gas_boiler
+                              - misc_system
+                              - other_gas_generators
+                              - pellet_boiler
+                              - pellet_stove
+                              - radiant_panel_heater
+                              - standard_gas_boiler
+                              - uninsulated_district_heating_network
+                              - wood_boiler
+                              - wood_stove
+                              - unknown
+                              example: condensing_gas_boiler
+                              description: Le type de générateur de chauffage.
+                            generator_energy:
+                              type: string
+                              enum:
+                              - electricity
+                              - fuel
+                              - gas
+                              - biomass_wood
+                              - district_heating
+                              - others
+                              - unknown
+                              example: gas
+                              description: Le type d'énergie utilisé par le générateur de chauffage.
+                            hot_water_type:
+                              type: string
+                              enum:
+                              - air_to_water_heat_pump
+                              - classic_gas_boiler
+                              - coal_boiler
+                              - condensing_gas_boiler
+                              - electric_boiler
+                              - electric_hot_water_tank
+                              - electric_water_heater
+                              - fossil_fueled_district_heating_network
+                              - fuel_boiler
+                              - gas_water_tank
+                              - geothermal_heat_pump
+                              - hybrid_heat_pump
+                              - insulated_district_heating_network
+                              - instant_gas_water_heater
+                              - instant_lpg_propane_butane_water_heater
+                              - lpg_propane_butane_boiler_external_tank
+                              - lpg_propane_butane_storage_hot_water_tank
+                              - low_temperature_gas_boiler
+                              - other_gas_generators
+                              - pellet_boiler
+                              - standard_gas_boiler
+                              - thermodynamic_water_tank
+                              - uninsulated_district_heating_network
+                              - wood_boiler
+                              - unknown
+                              example: electric_hot_water_tank
+                              description: Le type de système de production d'eau chaude sanitaire.
+                            hot_water_energy:
+                              type: string
+                              enum:
+                              - electricity
+                              - fuel
+                              - gas
+                              - biomass_wood
+                              - district_heating
+                              - others
+                              - unknown
+                              example: electricity
+                              description: Le type d'énergie utilisé pour l'eau chaude sanitaire.
+                            walls_insulation:
+                              type:
+                              - object
+                              - 'null'
+                              description: L'isolation des murs.
+                              properties:
+                                level:
+                                  type:
+                                  - string
+                                  - 'null'
+                                  enum:
+                                  - no_insulation
+                                  - partially_insulated
+                                  - moderately_insulated
+                                  - well_insulated
+                                  example: partially_insulated
+                                  description: Le niveau d'isolation des murs.
+                                u_value:
+                                  type:
+                                  - number
+                                  - 'null'
+                                  format: float
+                                  example: 0.35
+                                  description: La valeur U des murs en W/m²K.
+                            windows_insulation:
+                              type:
+                              - object
+                              - 'null'
+                              description: L'isolation des fenêtres.
+                              properties:
+                                level:
+                                  type:
+                                  - string
+                                  - 'null'
+                                  enum:
+                                  - high_class
+                                  - middle_class
+                                  - low_class
+                                  example: middle_class
+                                  description: Le niveau d'isolation des fenêtres.
+                                u_value:
+                                  type:
+                                  - number
+                                  - 'null'
+                                  format: float
+                                  example: 1.8
+                                  description: La valeur U des fenêtres en W/m²K.
+                            high_floor_insulation:
+                              type:
+                              - object
+                              - 'null'
+                              description: L'isolation du plancher haut.
+                              properties:
+                                level:
+                                  type:
+                                  - string
+                                  - 'null'
+                                  enum:
+                                  - no_insulation
+                                  - partially_insulated
+                                  - moderately_insulated
+                                  - well_insulated
+                                  example: partially_insulated
+                                  description: Le niveau d'isolation du plancher haut.
+                                u_value:
+                                  type:
+                                  - number
+                                  - 'null'
+                                  format: float
+                                  example: 0.25
+                                  description: La valeur U du plancher haut en W/m²K.
+                            low_floor_insulation:
+                              type:
+                              - object
+                              - 'null'
+                              description: L'isolation du plancher bas.
+                              properties:
+                                level:
+                                  type:
+                                  - string
+                                  - 'null'
+                                  enum:
+                                  - no_insulation
+                                  - partially_insulated
+                                  - moderately_insulated
+                                  - well_insulated
+                                  example: partially_insulated
+                                  description: Le niveau d'isolation du plancher bas.
+                                u_value:
+                                  type:
+                                  - number
+                                  - 'null'
+                                  format: float
+                                  example: 0.4
+                                  description: La valeur U du plancher bas en W/m²K.
+                            vents_type:
+                              type: string
+                              enum:
+                              - window_opening_ventilation
+                              - high_low_air_inlet_ventilation
+                              - natural_ventilation_duct
+                              - mechanical_ventilation_existing_duct
+                              - sf_self_regulating_vmc
+                              - sf_hygro_a_vmc
+                              - sf_hygro_b_vmc
+                              - sf_gas_vmc
+                              - low_pressure_vmc
+                              - hybrid_ventilation
+                              - individual_df_vmc
+                              - collective_df_vmc
+                              - climatic_well
+                              example: sf_self_regulating_vmc
+                              description: Le type de ventilation.
+                            garage:
+                              type: boolean
+                              example: false
+                              description: Présence d'un garage.
+                            high_floor_kinds:
+                              type: array
+                              items:
+                                type: string
+                                enum:
+                                - apartment
+                                - converted_attic
+                                - lost_attic
+                                - not_heated_space
+                                - office
+                                - roof_terrace
+                                - unknown
+                              example:
+                              - not_heated_space
+                              description: Les types de plancher haut.
+                            low_floor_kinds:
+                              type: array
+                              items:
+                                type: string
+                                enum:
+                                - apartment
+                                - crawl_space
+                                - not_heated_space
+                                - office
+                                - slab_on_grade
+                                - underground_garage
+                                - unknown
+                              example:
+                              - crawl_space
+                              description: Les types de plancher bas.
+                            secondary_generator_energy:
+                              type: string
+                              enum:
+                              - electricity
+                              - fuel
+                              - gas
+                              - biomass_wood
+                              - district_heating
+                              - others
+                              - unknown
+                              example: gas
+                              description: Le type d'énergie utilisé par le chauffage secondaire.
+                            secondary_generator_type:
+                              type: string
+                              enum:
+                              - air_to_air_heat_pump
+                              - air_to_water_heat_pump
+                              - classic_gas_boiler
+                              - closed_fireplace_insert
+                              - coal_boiler
+                              - condensing_gas_boiler
+                              - electric_boiler_or_underfloor_heating
+                              - electric_convector_heater
+                              - electric_radiator
+                              - fossil_fueled_district_heating_network
+                              - fuel_boiler
+                              - fuel_stove
+                              - geothermal_heat_pump
+                              - hybrid_heat_pump
+                              - insulated_district_heating_network
+                              - lpg_propane_butane_boiler_with_external_tank
+                              - low_temperature_gas_boiler
+                              - misc_system
+                              - other_gas_generators
+                              - pellet_boiler
+                              - pellet_stove
+                              - radiant_panel_heater
+                              - standard_gas_boiler
+                              - uninsulated_district_heating_network
+                              - wood_boiler
+                              - wood_stove
+                              - unknown
+                              example: condensing_gas_boiler
+                              description: Le type de générateur de chauffage secondaire.
+                            collective_heating:
+                              type: boolean
+                              example: false
+                              description: Chauffage collectif.
+                            collective_hot_water:
+                              type: boolean
+                              example: false
+                              description: Eau chaude sanitaire collective.
+                            high_floor_surface:
+                              type: integer
+                              example: 60
+                              description: La surface du plancher haut en mètres carrés.
+                            low_floor_surface:
+                              type: integer
+                              example: 60
+                              description: La surface du plancher bas en mètres carrés.
+                            windows_surface:
+                              type: integer
+                              example: 10
+                              description: La surface totale des fenêtres en mètres carrés.
+                            sources:
+                              type:
+                              - object
+                              - 'null'
+                              description: La source de chaque champ de l'état initial. Absent si aucune source n'est disponible.
+                              properties:
+                                living_area:
+                                  type:
+                                  - string
+                                  - 'null'
+                                  enum:
+                                  - ai
+                                  - user
+                                  - dpe
+                                exterior_walls_surface:
+                                  type:
+                                  - string
+                                  - 'null'
+                                  enum:
+                                  - ai
+                                  - user
+                                  - dpe
+                                house_number_of_levels:
+                                  type:
+                                  - string
+                                  - 'null'
+                                  enum:
+                                  - ai
+                                  - user
+                                  - dpe
+                                wall_material:
+                                  type:
+                                  - string
+                                  - 'null'
+                                  enum:
+                                  - ai
+                                  - user
+                                  - dpe
+                                construction_year:
+                                  type:
+                                  - string
+                                  - 'null'
+                                  enum:
+                                  - ai
+                                  - user
+                                  - dpe
+                                number_of_windows:
+                                  type:
+                                  - string
+                                  - 'null'
+                                  enum:
+                                  - ai
+                                  - user
+                                  - dpe
+                                windows_insulation:
+                                  type:
+                                  - string
+                                  - 'null'
+                                  enum:
+                                  - ai
+                                  - user
+                                  - dpe
+                                windows_surface:
+                                  type:
+                                  - string
+                                  - 'null'
+                                  enum:
+                                  - ai
+                                  - user
+                                  - dpe
+                                vents_type:
+                                  type:
+                                  - string
+                                  - 'null'
+                                  enum:
+                                  - ai
+                                  - user
+                                  - dpe
+                                generator_type:
+                                  type:
+                                  - string
+                                  - 'null'
+                                  enum:
+                                  - ai
+                                  - user
+                                  - dpe
+                                generator_energy:
+                                  type:
+                                  - string
+                                  - 'null'
+                                  enum:
+                                  - ai
+                                  - user
+                                  - dpe
+                                secondary_generator_type:
+                                  type:
+                                  - string
+                                  - 'null'
+                                  enum:
+                                  - ai
+                                  - user
+                                  - dpe
+                                secondary_generator_energy:
+                                  type:
+                                  - string
+                                  - 'null'
+                                  enum:
+                                  - ai
+                                  - user
+                                  - dpe
+                                hot_water_type:
+                                  type:
+                                  - string
+                                  - 'null'
+                                  enum:
+                                  - ai
+                                  - user
+                                  - dpe
+                                hot_water_energy:
+                                  type:
+                                  - string
+                                  - 'null'
+                                  enum:
+                                  - ai
+                                  - user
+                                  - dpe
+                                high_floor_kinds:
+                                  type:
+                                  - string
+                                  - 'null'
+                                  enum:
+                                  - ai
+                                  - user
+                                  - dpe
+                                low_floor_kinds:
+                                  type:
+                                  - string
+                                  - 'null'
+                                  enum:
+                                  - ai
+                                  - user
+                                  - dpe
+                                walls_insulation:
+                                  type:
+                                  - string
+                                  - 'null'
+                                  enum:
+                                  - ai
+                                  - user
+                                  - dpe
+                                high_floor_insulation:
+                                  type:
+                                  - string
+                                  - 'null'
+                                  enum:
+                                  - ai
+                                  - user
+                                  - dpe
+                                low_floor_insulation:
+                                  type:
+                                  - string
+                                  - 'null'
+                                  enum:
+                                  - ai
+                                  - user
+                                  - dpe
+                                close_to_historical_monument:
+                                  type:
+                                  - string
+                                  - 'null'
+                                  enum:
+                                  - ai
+                                  - user
+                                  - dpe
+                                shared_walls:
+                                  type:
+                                  - string
+                                  - 'null'
+                                  enum:
+                                  - ai
+                                  - user
+                                  - dpe
+                        projected_state:
+                          type: object
+                          properties:
+                            renovation_plans:
+                              type: array
+                              items:
+                                type: object
+                                description: Liste des plans de rénovation.
+                                properties:
+                                  id:
+                                    type: string
+                                    example: hjjcm1qp28
+                                    description: L'identifiant du plan de rénovation.
+                                  name:
+                                    type: string
+                                    example: Mon plan personnalisé
+                                    description: Le nom du plan de rénovation.
+                                  type:
+                                    type: string
+                                    enum:
+                                    - customized
+                                    - optimized
+                                    - normal
+                                    example: customized
+                                    description: Le type de plan de rénovation.
+                                  overall_rating:
+                                    type: string
+                                    enum:
+                                    - A
+                                    - B
+                                    - C
+                                    - D
+                                    - E
+                                    - F
+                                    - G
+                                    example: B
+                                    description: La lettre DPE globale (la plus défavorable entre énergie et GES).
+                                  energy_rating:
+                                    type: string
+                                    enum:
+                                    - A
+                                    - B
+                                    - C
+                                    - D
+                                    - E
+                                    - F
+                                    - G
+                                    example: B
+                                    description: La lettre énergie après rénovation.
+                                  energy_consumption:
+                                    type: integer
+                                    example: 201
+                                    description: La consommation énergétique après rénovation en kWh/m²/an.
+                                  carbon_rating:
+                                    type: string
+                                    enum:
+                                    - A
+                                    - B
+                                    - C
+                                    - D
+                                    - E
+                                    - F
+                                    - G
+                                    example: C
+                                    description: La lettre GES après rénovation.
+                                  carbon_emissions:
+                                    type: integer
+                                    example: 40
+                                    description: Les émissions de gaz à effet de serre après rénovation en kg CO2/m²/an.
+                                  yearly_energy_savings:
+                                    type: number
+                                    format: float
+                                    description: Économies d'énergie annuelles estimées en Euros.
+                                    example: 600
+                                  yearly_energy_cost:
+                                    type: number
+                                    format: float
+                                    description: Coût énergétique annuel estimé en Euros.
+                                    example: 12000
+                                  budget:
+                                    type: number
+                                    format: float
+                                    description: Coût total estimé du plan de travaux en Euros.
+                                    example: 12000
+                                  financial_support:
+                                    $ref: '#/components/schemas/FinancialSupport'
+                                  kpi:
+                                    type: object
+                                    description: Indicateurs clés de performance du plan de rénovation.
+                                    properties:
+                                      property_value_increase:
+                                        type: object
+                                        description: Valorisation immobilière estimée suite aux travaux.
+                                        properties:
+                                          percentage:
+                                            type: number
+                                            format: float
+                                            description: Pourcentage d'augmentation de la valeur immobilière.
+                                            example: 5
+                                          price_per_sqm:
+                                            type: number
+                                            format: float
+                                            description: Valorisation estimée en €/m².
+                                            example: 115
+                                          area_loss_sqm:
+                                            type: number
+                                            format: float
+                                            description: Perte de surface en m² due aux travaux.
+                                            example: 0
+                                  renovation_plan:
+                                    type: object
+                                    description: Liste des tâches du plan de rénovation.
+                                    properties:
+                                      ventilation:
+                                        type: array
+                                        items:
+                                          type: object
+                                          properties:
+                                            technical_id:
+                                              type: string
+                                              enum:
+                                              - dual_flow_ventilation
+                                              - single_flow_ventilation_self_regulating
+                                              - air_destratifier
+                                              - mechanical_distributed_ventilation
+                                              - dual_flow_ventilation_thermodynamic
+                                              - single_flow_ventilation_humidity_controlled
+                                              - ventilation_mechanical_insufflation
+                                            name:
+                                              type: string
+                                              enum:
+                                              - Installation d'une VMC double flux
+                                              - Installation d'une VMC simple flux autoréglable
+                                              - Installation d'un destratificateur d'air
+                                              - Installation d'un système de ventilation mécanique répartie (VMR)
+                                              - Installation d'une VMC double flux thermodynamique
+                                              - Installation d'une VMC simple flux hygroréglable
+                                              - Installation d'un système de ventilation mécanique par insufflation (VMI)
+                                            quantity:
+                                              type: integer
+                                              description: Nombre d'unités
+                                            budget:
+                                              type: number
+                                              format: float
+                                              description: Coût estimé des travaux (en euros)
+                                            financial_support:
+                                              $ref: '#/components/schemas/GestureFinancialSupport'
+                                      walls:
+                                        type: array
+                                        items:
+                                          type: object
+                                          properties:
+                                            technical_id:
+                                              type: string
+                                              enum:
+                                              - exterior_thermal_correction
+                                              - interior_thermal_insulation
+                                              - exterior_thermal_insulation
+                                              - exterior_thermal_insulation_historic
+                                              - interior_thermal_insulation_thin
+                                            name:
+                                              type: string
+                                              enum:
+                                              - Réalisation d'une correction thermique par l'extérieur
+                                              - Isolation thermique des murs par l'intérieur (ITI)
+                                              - Isolation thermique des murs par l'extérieur (ITE)
+                                              - Isolation thermique des murs par l'extérieur (ITE) en zone historique
+                                              - Isolation thermique des murs par l'intérieur (ITI) avec isolant mince
+                                            quantity:
+                                              type: integer
+                                              description: Surface en m²
+                                            budget:
+                                              type: number
+                                              format: float
+                                              description: Coût estimé des travaux (en euros)
+                                            financial_support:
+                                              $ref: '#/components/schemas/GestureFinancialSupport'
+                                      doors_windows:
+                                        type: array
+                                        items:
+                                          type: object
+                                          properties:
+                                            technical_id:
+                                              type: string
+                                              enum:
+                                              - windows_triple_glazed
+                                              - doors_double_glazed
+                                              - windows_double_glazed_historic
+                                              - french_doors_double_glazed_historic
+                                              - doors_full_historic
+                                              - roof_windows_triple_glazed_historic
+                                              - french_doors_triple_glazed
+                                              - roof_windows_triple_glazed
+                                              - doors_triple_glazed
+                                              - roof_windows_double_glazed
+                                              - windows_double_glazed
+                                              - windows_triple_glazed_historic
+                                              - french_doors_double_glazed
+                                              - doors_full
+                                              - roof_windows_double_glazed_historic
+                                              - doors_double_glazed_historic
+                                              - doors_triple_glazed_historic
+                                              - french_doors_triple_glazed_historic
+                                            name:
+                                              type: string
+                                              enum:
+                                              - Pose de fenêtres à triple vitrage
+                                              - Pose de portes à double vitrage
+                                              - Pose de fenêtres à double vitrage en zone historique
+                                              - Pose de portes-fenêtres à double vitrage en zone historique
+                                              - Pose de portes pleines en zone historique
+                                              - Pose de fenêtres de toit à triple vitrage en zone historique
+                                              - Pose de portes-fenêtres à triple vitrage
+                                              - Pose de fenêtres de toit à triple vitrage
+                                              - Pose de portes à triple vitrage
+                                              - Pose de fenêtres de toit à double vitrage
+                                              - Pose de fenêtres à double vitrage
+                                              - Pose de fenêtres à triple vitrage en zone historique
+                                              - Pose de portes-fenêtres à double vitrage
+                                              - Pose de portes pleines
+                                              - Pose de fenêtres de toit à double vitrage en zone historique
+                                              - Pose de portes à double vitrage en zone historique
+                                              - Pose de portes à triple vitrage en zone historique
+                                              - Pose de portes-fenêtres à triple vitrage en zone historique
+                                            quantity:
+                                              type: integer
+                                              description: Nombre d'unités
+                                            budget:
+                                              type: number
+                                              format: float
+                                              description: Coût estimé des travaux (en euros)
+                                            financial_support:
+                                              $ref: '#/components/schemas/GestureFinancialSupport'
+                                      low_floor:
+                                        type: array
+                                        items:
+                                          type: object
+                                          properties:
+                                            technical_id:
+                                              type: string
+                                              enum:
+                                              - crawl_space
+                                              - underfloor
+                                              - parcel
+                                            name:
+                                              type: string
+                                              enum:
+                                              - Isolation du plancher bas sur vide sanitaire
+                                              - Isolation du plancher bas sur sous-sol
+                                              - Isolation du plancher bas sur terre-plein
+                                            quantity:
+                                              type: integer
+                                              description: Surface en m²
+                                            budget:
+                                              type: number
+                                              format: float
+                                              description: Coût estimé des travaux (en euros)
+                                            financial_support:
+                                              $ref: '#/components/schemas/GestureFinancialSupport'
+                                      high_floor:
+                                        type: array
+                                        items:
+                                          type: object
+                                          properties:
+                                            technical_id:
+                                              type: string
+                                              enum:
+                                              - sloped_walls_nonreg
+                                              - flat_roof
+                                              - sloped_walls
+                                              - lost_attic
+                                              - flat_roof_nonreg
+                                            name:
+                                              type: string
+                                              enum:
+                                              - Isolation non réglementaire des rampants de toiture
+                                              - Isolation de la toiture-terrasse
+                                              - Isolation des rampants de toiture
+                                              - Isolation du plancher haut sur combles perdus
+                                              - Isolation non réglementaire de la toiture terrasse
+                                            quantity:
+                                              type: integer
+                                              description: Surface en m²
+                                            budget:
+                                              type: number
+                                              format: float
+                                              description: Coût estimé des travaux (en euros)
+                                            financial_support:
+                                              $ref: '#/components/schemas/GestureFinancialSupport'
+                                      heating:
+                                        type: array
+                                        items:
+                                          type: object
+                                          properties:
+                                            technical_id:
+                                              type: string
+                                              enum:
+                                              - wood_pellets_stove
+                                              - wood_logs_boiler_simple_service
+                                              - mass_stove
+                                              - wood_pellets_boiler_simple_service
+                                              - wood_logs_boiler_double_service
+                                              - geothermal_heat_pump_double_service
+                                              - wood_pellets_boiler_double_service
+                                              - air_water_heat_pump_simple_service
+                                              - gas_boiler_double_service
+                                              - geothermal_heat_pump_simple_service
+                                              - wood_logs_stove_double_service
+                                              - gas_boiler_simple_service
+                                              - air_water_heat_pump_double_service
+                                              - air_air_heat_pump_with_external_unit_complete
+                                              - hybrid_heat_pump_simple_service
+                                              - wood_logs_stove
+                                              - hybrid_heat_pump_double_service
+                                              - electric_emitter_fluid_inertia
+                                              - low_temperature_underfloor_heating
+                                              - air_air_heat_pump_without_external_unit
+                                            name:
+                                              type: string
+                                              enum:
+                                              - Installation d'un poêle à granulés
+                                              - Installation d'une chaudière bois à bûches simple service
+                                              - Installation d'un poêle de masse
+                                              - Installation d'une chaudière bois à granulés simple service
+                                              - Installation d'une chaudière bois à bûches double service
+                                              - Installation d'une pompe à chaleur géothermique double service
+                                              - Installation d'une chaudière bois à granulés double service
+                                              - Installation d'une pompe à chaleur air/eau simple service
+                                              - Installation d'une chaudière gaz à condensation double service
+                                              - Installation d'une pompe à chaleur géothermique simple service
+                                              - Installation d'un poêle à bûches avec bouilleur
+                                              - Installation d'une chaudière gaz à condensation simple service
+                                              - Installation d'une pompe à chaleur air/eau double service
+                                              - Installation d'une pompe à chaleur air/air avec groupe extérieur
+                                              - Installation d'une pompe à chaleur hybride air/eau simple service
+                                              - Installation d'un poêle à bûches
+                                              - Installation d'une pompe à chaleur hybride air/eau double service
+                                              - Installation d'un émetteur électrique performant
+                                              - Installation d'un plancher chauffant basse température (PCBT)
+                                              - Installation d'une pompe à chaleur air/air sans groupe extérieur
+                                            quantity:
+                                              type: integer
+                                              description: Nombre d'unités
+                                            energy:
+                                              type: object
+                                              description: Type d'énergie utilisé pour le chauffage.
+                                              properties:
+                                                technical_id:
+                                                  type: string
+                                                  enum:
+                                                  - electricity
+                                                  - fuel
+                                                  - gas
+                                                  - biomass_wood
+                                                  - district_heating
+                                                  - others
+                                                name:
+                                                  type: string
+                                                  enum:
+                                                  - Électricité
+                                                  - Fioul
+                                                  - Gaz
+                                                  - Bois/biomasse
+                                                  - Réseau de chauffage urbain
+                                                  - Autres
+                                            budget:
+                                              type: number
+                                              format: float
+                                              description: Coût estimé des travaux (en euros)
+                                            financial_support:
+                                              $ref: '#/components/schemas/GestureFinancialSupport'
+                                            recommended_power:
+                                              type: number
+                                              description: Puissance recommandée (en kW). Présent uniquement pour les pompes à chaleur.
+                                              example: 6.2
+                                            recommended_water_tank_volume:
+                                              type: integer
+                                              description: Capacité du ballon recommandée (en litres). Présent uniquement pour les pompes à chaleur double service.
+                                              example: 80
+                                      hot_water:
+                                        type: array
+                                        items:
+                                          type: object
+                                          properties:
+                                            technical_id:
+                                              type: string
+                                              enum:
+                                              - solar_water_heater
+                                              - electric_storage_tank
+                                              - solar_system_combined
+                                              - thermodynamic_water_heater
+                                            name:
+                                              type: string
+                                              enum:
+                                              - Installation d'un chauffe-eau solaire individuel
+                                              - Installation d'un ballon d'eau chaude électrique à accumulation
+                                              - Installation d'un système solaire combiné (SSC)
+                                              - Installation d'un ballon d'eau chaude thermodynamique indépendant
+                                            quantity:
+                                              type: integer
+                                              description: Nombre d'unités
+                                            energy:
+                                              type: object
+                                              description: Type d'énergie utilisé pour l'eau chaude sanitaire.
+                                              properties:
+                                                technical_id:
+                                                  type: string
+                                                  enum:
+                                                  - electricity
+                                                  - fuel
+                                                  - gas
+                                                  - biomass_wood
+                                                  - district_heating
+                                                  - others
+                                                name:
+                                                  type: string
+                                                  enum:
+                                                  - Électricité
+                                                  - Fioul
+                                                  - Gaz
+                                                  - Bois/biomasse
+                                                  - Réseau de chauffage urbain
+                                                  - Autres
+                                            budget:
+                                              type: number
+                                              format: float
+                                              description: Coût estimé des travaux (en euros)
+                                            financial_support:
+                                              $ref: '#/components/schemas/GestureFinancialSupport'
+                                      renewable_energy:
+                                        type: array
+                                        items:
+                                          type: object
+                                          properties:
+                                            technical_id:
+                                              type: string
+                                              enum:
+                                              - hydroelectric_turbine
+                                              - wind_turbine
+                                              - photovoltaic_panels
+                                            name:
+                                              type: string
+                                              enum:
+                                              - Installation d'une micro-turbine hydroélectrique
+                                              - Installation d'une éolienne domestique
+                                              - Installation de panneaux photovoltaïques
+                                            quantity:
+                                              type: integer
+                                              description: Nombre d'unités
+                                            budget:
+                                              type: number
+                                              format: float
+                                              description: Coût estimé des travaux (en euros)
+                                            financial_support:
+                                              $ref: '#/components/schemas/GestureFinancialSupport'
+                                      summer_comfort:
+                                        type: array
+                                        items:
+                                          type: object
+                                          properties:
+                                            technical_id:
+                                              type: string
+                                              enum:
+                                              - sunshade
+                                              - roller_shutters
+                                              - vegetal_facade
+                                              - solar_film
+                                              - exterior_jalousies
+                                              - vegetal_screens
+                                              - awnings
+                                            name:
+                                              type: string
+                                              enum:
+                                              - Installation de brise-soleil
+                                              - Installation de volets roulants
+                                              - Mise en place d'une végétalisation de façade
+                                              - Pose de films solaires sur vitrages
+                                              - Installation de jalousies extérieures
+                                              - Installation d'écrans végétaux mobiles
+                                              - Installation de stores bannes
+                                            quantity:
+                                              type: integer
+                                              description: Nombre d'unités
+                                            budget:
+                                              type: number
+                                              format: float
+                                              description: Coût estimé des travaux (en euros)
+                                            financial_support:
+                                              $ref: '#/components/schemas/GestureFinancialSupport'
+                                      winter_comfort:
+                                        type: array
+                                        items:
+                                          type: object
+                                          properties:
+                                            technical_id:
+                                              type: string
+                                              enum:
+                                              - thermal_curtains
+                                              - window_sealing
+                                              - carpets
+                                              - air_leak_detection
+                                              - door_borders
+                                            name:
+                                              type: string
+                                              enum:
+                                              - Installation de rideaux thermiques
+                                              - Pose de joints d'étanchéité sur menuiseries
+                                              - Mise en place de moquettes ou de tapis
+                                              - Réalisation d'une traque des infiltrations d'air
+                                              - Installation de boudins de porte
+                                            quantity:
+                                              type: integer
+                                              description: Nombre d'unités
+                                            budget:
+                                              type: number
+                                              format: float
+                                              description: Coût estimé des travaux (en euros)
+                                            financial_support:
+                                              $ref: '#/components/schemas/GestureFinancialSupport'
+                                      thermal_bridge_treatment:
+                                        type: array
+                                        items:
+                                          type: object
+                                          properties:
+                                            technical_id:
+                                              type: string
+                                              enum:
+                                              - thermal_bridge_treatment_after_interior_insulation
+                                              - thermal_bridge_treatment_after_high_floor_insulation
+                                              - thermal_point_insulation_window
+                                              - thermal_bridge_treatment_after_low_floor_insulation
+                                            name:
+                                              type: string
+                                              enum:
+                                              - Traitement d'une rupture de pont thermique suite à une isolation des murs par l'intérieur
+                                              - Traitement d'une rupture de pont thermique suite à une isolation du plancher haut
+                                              - Isolation thermique d'un pont thermique induit par une menuiserie
+                                              - Traitement d'une rupture de pont thermique suite à une isolation du plancher bas
+                                            quantity:
+                                              type: integer
+                                              description: Nombre d'unités
+                                            budget:
+                                              type: number
+                                              format: float
+                                              description: Coût estimé des travaux (en euros)
+                                            financial_support:
+                                              $ref: '#/components/schemas/GestureFinancialSupport'
+                                      lighting:
+                                        type: array
+                                        items:
+                                          type: object
+                                          properties:
+                                            technical_id:
+                                              type: string
+                                              enum:
+                                              - led_low_consumption_bulbs
+                                              - lighting_controller
+                                              - solar_lighting_with_motion_detector
+                                            name:
+                                              type: string
+                                              enum:
+                                              - Remplacement d'ampoules existantes par des lampes LED à faible consommation
+                                              - Installation d'un contrôleur d'éclairage connecté
+                                              - Installation d'un éclairage solaire extérieur avec détecteur de mouvement
+                                            quantity:
+                                              type: integer
+                                              description: Nombre d'unités
+                                            budget:
+                                              type: number
+                                              format: float
+                                              description: Coût estimé des travaux (en euros)
+                                            financial_support:
+                                              $ref: '#/components/schemas/GestureFinancialSupport'
+                                      sobriety:
+                                        type: array
+                                        items:
+                                          type: object
+                                          properties:
+                                            technical_id:
+                                              type: string
+                                              enum:
+                                              - rainwater_watering_system
+                                              - rainwater_downspout
+                                              - gray_water_recovery_system
+                                              - rainwater_recovery_tank_with_cistern
+                                              - buried_water_recovery_tank
+                                              - thermostat_valves
+                                              - terminal_regulation
+                                            name:
+                                              type: string
+                                              enum:
+                                              - Installation d'un système d'arrosage utilisant l'eau de récupération
+                                              - Installation d'une descente d'eau pluviale
+                                              - Installation d'un récupérateur d'énergie sur les eaux grises
+                                              - Installation d'un récupérateur d'eau de pluie avec citerne
+                                              - Installation d'une cuve de récupération d'eau de pluie enterrée
+                                              - Pose de robinets thermostatiques
+                                              - Installation d'un système de régulation terminale
+                                            quantity:
+                                              type: integer
+                                              description: Nombre d'unités
+                                            budget:
+                                              type: number
+                                              format: float
+                                              description: Coût estimé des travaux (en euros)
+                                            financial_support:
+                                              $ref: '#/components/schemas/GestureFinancialSupport'
+                                required:
+                                - id
+                                - name
+                                - type
+                                - overall_rating
+                                - energy_rating
+                                - energy_consumption
+                                - carbon_rating
+                                - carbon_emissions
+                                - yearly_energy_savings
+                                - yearly_energy_cost
+                                - budget
+                                - financial_support
+                                - kpi
+                                - renovation_plan
+                      required:
+                      - id
+                      - created_at
+                      - simulation_url
+                      - team_id
+                      - source
+                      - tracking_context
+                      - client
+                      - housing
+                  meta:
+                    type: object
+                    properties:
+                      total_pages:
+                        type: integer
+                      current_page:
+                        type: integer
+                      total_count:
+                        type: integer
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: Status is not valid
+                    description: Error message indicating the issue.
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: Unauthorized
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: Forbidden
+      tags:
+      - Simulations
+    servers:
+    - url: '{protocol}://{defaultHost}'
+      variables:
+        protocol:
+          default: https
+        defaultHost:
+          default: app.go-kelvin.com
+  /api/v2/simulations:
+    get:
+      summary: Lister les simulations
+      description: Endpoint pour lister les simulations.
+      security:
+      - bearerAuth: []
+      parameters:
+      - name: status
+        in: query
+        required: false
+        example: with_contact_details
+        enum:
+        - with_contact_details
+        description: "Filtrer les simulations avec des informations de contact:\n * `with_contact_details` \n "
+        schema:
+          type: string
+      - name: page
+        in: query
+        required: false
+        example: 1
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: string
+                          example: 1fh9vrmd2c
+                          description: L'identifiant de la simulation
+                        created_at:
+                          type: string
+                          format: date-time
+                          example: '2024-10-08T10:00:54Z'
+                          description: La date de création de la simulation
+                        simulation_url:
+                          type: string
+                          format: uri
+                          example: https://app.go-kelvin.com/simulator/4732fnd4mt/simulations/1fh9vrmd2c
+                          description: L'adresse web du résultat de la simulation
+                        team_id:
+                          type: string
+                          example: 4732fnd4mt
+                          description: L'identifiant de l'équipe
+                        source:
+                          type: string
+                          enum:
+                          - simulator
+                          - qualification
+                          - api
+                          example: api
+                          description: La source de la simulation
+                        tracking_context:
+                          type: object
+                          description: Les informations de tracking extraites du contexte de lancement de la simulation
+                          properties:
+                            utm_source:
+                              type:
+                              - string
+                              - 'null'
+                            utm_medium:
+                              type:
+                              - string
+                              - 'null'
+                            utm_campaign:
+                              type:
+                              - string
+                              - 'null'
+                            utm_content:
+                              type:
+                              - string
+                              - 'null'
+                            utm_term:
+                              type:
+                              - string
+                              - 'null'
+                            gad_source:
+                              type:
+                              - string
+                              - 'null'
+                            gclid:
+                              type:
+                              - string
+                              - 'null'
+                            fbclid:
+                              type:
+                              - string
+                              - 'null'
+                            cuid:
+                              type:
+                              - string
+                              - 'null'
+                            referer:
+                              type:
+                              - string
+                              - 'null'
+                            gbraid:
+                              type:
+                              - string
+                              - 'null'
+                            msclkid:
+                              type:
+                              - string
+                              - 'null'
+                            krid:
+                              type:
+                              - string
+                              - 'null'
+                            krsrc:
+                              type:
+                              - string
+                              - 'null'
+                            ksid:
+                              type:
+                              - string
+                              - 'null'
+                        client:
+                          type: object
+                          description: Les informations du client (nom, prénom, email, téléphone)
+                          properties:
+                            first_name:
+                              type:
+                              - string
+                              - 'null'
+                              example: Jean
+                              description: Le prénom du client
+                            last_name:
+                              type:
+                              - string
+                              - 'null'
+                              example: Dupont
+                              description: Le nom de famille du client
+                            email:
+                              type:
+                              - string
+                              - 'null'
+                              example: jean.dupont@example.com
+                              description: L'email du client
+                            phone_number:
+                              type:
+                              - string
+                              - 'null'
+                              example: '+33600112233'
+                              description: Le téléphone du client
+                            ownership_status:
+                              type:
+                              - string
+                              - 'null'
+                              enum:
+                              - Propriétaire occupant
+                              - Résidence secondaire
+                              - Locataire
+                              - Propriétaire bailleur
+                              example: Propriétaire occupant
+                              description: Le statut de propriété du client
+                            main_property:
+                              type:
+                              - string
+                              - 'null'
+                              example: 'true'
+                              description: Indique si la propriété est la principale
+                            number_people:
+                              type:
+                              - integer
+                              - 'null'
+                              example: 4
+                              description: Le nombre de personnes dans le foyer
+                            fiscal_department:
+                              type:
+                              - string
+                              - 'null'
+                              example: '50'
+                              description: Le département fiscal du client
+                            revenues:
+                              type:
+                              - string
+                              - 'null'
+                              example: 34948 - 44802
+                              description: La tranche de revenus du client
+                            mindset:
+                              type:
+                              - string
+                              - 'null'
+                              enum:
+                              - Projet d’achat
+                              - Réflexion en cours
+                              - Devis déjà obtenu
+                              - Devis déjà signé
+                              example: Projet d’achat
+                              description: L'état d'esprit ou la maturité du projet du client
+                            household_level:
+                              type:
+                              - string
+                              - 'null'
+                              enum:
+                              - Très modeste
+                              - Modeste
+                              - Intermédiaire
+                              - Supérieur
+                              example: Très modeste
+                              description: Le niveau de revenu du ménage
+                            household_color:
+                              type:
+                              - string
+                              - 'null'
+                              enum:
+                              - Bleu
+                              - Jaune
+                              - Violet
+                              - Rose
+                              example: Bleu
+                              description: La couleur associée au niveau de revenu du ménage
+                        housing:
+                          type: object
+                          description: Les informations du logement (type, latitude, longitude, adresse, adresse détaillée, BAN, lien Google Maps)
+                          properties:
+                            kind:
+                              type:
+                              - string
+                              - 'null'
+                              enum:
+                              - apartment
+                              - house
+                              - null
+                              description: Le type de logement
+                            latitude:
+                              type: number
+                              format: float
+                              example: 48.8487743
+                              description: La latitude des coordonnées GPS du logement
+                            longitude:
+                              type: number
+                              format: float
+                              example: 2.328388
+                              description: La longitude des coordonnées GPS du logement
+                            address:
+                              type:
+                              - string
+                              - 'null'
+                              example: 10 rue du Regard, 75006, Paris
+                              description: L'adresse du logement
+                            address_parts:
+                              type: object
+                              description: Les parties de l'adresse du logement (numéro, rue, ville, code postal, pays, latitude, longitude)
+                              properties:
+                                street_number:
+                                  type: string
+                                  example: '10'
+                                  description: Le numéro de la rue
+                                address_line_1:
+                                  type: string
+                                  example: rue du Regard
+                                  description: La rue
+                                address_line_2:
+                                  type:
+                                  - string
+                                  - 'null'
+                                  example: Appartement 2
+                                  description: Le complément d'adresse
+                                city:
+                                  type: string
+                                  example: Paris
+                                  description: La ville
+                                postal_code:
+                                  type: string
+                                  example: '75006'
+                                  description: Le code postal
+                                country_number:
+                                  type: integer
+                                  example: 250
+                                  description: Le code pays (ISO 3166-1 alpha-3)
+                                latitude:
+                                  type: number
+                                  format: float
+                                  example: 48.8487743
+                                  description: La latitude des coordonnées GPS du logement
+                                longitude:
+                                  type: number
+                                  format: float
+                                  example: 2.328388
+                                  description: La longitude des coordonnées GPS du logement
+                            ban_id:
+                              type:
+                              - string
+                              - 'null'
+                              example: '75106_8092_00010'
+                              description: L'identifiant BAN du logement
+                            google_maps_link:
+                              type: string
+                              example: https://maps.google.com/
+                              description: Le lien Google Maps du logement
+                        initial_state:
+                          type: object
+                          properties:
+                            dpe_class:
+                              type: string
+                              enum:
+                              - A
+                              - B
+                              - C
+                              - D
+                              - E
+                              - F
+                              - G
+                              example: B
+                              description: La lettre du DPE
+                            confidence_score:
+                              type: float
+                              example: 0.85
+                              description: Le score de confiance concernant la lettre du DPE.
+                            annual_energy_cost_range:
+                              type: object
+                              properties:
+                                min:
+                                  type: integer
+                                  example: 500
+                                  description: '[Déprécié] Le minimum du prix annuel estimé de chauffage.'
+                                max:
+                                  type: float
+                                  example: 1200
+                                  description: '[Déprécié] Le maximum du prix annuel estimé de chauffage.'
+                            annual_energy_consumption:
+                              type: integer
+                              example: 150
+                              description: La consommation énergétique annuelle en kWh/m²/an.
+                            position_percentage_neighborhood:
+                              type: float
+                              example: 0.75
+                              description: Le pourcentage de logements du quartier qui consomment plus que le logement en question.
+                            energy_loss_percentage:
+                              type: object
+                              properties:
+                                walls:
+                                  type: float
+                                  example: 0.15
+                                  description: Le pourcentage de perte d'énergie des murs.
+                                openings:
+                                  type: float
+                                  example: 0.2
+                                  description: Le pourcentage de perte d'énergie des ouvrants.
+                                low_floor:
+                                  type: float
+                                  example: 0.3
+                                  description: Le pourcentage de perte d'énergie des planchers bas.
+                                high_floor:
+                                  type: float
+                                  example: 0.35
+                                  description: Le pourcentage de perte d'énergie des plafonds.
+                            close_to_historical_monument:
+                              type: boolean
+                              example: false
+                              description: Proximité d'un monument historique.
+                            living_area:
+                              type: number
+                              example: 120
+                              description: La surface habitable en mètres carrés.
+                            exterior_walls_surface:
+                              type: integer
+                              example: 100
+                              description: La surface extérieure des murs en mètres carrés.
+                            house_number_of_levels:
+                              type: integer
+                              example: 1
+                              description: Le nombre de niveaux dans la maison.
+                            shared_walls:
+                              type: boolean
+                              example: true
+                              description: Présence de murs mitoyens.
+                            wall_material:
+                              type: string
+                              enum:
+                              - aggregate
+                              - brick
+                              - concrete
+                              - millstone
+                              - other
+                              - stone
+                              - wood
+                              example: brick
+                              description: Le matériau principal des murs.
+                            construction_year:
+                              type: integer
+                              example: 1985
+                              description: L'année de construction du bâtiment.
+                            number_of_windows:
+                              type: integer
+                              example: 8
+                              description: Le nombre total de fenêtres.
+                            generator_type:
+                              type: string
+                              enum:
+                              - boiler
+                              - district_heating_network
+                              - electric
+                              - heat_pump
+                              example: heat_pump
+                              description: Le type de générateur de chauffage.
+                            generator_energy:
+                              type: string
+                              enum:
+                              - electricity
+                              - fuel
+                              - gas
+                              - urban_heating_or_biomass
+                              - wood
+                              example: electricity
+                              description: Le type d'énergie utilisé par le générateur de chauffage.
+                            hot_water_type:
+                              type: string
+                              enum:
+                              - boiler
+                              - district_heating_network
+                              - heat_pump
+                              - hot_water_tank
+                              - water_heater
+                              example: heat_pump
+                              description: Le type de système de production d'eau chaude sanitaire.
+                            hot_water_energy:
+                              type: string
+                              enum:
+                              - electricity
+                              - fuel
+                              - gas
+                              - urban_heating_or_biomass
+                              - wood
+                              example: electricity
+                              description: Le type d'énergie utilisé pour l'eau chaude sanitaire.
+                            u_walls:
+                              type: string
+                              enum:
+                              - excellent
+                              - very_good
+                              - good
+                              - low
+                              - very_low
+                              - poor
+                              example: very_good
+                              description: L'indice de confort des murs.
+                            u_windows:
+                              type: string
+                              enum:
+                              - high_class
+                              - middle_class
+                              - low_class
+                              example: middle_class
+                              description: L'indice de confort des fenêtres.
+                            u_high_floor:
+                              type: string
+                              enum:
+                              - excellent
+                              - very_good
+                              - good
+                              - low
+                              - very_low
+                              - poor
+                              example: very_good
+                              description: L'indice de confort des plafonds.
+                            u_low_floor:
+                              type: string
+                              enum:
+                              - excellent
+                              - very_good
+                              - good
+                              - low
+                              - very_low
+                              - poor
+                              example: very_good
+                              description: L'indice de confort des planchers bas.
+                            vents_type:
+                              type: string
+                              enum:
+                              - window_opening
+                              - high_low_air_inlets
+                              - vmc_sf_autoregulated
+                              - vmc_sf_hygro_a
+                              - vmc_sf_gas
+                              - vmc_sf_hygro_b
+                              - low_pressure_autoregulated
+                              - low_pressure_hygro_a
+                              - low_pressure_hygro_b
+                              - vmc_df_individual
+                              - vmc_df_collective
+                              - natural_ventilation
+                              - hybrid_ventilation
+                              - mechanical_ventilation_existing_duct
+                              - climatic_well
+                              example: electric
+                              description: Le type de ventilation.
+                            has_vents:
+                              type: boolean
+                              example: true
+                              description: Présence d'un système de ventilation.
+                            recently_renovated:
+                              type: array
+                              items:
+                                type: string
+                                enum:
+                                - roof
+                                - attic
+                                - walls
+                                - windows
+                                - lower_floor
+                                - vents
+                                - generator
+                                - hot_water
+                              uniqueItems: true
+                              example:
+                              - roof
+                              - walls
+                              description: Les travaux récents effectués sur le logement.
+                            high_floor_type:
+                              type: string
+                              enum:
+                              - apartment
+                              - converted_attic
+                              - lost_attic
+                              - not_heated_space
+                              - office
+                              - roof_terrace
+                              - unknown
+                              example: not_heated_space
+                              description: Le type de plafond.
+                            low_floor_type:
+                              type: string
+                              enum:
+                              - apartment
+                              - crawl_space
+                              - not_heated_space
+                              - office
+                              - slab_on_grade
+                              - underground_garage
+                              - unknown
+                              example: crawl_space
+                              description: Le type de plancher bas.
+                        projected_state:
+                          type: object
+                          properties:
+                            renovation_plans:
+                              type: array
+                              items:
+                                type: object
+                                description: Liste des plans de rénovation.
+                                properties:
+                                  id:
+                                    type: string
+                                    example: hjjcm1qp28
+                                    description: L'identifiant du plan de rénovation.
+                                  name:
+                                    type: string
+                                    example: Mon plan personnalisé
+                                    description: Le nom du plan de rénovation.
+                                  type:
+                                    type: string
+                                    enum:
+                                    - customized
+                                    - optimized
+                                    - normal
+                                    example: customized
+                                    description: Le type de plan de rénovation.
+                                  dpe_after_renovation:
+                                    type: string
+                                    enum:
+                                    - A
+                                    - B
+                                    - C
+                                    - D
+                                    - E
+                                    - F
+                                    - G
+                                    example: B
+                                    description: La lettre du DPE après rénovation.
+                                  yearly_energy_savings:
+                                    type: number
+                                    format: float
+                                    description: Économies d'énergie annuelles estimées en Euros.
+                                    example: 600
+                                  yearly_energy_cost:
+                                    type: number
+                                    format: float
+                                    description: Coût énergétique annuel estimé en Euros.
+                                    example: 12000
+                                  budget:
+                                    type: number
+                                    format: float
+                                    description: Coût total estimé du plan de travaux en Euros.
+                                    example: 12000
+                                  subsidies:
+                                    type: number
+                                    format: float
+                                    description: Total des aides estimées en Euros.
+                                    example: 1200
+                                  renovation_plan:
+                                    type: object
+                                    description: Liste des tâches du plan de rénovation.
+                                    properties:
+                                      vents:
+                                        type: object
+                                        properties:
+                                          id:
+                                            type: string
+                                            enum:
+                                            - vmc_sf_hygro_b
+                                          simplified_id:
+                                            type: string
+                                            enum:
+                                            - install_vmc_hygro_b
+                                          label:
+                                            type: string
+                                            enum:
+                                            - Installation d'une VMC hygro B
+                                          quantity:
+                                            type: integer
+                                            description: Nombre d'unités
+                                      walls:
+                                        type: object
+                                        properties:
+                                          id:
+                                            type: string
+                                            enum:
+                                            - ite_12cm_lm
+                                            - ite_16cm_pse
+                                            - add_10cm_th32_outside
+                                            - concrete_18cm_pse_26cm_th32_coating_1_5cm_ite
+                                            - iti_10cm_pur
+                                            - iti_12cm_lm
+                                            - iti_14cm_ldb
+                                            - iti_16cm_pse
+                                            - add_10cm_th32_inside
+                                            - mob_22cm_lm_th35_8percent_wood_double_interior_10cm_th32
+                                          simplified_id:
+                                            type: string
+                                            enum:
+                                            - wall_isolation_inside
+                                            - wall_isolation_outside
+                                          label:
+                                            type: string
+                                            enum:
+                                            - ITE avec 12 cm LM
+                                            - ITE avec 16 cm PSE
+                                            - Rajouter équivalent 10 cm Th32 à l'extérieur
+                                            - Béton 18 cm + PSE 26 cm Th32 + enduit 1,5 cm (ITE)
+                                            - ITI avec 10 cm PUR
+                                            - ITI avec 12 cm LM
+                                            - ITI avec 14 cm LdB
+                                            - ITI avec 16 cm PSE
+                                            - Rajouter équivalent 10 cm Th32 à l'intérieur
+                                            - MOB 22 cm LM Th35 (8% bois) + doublage intérieur 10 cm Th32
+                                          quantity:
+                                            type: integer
+                                            description: Surface en m²
+                                      windows:
+                                        type: object
+                                        properties:
+                                          id:
+                                            type: string
+                                            enum:
+                                            - wood_or_pvc_windows_dv_4_20_4
+                                            - wood_or_pvc_windows_dv_4_20_4_mh_zone
+                                            - passive_windows_tv_4_16_4_16_4_itr
+                                            - passive_windows_tv_4_16_4_16_4_itr_mh_zone
+                                          simplified_id:
+                                            type: string
+                                            enum:
+                                            - install_double_glazed_windows
+                                            - install_triple_glazed_windows
+                                          label:
+                                            type: string
+                                            enum:
+                                            - Menuiserie bois ou PVC avec DV 4/20/4
+                                            - Menuiserie bois ou PVC avec DV 4/20/4 - MH zone
+                                            - Menuiserie passive avec TV, 4/16/4/16/4, ITR
+                                            - Menuiserie passive avec TV, 4/16/4/16/4, ITR - MH zone
+                                          quantity:
+                                            type: integer
+                                            description: Nombre d'unités
+                                      low_floor:
+                                        type: object
+                                        properties:
+                                          id:
+                                            type: string
+                                            enum:
+                                            - underfloor_insulation_14cm_th35
+                                            - underfloor_insulation_16cm_fibrasyrène_th36
+                                            - under_screed_insulation_10cm_pur
+                                            - 20cm_insulating_hollow_block_r4_5_on_crawl_space_8cm_pur
+                                          simplified_id:
+                                            type: string
+                                            enum:
+                                            - low_floor_isolation
+                                          label:
+                                            type: string
+                                            enum:
+                                            - Isolation en sous-face avec 14 cm Th35
+                                            - Isolation en sous-face avec 16 cm Fibrasyrène Th36
+                                            - Isolation sous chape avec 10 cm PUR
+                                            - 20 cm entrevous isolant R=4,5 sur vide sanitaire + 8 cm PUR
+                                          quantity:
+                                            type: integer
+                                            description: Surface en m²
+                                      high_floor:
+                                        type: object
+                                        properties:
+                                          id:
+                                            type: string
+                                            enum:
+                                            - add_10cm_th32_outside_or_inside
+                                            - insulation_rampants_12cm_lm_between_rafters_18cm_fdb
+                                            - insulation_flat_roof_20cm_pur
+                                            - insulation_30cm_lm_high_floor
+                                            - add_8cm_th32_outside_or_inside
+                                            - add_10cm_th32
+                                            - wooden_floor_to_attic_30cm_lm_th32_above
+                                            - flat_roof_20cm_concrete_24cm_pur_th24
+                                            - iti_16cm_pse
+                                          simplified_id:
+                                            type: string
+                                            enum:
+                                            - roof_high_floor_isolation
+                                          label:
+                                            type: string
+                                            enum:
+                                            - Rajouter équivalent 10 cm Th32 à l'extérieur ou à l'intérieur
+                                            - Isolation des rampants avec 12 cm LM entre chevrons + 18 cm FdB
+                                            - Isolation sur toiture terrasse avec 20 cm PUR
+                                            - Isolation 30 cm LM sur plancher haut
+                                            - Rajouter équivalent 8 cm Th32 à l'extérieur ou à l'intérieur
+                                            - Rajouter équivalent 10 cm Th32
+                                            - Plancher bois vers combles avec 30 cm LM Th32 au-dessus
+                                            - Toiture terrasse 20 cm béton + 24 cm PUR Th24
+                                            - ITI avec 16 cm PSE
+                                          quantity:
+                                            type: integer
+                                            description: Surface en m²
+                                      generator_type:
+                                        type: object
+                                        properties:
+                                          id:
+                                            type: string
+                                            enum:
+                                            - pac_air_air
+                                            - pac_other_than_air_air
+                                            - double_service_heat_pump
+                                            - electric_joule_effect_generators
+                                          simplified_id:
+                                            type: string
+                                            enum:
+                                            - install_electric_joule_effect_generators
+                                            - install_heat_pump_air_water
+                                            - install_heat_pump_air_air
+                                            - install_double_service_heat_pump
+                                          label:
+                                            type: string
+                                            enum:
+                                            - Installation d'une pompe à chaleur (air/air)
+                                            - Installation d'une pompe à chaleur (air/eau)
+                                            - Installation d'une pompe à chaleur double service
+                                            - Installation d'un générateur électrique à effet joule
+                                          quantity:
+                                            type: integer
+                                            description: Nombre d'unités
+                                      generator_energy:
+                                        type: object
+                                        properties:
+                                          id:
+                                            type: string
+                                            enum:
+                                            - electricity
+                                            - gas
+                                            - wood
+                                            - fuel
+                                            - urban_heating_or_biomass
+                                          label:
+                                            type: string
+                                            enum:
+                                            - Électricité
+                                            - Gaz
+                                            - Bois
+                                            - Fioul
+                                            - Chauffage urbain ou biomasse
+                                      hot_water_type:
+                                        type: object
+                                        properties:
+                                          id:
+                                            type: string
+                                            enum:
+                                            - electric_water_heater
+                                            - thermodynamic_water_heater
+                                          simplified_id:
+                                            type: string
+                                            enum:
+                                            - install_heat_pump
+                                            - install_water_tank
+                                            - install_thermodynamic_water_tank
+                                          label:
+                                            type: string
+                                            enum:
+                                            - Installation d'un ballon électrique
+                                            - Installation d'un ballon thermodynamique
+                                      hot_water_energy:
+                                        type: object
+                                        properties:
+                                          id:
+                                            type: string
+                                            enum:
+                                            - electricity
+                                            - gas
+                                            - wood
+                                            - fuel
+                                            - urban_heating_or_biomass
+                                          label:
+                                            type: string
+                                            enum:
+                                            - Électricité
+                                            - Gaz
+                                            - Bois
+                                            - Fioul
+                                            - Chauffage urbain ou biomasse
+                                required:
+                                - id
+                                - name
+                                - type
+                                - dpe_after_renovation
+                                - yearly_energy_savings
+                                - yearly_energy_cost
+                                - budget
+                                - subsidies
+                                - renovation_plan
+                      required:
+                      - id
+                      - created_at
+                      - simulation_url
+                      - team_id
+                      - source
+                      - tracking_context
+                      - client
+                      - housing
+                  meta:
+                    type: object
+                    properties:
+                      total_pages:
+                        type: integer
+                      current_page:
+                        type: integer
+                      total_count:
+                        type: integer
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: Status is not valid
+                    description: Error message indicating the issue.
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: Unauthorized
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: Forbidden
+      tags:
+      - Simulations
+    servers:
+    - url: '{protocol}://{defaultHost}'
+      variables:
+        protocol:
+          default: https
+        defaultHost:
+          default: app.go-kelvin.com
+components:
+  schemas:
+    FinancialSupport:
+      type: object
+      description: Détail des aides financières
+      properties:
+        mpr:
+          type: number
+          format: float
+          description: Montant de l'aide MaPrimeRénov' par geste (Aides par geste) en Euros
+        mpr_ampleur:
+          type: number
+          format: float
+          description: Montant de l'aide MaPrimeRénov' Ampleur (Aides d'ampleur) en Euros
+        cee:
+          type: number
+          format: float
+          description: Montant de l'aide des Certificats d'Économies d'Énergie en Euros
+        ecoptz:
+          type: number
+          format: float
+          description: Montant de l'aide Éco-PTZ en Euros
+        local:
+          type: array
+          description: Détail des aides locales
+          items:
+            type: object
+            properties:
+              name:
+                type: string
+                description: Nom de l'aide locale
+              amount:
+                type: number
+                format: float
+                description: Montant de l'aide locale en Euros
+          example:
+          - name: Aide région Île-de-France
+            amount: 1500
+          - name: Aide département Seine-Saint-Denis
+            amount: 800
+          - name: Aide ville de Saint-Denis
+            amount: 500
+    GestureFinancialSupport:
+      type: object
+      description: Détail des aides financières par geste
+      properties:
+        mpr:
+          type: number
+          format: float
+          description: Montant de l'aide MaPrimeRénov' par geste (Aides par geste) en Euros
+        cee:
+          type: number
+          format: float
+          description: Montant de l'aide des Certificats d'Économies d'Énergie en Euros
+        ecoptz:
+          type: number
+          format: float
+          description: Montant de l'aide Éco-PTZ en Euros
+        local:
+          type: array
+          description: Détail des aides locales
+          items:
+            type: object
+            properties:
+              name:
+                type: string
+                description: Nom de l'aide locale
+              amount:
+                type: number
+                format: float
+                description: Montant de l'aide locale en Euros
+          example:
+          - name: Aide région Île-de-France
+            amount: 1500
+          - name: Aide département Seine-Saint-Denis
+            amount: 800
+          - name: Aide ville de Saint-Denis
+            amount: 500
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      description: Le token commence par 'team-api-key-'
+x-refined-from:
+- kelvin-api-openapi.yml
+- kelvin-api-v2-openapi.yml

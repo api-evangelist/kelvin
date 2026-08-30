@@ -1,0 +1,890 @@
+openapi: 3.2.0
+info:
+  title: kelvin Documents API
+  version: v3
+  description: 'Bienvenue dans la documentation de l''API kelvin. Cette API est conçue pour évaluer et améliorer la performance énergétique des propriétés.
+
+
+    ![API Logo](/api/kelvin-v3-api-flow-colored-fr.svg)
+
+
+    ### Aperçu de l''API
+
+    L''API kelvin vous permet de créer des simulations pour évaluer la performance énergétique d''un bien immobilier. Elle vous aide également à proposer des plans de travaux personnalisés pour optimiser l''efficacité énergétique de ces biens.
+
+
+    ### Objectifs Principaux
+
+    - **Création de simulations** : Lancez des simulations pour obtenir la performance énergétique actuelle d''une propriété.
+
+    - **Propositions de travaux** : Génération de recommandations de travaux spécifiques pour améliorer l''efficacité énergétique, basées sur les résultats de la simulation.
+
+    - **Gestion des DPE** : Recherchez et gérez les Diagnostics de Performance Énergétique.
+
+
+    ### Utilisation de l''iframe de sélection de polygone
+
+    Pour créer une simulation, il faut déterminer la latitude, la longitude et l''identifiant d''interopérabilité (ban_id) de la propriété. Une carte interactive est disponible pour faciliter cette tâche: L''iframe de sélection de polygone. Cette carte permet aux utilisateurs de sélectionner visuellement leur propriété sur une carte. Vous pouvez intégrer ce composant dans vos applications en suivant la [documentation de l''iframe de sélection de polygone](https://app.go-kelvin.com/docs/simulator-map-iframe#/).
+
+
+    Utilisez cette documentation pour explorer les endpoints disponibles, comprendre les paramètres requis, et découvrir comment intégrer efficacement l''API dans votre système.
+
+
+    ### Changelog v2 → v3
+
+
+    ### ⚠️ Breaking changes
+
+
+    **Tous les endpoints ont été migrés de `/api/v2/` vers `/api/v3/`.**
+
+
+    #### Renommage des champs de performance énergétique
+
+
+    `dpe_class` est renommé `energy_rating` dans l''état initial et l''état projeté. Trois nouveaux champs obligatoires sont ajoutés :
+
+
+    | Avant | Après |
+
+    |---|---|
+
+    | `dpe_class` | `energy_rating` |
+
+    | *(absent)* | `energy_consumption` (kWh/m²/an) |
+
+    | *(absent)* | `carbon_rating` (lettre GES A–G) |
+
+    | *(absent)* | `carbon_emissions` (kg CO₂/m²/an) |
+
+
+    #### Champs d''isolation restructurés
+
+
+    Les champs `walls_insulation_level`, `windows_insulation_level`, `high_floor_insulation_level`, `low_floor_insulation_level` (chaînes de caractères) sont remplacés par des objets contenant un `level` et une `u_value` numérique (W/m²K) :
+
+
+    ```json
+
+    "walls_insulation": { "level": "partially_insulated", "u_value": 0.35 }
+
+    ```
+
+
+    #### Aides financières restructurées
+
+
+    `subsidies` (montant total unique) est remplacé par un objet `financial_support` détaillé, disponible à la fois sur chaque plan de rénovation et sur chaque poste de travaux :
+
+
+    ```json
+
+    "financial_support": { "mpr": 4000.0, "cee": 800.0, "ecoptz": 1200.0, "local": { "Aide région Île-de-France": 1500.0 } }
+
+    ```
+
+
+    #### Structure du plan de rénovation modifiée
+
+
+    Chaque catégorie de travaux dans `renovation_plan` est désormais un **tableau d''items** (au lieu d''un objet unique). Chaque item remplace `id`/`simplified_id`/`label` par `technical_id` et `name`.
+
+
+    #### Valeurs d''enum mises à jour
+
+
+    Plusieurs champs ont des valeurs d''enum entièrement révisées pour correspondre au référentiel DPE/ADEME :
+
+
+    - `generator_type` / `secondary_generator_type` : 4 valeurs génériques → 26 valeurs précises (ex. `condensing_gas_boiler`, `air_to_water_heat_pump`, `pellet_stove`) + `unknown` pour les cas non identifiés
+
+    - `hot_water_type` : 5 valeurs → 24 valeurs précises (ex. `electric_hot_water_tank`, `thermodynamic_water_tank`) + `unknown` pour les cas non identifiés
+
+    - `generator_energy` / `hot_water_energy` / `secondary_generator_energy` : `urban_heating_or_biomass` → `district_heating` + `biomass_wood` + `others` + `unknown`
+
+    - `wall_material` : 5 valeurs → 9 valeurs (ex. `lightweight_concrete`, `hollow_or_perforated_bricks`, `rammed_or_cob_earth`)
+
+    - `vents_type` : codes renommés (ex. `vmc_sf_hygro_b` → `sf_hygro_b_vmc`)
+
+
+    #### `windows` renommé en `doors_windows` dans `renovation_plan`
+
+
+    La catégorie `windows` couvre désormais fenêtres, portes, portes-fenêtres et fenêtres de toit (18 valeurs de `technical_id`).
+
+
+    #### Champs supprimés
+
+
+    - `recently_renovated` — supprimé de l''état initial et de l''endpoint de mise à jour du logement
+
+    - `has_vents` — supprimé (remplacé par le champ `vents_type`)
+
+    - `subsidies` — remplacé par l''objet `financial_support`
+
+
+    ### ✨ Nouveautés
+
+
+    #### Nouvel endpoint de qualification
+
+
+    `PUT /api/v3/simulations/{id}/qualification` — Enregistre le profil de qualification de l''utilisateur (statut propriétaire/locataire, taille du foyer, tranche de revenus, département fiscal, maturité du projet). Cet appel doit être effectué avant `POST /run`.
+
+
+    #### Nouveaux champs dans l''état initial
+
+
+    - `epc_id` — numéro du DPE attaché à la simulation, le cas échéant
+
+    - `secondary_generator_type` / `secondary_generator_energy` — système de chauffage secondaire
+
+    - `collective_heating` / `collective_hot_water` — indicateurs de systèmes collectifs
+
+    - `high_floor_surface`, `low_floor_surface`, `windows_surface` — surfaces en m²
+
+    - `high_floor_kinds` / `low_floor_kinds` — tableaux remplaçant les anciens `high_floor_type` / `low_floor_type`
+
+    - `sources` — indique pour chaque champ si la valeur provient de `ai`, `user` ou `dpe`
+
+
+    #### Nouvelles catégories de travaux dans `renovation_plan`
+
+
+    En plus de `ventilation`, `walls`, `doors_windows`, `low_floor`, `high_floor`, les catégories suivantes sont désormais retournées :
+
+    `heating`, `hot_water`, `renewable_energy`, `summer_comfort`, `winter_comfort`, `thermal_bridge_treatment`, `lighting`, `sobriety`
+
+
+    #### Nouveau bloc KPI
+
+
+    Chaque plan de rénovation inclut désormais un objet `kpi` avec `property_value_increase` (valorisation immobilière estimée exprimée en pourcentage, en €/m² et en perte de surface m²).
+
+    '
+servers:
+- url: '{protocol}://{defaultHost}'
+  variables:
+    protocol:
+      default: https
+    defaultHost:
+      default: app.go-kelvin.com
+security:
+- bearerAuth: []
+tags:
+- name: Documents
+  description: Endpoints pour consulter les documents générés pour une simulation
+paths:
+  /api/v3/simulations/{simulation_id}/documents:
+    get:
+      summary: Lister les documents de la simulation
+      description: 'Liste paginée des documents générés pour la simulation (rapports PDF, offres commerciales, cadres de contribution, notes de dimensionnement, attestations sur l''honneur). Par défaut, seul le dernier document est renvoyé. Utilisez `full=true` pour tous les documents, `id` pour un document précis, `type` pour filtrer par type de document, et `begin`/`end` pour filtrer par date de génération.
+
+        '
+      tags:
+      - Documents
+      security:
+      - bearerAuth: []
+      parameters:
+      - name: simulation_id
+        in: path
+        required: true
+        example: hjjcm1qp28
+        description: L'identifiant de simulation renvoyé par l'appel au endpoint créer
+        schema:
+          type: string
+      - name: full
+        in: query
+        required: false
+        description: Renvoie tous les documents au lieu du seul dernier document.
+        schema:
+          type: boolean
+      - name: id
+        in: query
+        required: false
+        description: Renvoie uniquement le document correspondant à cet identifiant.
+        schema:
+          type: integer
+      - name: type
+        in: query
+        required: false
+        enum:
+        - report
+        - commercial_offer
+        - contribution_framework
+        - dimensioning_note
+        - sworn_statement
+        description: "Ne renvoie que les documents du type donné.:\n * `report` \n * `commercial_offer` \n * `contribution_framework` \n * `dimensioning_note` \n * `sworn_statement` \n "
+        schema:
+          type: string
+      - name: begin
+        in: query
+        format: date-time
+        required: false
+        description: Ne renvoie que les documents générés à partir de cette date (ISO 8601).
+        schema:
+          type: string
+      - name: end
+        in: query
+        format: date-time
+        required: false
+        description: Ne renvoie que les documents générés jusqu'à cette date (ISO 8601).
+        schema:
+          type: string
+      - name: page
+        in: query
+        required: false
+        description: Numéro de page.
+        schema:
+          type: integer
+      - name: per_page
+        in: query
+        required: false
+        default: 1000
+        description: Nombre de documents par page (par défaut 1000).
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: integer
+                          description: Le numéro unique du document.
+                          example: 42
+                        team_id:
+                          type: string
+                          description: L'identifiant de l'équipe.
+                          example: 4732fnd4mt
+                        user_id:
+                          type: string
+                          nullable: true
+                          description: L'identifiant de l'utilisateur associé à la simulation.
+                          example: 9ab3cd2ef1
+                        simulation_id:
+                          type: string
+                          description: L'identifiant de la simulation mère (racine).
+                          example: hjjcm1qp28
+                        source_simulation_id:
+                          type: string
+                          description: L'identifiant de la simulation (enfant ou racine) à laquelle le document est directement rattaché.
+                          example: 3kd8fvn2mt
+                        generated_at:
+                          type: string
+                          format: date-time
+                          description: L'horodatage de la génération du document.
+                          example: '2026-07-03T14:00:00Z'
+                        type:
+                          type: string
+                          description: Le type de document.
+                          enum:
+                          - report
+                          - commercial_offer
+                          - contribution_framework
+                          - dimensioning_note
+                          - sworn_statement
+                          example: report
+                        metadata:
+                          type: object
+                          description: Métadonnées du document générées au moment de la création.
+                          properties:
+                            format:
+                              type: string
+                              description: Format du fichier généré.
+                              example: pdf
+                            scenario_ids:
+                              type: array
+                              description: Identifiants des scénarios inclus dans le document.
+                              items:
+                                type: string
+                              example:
+                              - hjjcm1qp28
+                            type:
+                              type: string
+                              description: Type de document généré.
+                              example: report
+                            report_template:
+                              type: string
+                              nullable: true
+                              description: 'Template sélectionné lors de la génération. Valeurs possibles : `current_state` (Etat actuel du logement), `full` (Rapport complet). `null` pour les générations sans sélection de template (ex: API).'
+                              enum:
+                              - current_state
+                              - full
+                              example: current_state
+                        download_url:
+                          type: string
+                          description: L'URL de téléchargement du document.
+                          example: https://app.go-kelvin.com/rails/active_storage/blobs/redirect/xxx/report.pdf
+                  meta:
+                    type: object
+                    properties:
+                      total_pages:
+                        type: integer
+                        example: 1
+                      current_page:
+                        type: integer
+                        example: 1
+                      total_count:
+                        type: integer
+                        example: 1
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: Unauthorized
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: Forbidden
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: Could not find the simulation
+  /api/v3/simulations/{simulation_id}/documents/report:
+    post:
+      summary: 'Lancer la génération du document : Rapport complet'
+      description: Lance la génération asynchrone du document PDF « Rapport complet » pour la simulation. Renvoie l'identifiant de la génération à utiliser pour interroger son statut. Répond 403 si le document dépend d'une configuration d'équipe désactivée, et 422 si les données de la simulation ne permettent pas de produire le document.
+      tags:
+      - Documents
+      security:
+      - bearerAuth: []
+      parameters:
+      - name: simulation_id
+        in: path
+        required: true
+        example: hjjcm1qp28
+        description: L'identifiant de simulation renvoyé par l'appel au endpoint créer
+        schema:
+          type: string
+      responses:
+        '202':
+          description: Accepted - La génération du document a été lancée.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  operation_id:
+                    type: string
+                    example: op1a2b3c4d
+                    description: L'identifiant de la génération, à passer au endpoint de statut.
+                  document_type:
+                    type: string
+                    example: report
+                    description: Le type de document généré.
+                required:
+                - operation_id
+                - document_type
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: unauthorized
+        '403':
+          description: Forbidden - Scope manquant ou document désactivé pour l'équipe.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: missing_scope
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: Could not find the simulation
+        '409':
+          description: Conflict - La simulation n'est pas encore terminée.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: The simulation has not been run yet
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                scenario_ids:
+                  type: array
+                  items:
+                    type: string
+                  description: 'Optionnel. Identifiants des plans de rénovation à inclure (par défaut : tous les plans éligibles). Utilisé uniquement pour les documents liés à un scénario.'
+  /api/v3/simulations/{simulation_id}/documents/contribution-framework:
+    post:
+      summary: 'Lancer la génération du document : Cadre de contribution'
+      description: Lance la génération asynchrone du document PDF « Cadre de contribution » pour la simulation. Renvoie l'identifiant de la génération à utiliser pour interroger son statut. Répond 403 si le document dépend d'une configuration d'équipe désactivée, et 422 si les données de la simulation ne permettent pas de produire le document.
+      tags:
+      - Documents
+      security:
+      - bearerAuth: []
+      parameters:
+      - name: simulation_id
+        in: path
+        required: true
+        example: hjjcm1qp28
+        description: L'identifiant de simulation renvoyé par l'appel au endpoint créer
+        schema:
+          type: string
+      responses:
+        '202':
+          description: Accepted - La génération du document a été lancée.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  operation_id:
+                    type: string
+                    example: op1a2b3c4d
+                    description: L'identifiant de la génération, à passer au endpoint de statut.
+                  document_type:
+                    type: string
+                    example: report
+                    description: Le type de document généré.
+                required:
+                - operation_id
+                - document_type
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: unauthorized
+        '403':
+          description: Forbidden - Scope manquant ou document désactivé pour l'équipe.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: missing_scope
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: Could not find the simulation
+        '409':
+          description: Conflict - La simulation n'est pas encore terminée.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: The simulation has not been run yet
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                scenario_ids:
+                  type: array
+                  items:
+                    type: string
+                  description: 'Optionnel. Identifiants des plans de rénovation à inclure (par défaut : tous les plans éligibles). Utilisé uniquement pour les documents liés à un scénario.'
+  /api/v3/simulations/{simulation_id}/documents/dimensioning-note:
+    post:
+      summary: 'Lancer la génération du document : Note de dimensionnement'
+      description: Lance la génération asynchrone du document PDF « Note de dimensionnement » pour la simulation. Renvoie l'identifiant de la génération à utiliser pour interroger son statut. Répond 403 si le document dépend d'une configuration d'équipe désactivée, et 422 si les données de la simulation ne permettent pas de produire le document.
+      tags:
+      - Documents
+      security:
+      - bearerAuth: []
+      parameters:
+      - name: simulation_id
+        in: path
+        required: true
+        example: hjjcm1qp28
+        description: L'identifiant de simulation renvoyé par l'appel au endpoint créer
+        schema:
+          type: string
+      responses:
+        '202':
+          description: Accepted - La génération du document a été lancée.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  operation_id:
+                    type: string
+                    example: op1a2b3c4d
+                    description: L'identifiant de la génération, à passer au endpoint de statut.
+                  document_type:
+                    type: string
+                    example: report
+                    description: Le type de document généré.
+                required:
+                - operation_id
+                - document_type
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: unauthorized
+        '403':
+          description: Forbidden - Scope manquant ou document désactivé pour l'équipe.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: missing_scope
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: Could not find the simulation
+        '409':
+          description: Conflict - La simulation n'est pas encore terminée.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: The simulation has not been run yet
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                scenario_ids:
+                  type: array
+                  items:
+                    type: string
+                  description: 'Optionnel. Identifiants des plans de rénovation à inclure (par défaut : tous les plans éligibles). Utilisé uniquement pour les documents liés à un scénario.'
+  /api/v3/simulations/{simulation_id}/documents/sworn-statement:
+    post:
+      summary: 'Lancer la génération du document : Attestation sur l''honneur'
+      description: Lance la génération asynchrone du document PDF « Attestation sur l'honneur » pour la simulation. Renvoie l'identifiant de la génération à utiliser pour interroger son statut. Répond 403 si le document dépend d'une configuration d'équipe désactivée, et 422 si les données de la simulation ne permettent pas de produire le document.
+      tags:
+      - Documents
+      security:
+      - bearerAuth: []
+      parameters:
+      - name: simulation_id
+        in: path
+        required: true
+        example: hjjcm1qp28
+        description: L'identifiant de simulation renvoyé par l'appel au endpoint créer
+        schema:
+          type: string
+      responses:
+        '202':
+          description: Accepted - La génération du document a été lancée.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  operation_id:
+                    type: string
+                    example: op1a2b3c4d
+                    description: L'identifiant de la génération, à passer au endpoint de statut.
+                  document_type:
+                    type: string
+                    example: report
+                    description: Le type de document généré.
+                required:
+                - operation_id
+                - document_type
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: unauthorized
+        '403':
+          description: Forbidden - Scope manquant ou document désactivé pour l'équipe.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: missing_scope
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: Could not find the simulation
+        '409':
+          description: Conflict - La simulation n'est pas encore terminée.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: The simulation has not been run yet
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                scenario_ids:
+                  type: array
+                  items:
+                    type: string
+                  description: 'Optionnel. Identifiants des plans de rénovation à inclure (par défaut : tous les plans éligibles). Utilisé uniquement pour les documents liés à un scénario.'
+  /api/v3/simulations/{simulation_id}/documents/commercial-offer:
+    post:
+      summary: 'Lancer la génération du document : Offre commerciale'
+      description: Crée un devis à partir d'un plan de rénovation, puis lance la génération asynchrone du PDF « Offre commerciale ». Renvoie l'identifiant de la génération à utiliser pour interroger son statut, ainsi que l'identifiant du devis créé. Répond 403 si les devis sont désactivés pour l'équipe, et 422 si le plan de rénovation est inconnu.
+      tags:
+      - Documents
+      security:
+      - bearerAuth: []
+      parameters:
+      - name: simulation_id
+        in: path
+        required: true
+        example: hjjcm1qp28
+        description: L'identifiant de simulation renvoyé par l'appel au endpoint créer
+        schema:
+          type: string
+      responses:
+        '202':
+          description: Accepted - Le devis a été créé et la génération du document a été lancée.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  operation_id:
+                    type: string
+                    example: op1a2b3c4d
+                    description: L'identifiant de la génération, à passer au endpoint de statut.
+                  document_type:
+                    type: string
+                    example: commercial_offer
+                    description: Le type de document généré.
+                  quotation_id:
+                    type: string
+                    example: quo1a2b3c4d
+                    description: L'identifiant du devis créé à partir du plan de rénovation.
+                required:
+                - operation_id
+                - document_type
+                - quotation_id
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: unauthorized
+        '403':
+          description: Forbidden - Scope manquant ou devis désactivés pour l'équipe.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: missing_scope
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: Could not find the simulation
+        '409':
+          description: Conflict - La simulation n'est pas encore terminée.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: The simulation has not been run yet
+        '422':
+          description: Unprocessable Content - Plan de rénovation inconnu.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: Unknown renovation plan
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                renovation_plan_id:
+                  type: string
+                  example: rp1a2b3c4d
+                  description: Identifiant du plan de rénovation (sqid du scénario) à partir duquel créer le devis.
+              required:
+              - renovation_plan_id
+        required: true
+  /api/v3/simulations/{simulation_id}/documents/{id}:
+    get:
+      summary: Récupérer le statut d'une génération de document
+      description: Récupère le statut de la génération d'un document et l'URL de téléchargement lorsqu'il est prêt.
+      tags:
+      - Documents
+      security:
+      - bearerAuth: []
+      parameters:
+      - name: simulation_id
+        in: path
+        required: true
+        example: hjjcm1qp28
+        description: L'identifiant de simulation renvoyé par l'appel au endpoint créer
+        schema:
+          type: string
+      - name: id
+        in: path
+        required: true
+        example: op1a2b3c4d
+        description: L'identifiant de génération renvoyé par le endpoint de lancement
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    enum:
+                    - pending
+                    - processing
+                    - completed
+                    - failed
+                    example: completed
+                  document_type:
+                    type: string
+                    example: report
+                  download_url:
+                    type: string
+                    example: https://app.go-kelvin.com/rails/active_storage/blobs/redirect/xxx/report.pdf
+                    description: Présent uniquement lorsque le statut est 'completed'.
+                required:
+                - status
+                - document_type
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: unauthorized
+        '404':
+          description: Not Found - Aucune génération de document ne correspond.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: Could not find the document generation
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      description: Le token commence par 'team-api-key-'
