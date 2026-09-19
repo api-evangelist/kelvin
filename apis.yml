@@ -171,6 +171,8 @@ apis:
   humanURL: https://app.go-kelvin.com/api/docs
   baseURL: https://app.go-kelvin.com
   tags:
+  - Simulation
+  tags_raw:
   - Simulations
   properties:
   - type: OpenAPI
