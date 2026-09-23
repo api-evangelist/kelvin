@@ -2,7 +2,7 @@ openapi: 3.2.0
 info:
   title: Kelvin Qualification API
   version: '1.0'
-  description: 'Operations tagged Qualification across 2 of this provider''s published API definitions: kelvin-api-openapi.yml, kelvin-api-v2-openapi.yml. Each path carries the servers of the definition it was published in.'
+  description: 'Operations tagged Qualification across 2 of this provider''s published API definitions: kelvin-api-openapi.yml, kelvin-api-v2-openapi.json. Each path carries the servers of the definition it was published in.'
 servers:
 - url: '{protocol}://{defaultHost}'
   variables:
@@ -31,9 +31,7 @@ paths:
 
         Chaque geste inclut, le cas échéant, sa prestation par défaut (`default_service`)
 
-        ainsi que la référence par défaut associée pour l''équipe.
-
-        '
+        ainsi que la référence par défaut associée pour l''équipe.'
       security:
       - bearerAuth: []
       parameters:
@@ -129,6 +127,8 @@ paths:
                   error:
                     type: string
                     example: missing_scope
+      operationId: getApiV3CatalogEnabledGestures
+      x-operation-id-source: derived
     servers:
     - url: '{protocol}://{defaultHost}'
       variables:
@@ -153,9 +153,7 @@ paths:
         pour la prestation choisie.
 
 
-        Chaque référence inclut son prix pour l''équipe (héritant de la hiérarchie d''équipes le cas échéant).
-
-        '
+        Chaque référence inclut son prix pour l''équipe (héritant de la hiérarchie d''équipes le cas échéant).'
       security:
       - bearerAuth: []
       parameters:
@@ -295,6 +293,8 @@ paths:
                   error:
                     type: string
                     example: 'At least one filter is required: reference_ids, gestures_technical_ids, service_technical_ids'
+      operationId: getApiV3CatalogEnabledReferences
+      x-operation-id-source: derived
     servers:
     - url: '{protocol}://{defaultHost}'
       variables:
@@ -317,9 +317,7 @@ paths:
 
         Chaque prestation inclut, le cas échéant, sa référence par défaut (`default_reference`)
 
-        pour l''équipe.
-
-        '
+        pour l''équipe.'
       security:
       - bearerAuth: []
       parameters:
@@ -415,6 +413,8 @@ paths:
                   error:
                     type: string
                     example: missing_scope
+      operationId: getApiV3CatalogEnabledServices
+      x-operation-id-source: derived
     servers:
     - url: '{protocol}://{defaultHost}'
       variables:
@@ -424,7 +424,7 @@ paths:
           default: app.go-kelvin.com
   /api/v3/dpes:
     get:
-      summary: Rechercher des DPE par clé d'interopérabilité ou par numéro DPE.
+      summary: Rechercher des DPE par clé d'interopérabilité ou par numéro DPE
       tags:
       - Qualification
       description: 'Cet endpoint permet de rechercher des DPE par clé d''interopérabilité ou par numéro de DPE.
@@ -590,6 +590,8 @@ paths:
                   error:
                     type: string
                     example: Forbidden
+      operationId: getApiV3Dpes
+      x-operation-id-source: derived
     servers:
     - url: '{protocol}://{defaultHost}'
       variables:
@@ -1316,6 +1318,8 @@ paths:
                     type: string
                     example: The simulation has not been run yet
                     description: Error message indicating the issue.
+      operationId: getApiV3SimulationsBySimulationIdInitialState
+      x-operation-id-source: derived
     put:
       summary: Mettre à jour l'état initial
       tags:
@@ -1699,6 +1703,8 @@ paths:
                   example: 10
                   description: La surface totale des fenêtres en mètres carrés.
               required: []
+      operationId: putApiV3SimulationsBySimulationIdInitialState
+      x-operation-id-source: derived
     servers:
     - url: '{protocol}://{defaultHost}'
       variables:
@@ -2182,6 +2188,8 @@ paths:
               required:
               - renovation_plan
         required: true
+      operationId: postApiV3SimulationsBySimulationIdProjectedStateRenovationPlans
+      x-operation-id-source: derived
     servers:
     - url: '{protocol}://{defaultHost}'
       variables:
@@ -3093,6 +3101,8 @@ paths:
                     type: string
                     example: Could not find the simulation
                     description: Error message indicating the issue.
+      operationId: getApiV3SimulationsBySimulationIdProjectedStateRenovationPlansByRenovationPlanId
+      x-operation-id-source: derived
     patch:
       summary: Modifier un plan de rénovation personnalisé
       tags:
@@ -3575,6 +3585,8 @@ paths:
               required:
               - renovation_plan
         required: true
+      operationId: patchApiV3SimulationsBySimulationIdProjectedStateRenovationPlansByRenovationPlanId
+      x-operation-id-source: derived
     servers:
     - url: '{protocol}://{defaultHost}'
       variables:
@@ -3667,6 +3679,8 @@ paths:
                       type: string
                       example: '+33600112233'
                       description: Le téléphone du client
+      operationId: postApiV3SimulationsBySimulationIdReport
+      x-operation-id-source: derived
     get:
       summary: Récupérer le statut du rapport PDF
       description: Le statut de la génération du rapport PDF et l'URL de téléchargement.
@@ -3745,6 +3759,8 @@ paths:
                   error:
                     type: string
                     example: The simulation has not been run yet
+      operationId: getApiV3SimulationsBySimulationIdReport
+      x-operation-id-source: derived
     servers:
     - url: '{protocol}://{defaultHost}'
       variables:
@@ -3754,7 +3770,7 @@ paths:
           default: app.go-kelvin.com
   /api/v2/dpes:
     get:
-      summary: Rechercher des DPE par clé d'interopérabilité ou par numéro DPE.
+      summary: Rechercher des DPE par clé d'interopérabilité ou par numéro DPE
       tags:
       - Qualification
       description: 'Cet endpoint permet de rechercher des DPE par clé d''interopérabilité ou par numéro de DPE.
@@ -3920,6 +3936,8 @@ paths:
                   error:
                     type: string
                     example: Forbidden
+      operationId: getApiV2Dpes
+      x-operation-id-source: derived
     servers:
     - url: '{protocol}://{defaultHost}'
       variables:
@@ -4251,6 +4269,8 @@ paths:
                     type: string
                     example: The simulation has not been run yet
                     description: Error message indicating the issue.
+      operationId: getApiV2SimulationsBySimulationIdInitialState
+      x-operation-id-source: derived
     put:
       summary: Mettre à jour l'état initial
       description: Endpoint pour mettre à jour les informations de l'état initial
@@ -4489,6 +4509,8 @@ paths:
                   example: false
                   description: Présence d'un garage.
               required: []
+      operationId: putApiV2SimulationsBySimulationIdInitialState
+      x-operation-id-source: derived
     servers:
     - url: '{protocol}://{defaultHost}'
       variables:
@@ -4706,6 +4728,8 @@ paths:
                       - simplified_id
               required:
               - renovation_plan
+      operationId: postApiV2SimulationsBySimulationIdProjectedStateRenovationPlans
+      x-operation-id-source: derived
     servers:
     - url: '{protocol}://{defaultHost}'
       variables:
@@ -5057,6 +5081,8 @@ paths:
                     type: string
                     example: Could not find the simulation
                     description: Error message indicating the issue.
+      operationId: getApiV2SimulationsBySimulationIdProjectedStateRenovationPlansByRenovationPlanId
+      x-operation-id-source: derived
     servers:
     - url: '{protocol}://{defaultHost}'
       variables:
@@ -5149,6 +5175,8 @@ paths:
                       type: string
                       example: '+33600112233'
                       description: Le téléphone du client
+      operationId: postApiV2SimulationsBySimulationIdReport
+      x-operation-id-source: derived
     get:
       summary: Récupérer le statut du rapport PDF
       description: Le statut de la génération du rapport PDF et l'URL de téléchargement.
@@ -5227,6 +5255,8 @@ paths:
                   error:
                     type: string
                     example: The simulation has not been run yet
+      operationId: getApiV2SimulationsBySimulationIdReport
+      x-operation-id-source: derived
     servers:
     - url: '{protocol}://{defaultHost}'
       variables:
@@ -5319,4 +5349,4 @@ components:
       description: Le token commence par 'team-api-key-'
 x-refined-from:
 - kelvin-api-openapi.yml
-- kelvin-api-v2-openapi.yml
+- kelvin-api-v2-openapi.json

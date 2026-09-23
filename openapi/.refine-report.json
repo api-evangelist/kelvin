@@ -1,0 +1,38 @@
+{
+  "provider": "kelvin",
+  "sources": [
+    "_original/kelvin-api-openapi.yml",
+    "_original/kelvin-api-v2-openapi.json"
+  ],
+  "outputs": [
+    "kelvin-documents-api-openapi.yml",
+    "kelvin-qualification-api-openapi.yml",
+    "kelvin-simulateur-api-openapi.yml",
+    "kelvin-simulations-api-openapi.yml"
+  ],
+  "archived": [],
+  "errors": [],
+  "warnings": [],
+  "notes": [
+    "2 archived document(s) dropped as subsets of other archived documents",
+    "sourced from openapi/_original/ (2 archived document(s)); previously refined output at the top level was skipped rather than re-split",
+    "kelvin-api-openapi.yml: upgraded openapi 3.1.0 -> OpenAPI 3.2.0",
+    "kelvin-api-openapi.yml: tagged paths GET /api/v3/simulations -> Simulations",
+    "kelvin-api-openapi.yml: declared missing tag: Simulations",
+    "kelvin-api-v2-openapi.json: upgraded openapi 3.1.0 -> OpenAPI 3.2.0",
+    "kelvin-api-v2-openapi.json: tagged paths GET /api/v2/simulations -> Simulations",
+    "kelvin-api-v2-openapi.json: declared missing tag: Simulations",
+    "tag 'Qualification' spans 2 source specs (kelvin-api-openapi.yml, kelvin-api-v2-openapi.json): per-path servers applied",
+    "tag 'Simulateur' spans 2 source specs (kelvin-api-openapi.yml, kelvin-api-v2-openapi.json): per-path servers applied",
+    "tag 'Simulations' spans 2 source specs (kelvin-api-openapi.yml, kelvin-api-v2-openapi.json): per-path servers applied",
+    "apis.yml register: already-registered"
+  ],
+  "skipped": [
+    "_original/kelvin-api-v3-openapi.json: archived document superseded by a larger archived document",
+    "_original/kelvin-api-v2-openapi.yml: archived document superseded by a larger archived document",
+    "kelvin-documents-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "kelvin-qualification-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "kelvin-simulateur-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "kelvin-simulations-api-openapi.yml: previously refined output, superseded by openapi/_original/"
+  ]
+}

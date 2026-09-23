@@ -2,166 +2,7 @@ openapi: 3.2.0
 info:
   title: kelvin Documents API
   version: v3
-  description: 'Bienvenue dans la documentation de l''API kelvin. Cette API est conçue pour évaluer et améliorer la performance énergétique des propriétés.
-
-
-    ![API Logo](/api/kelvin-v3-api-flow-colored-fr.svg)
-
-
-    ### Aperçu de l''API
-
-    L''API kelvin vous permet de créer des simulations pour évaluer la performance énergétique d''un bien immobilier. Elle vous aide également à proposer des plans de travaux personnalisés pour optimiser l''efficacité énergétique de ces biens.
-
-
-    ### Objectifs Principaux
-
-    - **Création de simulations** : Lancez des simulations pour obtenir la performance énergétique actuelle d''une propriété.
-
-    - **Propositions de travaux** : Génération de recommandations de travaux spécifiques pour améliorer l''efficacité énergétique, basées sur les résultats de la simulation.
-
-    - **Gestion des DPE** : Recherchez et gérez les Diagnostics de Performance Énergétique.
-
-
-    ### Utilisation de l''iframe de sélection de polygone
-
-    Pour créer une simulation, il faut déterminer la latitude, la longitude et l''identifiant d''interopérabilité (ban_id) de la propriété. Une carte interactive est disponible pour faciliter cette tâche: L''iframe de sélection de polygone. Cette carte permet aux utilisateurs de sélectionner visuellement leur propriété sur une carte. Vous pouvez intégrer ce composant dans vos applications en suivant la [documentation de l''iframe de sélection de polygone](https://app.go-kelvin.com/docs/simulator-map-iframe#/).
-
-
-    Utilisez cette documentation pour explorer les endpoints disponibles, comprendre les paramètres requis, et découvrir comment intégrer efficacement l''API dans votre système.
-
-
-    ### Changelog v2 → v3
-
-
-    ### ⚠️ Breaking changes
-
-
-    **Tous les endpoints ont été migrés de `/api/v2/` vers `/api/v3/`.**
-
-
-    #### Renommage des champs de performance énergétique
-
-
-    `dpe_class` est renommé `energy_rating` dans l''état initial et l''état projeté. Trois nouveaux champs obligatoires sont ajoutés :
-
-
-    | Avant | Après |
-
-    |---|---|
-
-    | `dpe_class` | `energy_rating` |
-
-    | *(absent)* | `energy_consumption` (kWh/m²/an) |
-
-    | *(absent)* | `carbon_rating` (lettre GES A–G) |
-
-    | *(absent)* | `carbon_emissions` (kg CO₂/m²/an) |
-
-
-    #### Champs d''isolation restructurés
-
-
-    Les champs `walls_insulation_level`, `windows_insulation_level`, `high_floor_insulation_level`, `low_floor_insulation_level` (chaînes de caractères) sont remplacés par des objets contenant un `level` et une `u_value` numérique (W/m²K) :
-
-
-    ```json
-
-    "walls_insulation": { "level": "partially_insulated", "u_value": 0.35 }
-
-    ```
-
-
-    #### Aides financières restructurées
-
-
-    `subsidies` (montant total unique) est remplacé par un objet `financial_support` détaillé, disponible à la fois sur chaque plan de rénovation et sur chaque poste de travaux :
-
-
-    ```json
-
-    "financial_support": { "mpr": 4000.0, "cee": 800.0, "ecoptz": 1200.0, "local": { "Aide région Île-de-France": 1500.0 } }
-
-    ```
-
-
-    #### Structure du plan de rénovation modifiée
-
-
-    Chaque catégorie de travaux dans `renovation_plan` est désormais un **tableau d''items** (au lieu d''un objet unique). Chaque item remplace `id`/`simplified_id`/`label` par `technical_id` et `name`.
-
-
-    #### Valeurs d''enum mises à jour
-
-
-    Plusieurs champs ont des valeurs d''enum entièrement révisées pour correspondre au référentiel DPE/ADEME :
-
-
-    - `generator_type` / `secondary_generator_type` : 4 valeurs génériques → 26 valeurs précises (ex. `condensing_gas_boiler`, `air_to_water_heat_pump`, `pellet_stove`) + `unknown` pour les cas non identifiés
-
-    - `hot_water_type` : 5 valeurs → 24 valeurs précises (ex. `electric_hot_water_tank`, `thermodynamic_water_tank`) + `unknown` pour les cas non identifiés
-
-    - `generator_energy` / `hot_water_energy` / `secondary_generator_energy` : `urban_heating_or_biomass` → `district_heating` + `biomass_wood` + `others` + `unknown`
-
-    - `wall_material` : 5 valeurs → 9 valeurs (ex. `lightweight_concrete`, `hollow_or_perforated_bricks`, `rammed_or_cob_earth`)
-
-    - `vents_type` : codes renommés (ex. `vmc_sf_hygro_b` → `sf_hygro_b_vmc`)
-
-
-    #### `windows` renommé en `doors_windows` dans `renovation_plan`
-
-
-    La catégorie `windows` couvre désormais fenêtres, portes, portes-fenêtres et fenêtres de toit (18 valeurs de `technical_id`).
-
-
-    #### Champs supprimés
-
-
-    - `recently_renovated` — supprimé de l''état initial et de l''endpoint de mise à jour du logement
-
-    - `has_vents` — supprimé (remplacé par le champ `vents_type`)
-
-    - `subsidies` — remplacé par l''objet `financial_support`
-
-
-    ### ✨ Nouveautés
-
-
-    #### Nouvel endpoint de qualification
-
-
-    `PUT /api/v3/simulations/{id}/qualification` — Enregistre le profil de qualification de l''utilisateur (statut propriétaire/locataire, taille du foyer, tranche de revenus, département fiscal, maturité du projet). Cet appel doit être effectué avant `POST /run`.
-
-
-    #### Nouveaux champs dans l''état initial
-
-
-    - `epc_id` — numéro du DPE attaché à la simulation, le cas échéant
-
-    - `secondary_generator_type` / `secondary_generator_energy` — système de chauffage secondaire
-
-    - `collective_heating` / `collective_hot_water` — indicateurs de systèmes collectifs
-
-    - `high_floor_surface`, `low_floor_surface`, `windows_surface` — surfaces en m²
-
-    - `high_floor_kinds` / `low_floor_kinds` — tableaux remplaçant les anciens `high_floor_type` / `low_floor_type`
-
-    - `sources` — indique pour chaque champ si la valeur provient de `ai`, `user` ou `dpe`
-
-
-    #### Nouvelles catégories de travaux dans `renovation_plan`
-
-
-    En plus de `ventilation`, `walls`, `doors_windows`, `low_floor`, `high_floor`, les catégories suivantes sont désormais retournées :
-
-    `heating`, `hot_water`, `renewable_energy`, `summer_comfort`, `winter_comfort`, `thermal_bridge_treatment`, `lighting`, `sobriety`
-
-
-    #### Nouveau bloc KPI
-
-
-    Chaque plan de rénovation inclut désormais un objet `kpi` avec `property_value_increase` (valorisation immobilière estimée exprimée en pourcentage, en €/m² et en perte de surface m²).
-
-    '
+  description: Bienvenue dans la documentation de l'API kelvin.
 servers:
 - url: '{protocol}://{defaultHost}'
   variables:
@@ -178,9 +19,7 @@ paths:
   /api/v3/simulations/{simulation_id}/documents:
     get:
       summary: Lister les documents de la simulation
-      description: 'Liste paginée des documents générés pour la simulation (rapports PDF, offres commerciales, cadres de contribution, notes de dimensionnement, attestations sur l''honneur). Par défaut, seul le dernier document est renvoyé. Utilisez `full=true` pour tous les documents, `id` pour un document précis, `type` pour filtrer par type de document, et `begin`/`end` pour filtrer par date de génération.
-
-        '
+      description: Liste paginée des documents générés pour la simulation (rapports PDF, offres commerciales, cadres de contribution, notes de dimensionnement, attestations sur l'honneur). Par défaut, seul le dernier document est renvoyé. Utilisez `full=true` pour tous les documents, `id` pour un document précis, `type` pour filtrer par type de document, et `begin`/`end` pour filtrer par date de génération.
       tags:
       - Documents
       security:
@@ -366,6 +205,8 @@ paths:
                   error:
                     type: string
                     example: Could not find the simulation
+      operationId: getApiV3SimulationsBySimulationIdDocuments
+      x-operation-id-source: derived
   /api/v3/simulations/{simulation_id}/documents/report:
     post:
       summary: 'Lancer la génération du document : Rapport complet'
@@ -452,6 +293,8 @@ paths:
                   items:
                     type: string
                   description: 'Optionnel. Identifiants des plans de rénovation à inclure (par défaut : tous les plans éligibles). Utilisé uniquement pour les documents liés à un scénario.'
+      operationId: postApiV3SimulationsBySimulationIdDocumentsReport
+      x-operation-id-source: derived
   /api/v3/simulations/{simulation_id}/documents/contribution-framework:
     post:
       summary: 'Lancer la génération du document : Cadre de contribution'
@@ -538,6 +381,8 @@ paths:
                   items:
                     type: string
                   description: 'Optionnel. Identifiants des plans de rénovation à inclure (par défaut : tous les plans éligibles). Utilisé uniquement pour les documents liés à un scénario.'
+      operationId: postApiV3SimulationsBySimulationIdDocumentsContributionFramework
+      x-operation-id-source: derived
   /api/v3/simulations/{simulation_id}/documents/dimensioning-note:
     post:
       summary: 'Lancer la génération du document : Note de dimensionnement'
@@ -624,6 +469,8 @@ paths:
                   items:
                     type: string
                   description: 'Optionnel. Identifiants des plans de rénovation à inclure (par défaut : tous les plans éligibles). Utilisé uniquement pour les documents liés à un scénario.'
+      operationId: postApiV3SimulationsBySimulationIdDocumentsDimensioningNote
+      x-operation-id-source: derived
   /api/v3/simulations/{simulation_id}/documents/sworn-statement:
     post:
       summary: 'Lancer la génération du document : Attestation sur l''honneur'
@@ -710,6 +557,8 @@ paths:
                   items:
                     type: string
                   description: 'Optionnel. Identifiants des plans de rénovation à inclure (par défaut : tous les plans éligibles). Utilisé uniquement pour les documents liés à un scénario.'
+      operationId: postApiV3SimulationsBySimulationIdDocumentsSwornStatement
+      x-operation-id-source: derived
   /api/v3/simulations/{simulation_id}/documents/commercial-offer:
     post:
       summary: 'Lancer la génération du document : Offre commerciale'
@@ -813,6 +662,8 @@ paths:
               required:
               - renovation_plan_id
         required: true
+      operationId: postApiV3SimulationsBySimulationIdDocumentsCommercialOffer
+      x-operation-id-source: derived
   /api/v3/simulations/{simulation_id}/documents/{id}:
     get:
       summary: Récupérer le statut d'une génération de document
@@ -882,6 +733,8 @@ paths:
                   error:
                     type: string
                     example: Could not find the document generation
+      operationId: getApiV3SimulationsBySimulationIdDocumentsById
+      x-operation-id-source: derived
 components:
   securitySchemes:
     bearerAuth:

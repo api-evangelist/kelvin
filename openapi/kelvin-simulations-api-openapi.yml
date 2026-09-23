@@ -2,7 +2,7 @@ openapi: 3.2.0
 info:
   title: Kelvin Simulations API
   version: '1.0'
-  description: 'Operations tagged Simulations across 2 of this provider''s published API definitions: kelvin-api-openapi.yml, kelvin-api-v2-openapi.yml. Each path carries the servers of the definition it was published in.'
+  description: 'Operations tagged Simulations across 2 of this provider''s published API definitions: kelvin-api-openapi.yml, kelvin-api-v2-openapi.json. Each path carries the servers of the definition it was published in.'
 servers:
 - url: '{protocol}://{defaultHost}'
   variables:
@@ -1599,6 +1599,8 @@ paths:
                     example: Forbidden
       tags:
       - Simulations
+      operationId: getApiV3Simulations
+      x-operation-id-source: derived
     servers:
     - url: '{protocol}://{defaultHost}'
       variables:
@@ -2493,6 +2495,8 @@ paths:
                     example: Forbidden
       tags:
       - Simulations
+      operationId: getApiV2Simulations
+      x-operation-id-source: derived
     servers:
     - url: '{protocol}://{defaultHost}'
       variables:
@@ -2585,4 +2589,4 @@ components:
       description: Le token commence par 'team-api-key-'
 x-refined-from:
 - kelvin-api-openapi.yml
-- kelvin-api-v2-openapi.yml
+- kelvin-api-v2-openapi.json
