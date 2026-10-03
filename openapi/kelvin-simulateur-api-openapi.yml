@@ -2268,18 +2268,14 @@ paths:
           default: app.go-kelvin.com
 components:
   schemas:
-    FinancialSupport:
+    GestureFinancialSupport:
       type: object
-      description: Détail des aides financières
+      description: Détail des aides financières par geste
       properties:
         mpr:
           type: number
           format: float
           description: Montant de l'aide MaPrimeRénov' par geste (Aides par geste) en Euros
-        mpr_ampleur:
-          type: number
-          format: float
-          description: Montant de l'aide MaPrimeRénov' Ampleur (Aides d'ampleur) en Euros
         cee:
           type: number
           format: float
@@ -2308,14 +2304,18 @@ components:
             amount: 800
           - name: Aide ville de Saint-Denis
             amount: 500
-    GestureFinancialSupport:
+    FinancialSupport:
       type: object
-      description: Détail des aides financières par geste
+      description: Détail des aides financières
       properties:
         mpr:
           type: number
           format: float
           description: Montant de l'aide MaPrimeRénov' par geste (Aides par geste) en Euros
+        mpr_ampleur:
+          type: number
+          format: float
+          description: Montant de l'aide MaPrimeRénov' Ampleur (Aides d'ampleur) en Euros
         cee:
           type: number
           format: float
