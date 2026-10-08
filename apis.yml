@@ -205,6 +205,8 @@ maintainers:
 - FN: APIs.json
   email: info@apis.io
 common:
+- type: RateLimits
+  url: rate-limits/kelvin-rate-limits.yml
 - type: Overlay
   url: overlays/kelvin-api-overlay.yaml
 - type: X-MCPServerCandidate
